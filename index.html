@@ -125,6 +125,10 @@ const isAdminCreateMode = () => {
 // ── CONSTANTES ────────────────────────────────────────────────────────────────
 const DEVISES = { GNF:{symbole:"GNF",nom:"Franc Guinéen"}, XOF:{symbole:"FCFA",nom:"Franc CFA"} };
 const ROLE_CLR = {Administrateur:"#f59e0b",Professeur:"#3b82f6","Secrétaire":"#10b981",Directeur:"#8b5cf6",Comptable:"#ec4899"};
+// Formules d'abonnement : déterminent le nombre d'administrateurs autorisés par école
+const FORMULES = { basique:{l:"Basique",admins:1}, standard:{l:"Standard",admins:3}, premium:{l:"Premium",admins:Infinity} };
+const adminLimitOf = (etab) => { const f=FORMULES[etab&&etab.formule]; if(f) return f.admins; const m=Number(etab&&etab.max_admins); return m>0?m:2; };
+const formuleLabel = (etab) => { const f=FORMULES[etab&&etab.formule]; return f?f.l:null; };
 // Barème selon le cycle : Primaire = /10, Collège & Lycée = /20
 const CYCLES = ["Maternelle","Primaire","Collège","Lycée"];
 // Niveaux standard guinéens par cycle
@@ -376,6 +380,7 @@ const I18N = {
     st_eval_mat:"Évaluation Maternelle", st_eval_note:"Notes chiffrées (/10)", st_eval_app:"Appréciations (Acquis...)",
     st_devise_mon:"Devise monétaire", st_gnf:"GNF — Franc Guinéen", st_xof:"FCFA — Franc CFA",
     st_code_men:"Code MEN", st_adresse:"Adresse", st_prefixe:"Préfixe matricule", st_frais_insc_def:"Frais inscription (défaut)", st_mensualite_def:"Mensualité (défaut)",
+    st_formule:"Formule", st_formule_nd:"non définie", st_admins_mot:"administrateur(s)", st_admins_illimite:"administrateurs illimités", us_admin_limit:"Votre formule actuelle ({f}) autorise {n} administrateur(s). Pour en ajouter, vous devez passer à une formule supérieure — contactez-nous. Vous pouvez aussi attribuer un autre rôle (Directeur, Secrétaire, Comptable…).",
     st_periodes:"🗓️ Périodes / Compositions de l'année", st_periodes_d:"Structurez l'année selon votre pays et votre organisation (trimestres, semestres, compositions, séquences…). Ces intitulés deviennent les colonnes des bulletins.",
     st_preset_3trim:"3 trimestres", st_preset_2sem:"2 semestres", st_preset_2comp:"2 compositions", st_preset_3comp:"3 compositions", st_preset_6seq:"6 séquences",
     st_selon_systeme:"Selon système", st_2sem:"2 sem.", st_3trim:"3 trim.", st_periode:"Période", st_add_periode:"+ Ajouter une période",
@@ -556,6 +561,7 @@ const I18N = {
     st_eval_mat:"تقييم الروضة", st_eval_note:"نقاط رقمية (/10)", st_eval_app:"تقديرات (مكتسب...)",
     st_devise_mon:"العملة", st_gnf:"GNF — الفرنك الغيني", st_xof:"FCFA — فرنك سيفا",
     st_code_men:"رمز MEN", st_adresse:"العنوان", st_prefixe:"بادئة رقم التسجيل", st_frais_insc_def:"رسوم التسجيل (افتراضي)", st_mensualite_def:"القسط الشهري (افتراضي)",
+    st_formule:"الباقة", st_formule_nd:"غير محددة", st_admins_mot:"مدير", st_admins_illimite:"مديرون بلا حدّ", us_admin_limit:"باقتك الحالية ({f}) تسمح بـ {n} مدير. لإضافة المزيد، يجب الترقية إلى باقة أعلى — تواصل معنا. يمكنك أيضًا إسناد دور آخر (مدير الدراسة، أمانة، محاسبة…).",
     st_periodes:"🗓️ فترات / فروض السنة", st_periodes_d:"نظّم السنة حسب بلدك وتنظيمك (فصول، سداسيات، فروض، تسلسلات…). تصبح هذه التسميات أعمدة الكشوف.",
     st_preset_3trim:"3 فصول", st_preset_2sem:"سداسيان", st_preset_2comp:"فرضان", st_preset_3comp:"3 فروض", st_preset_6seq:"6 تسلسلات",
     st_selon_systeme:"حسب النظام", st_2sem:"سداسيان", st_3trim:"3 فصول", st_periode:"الفترة", st_add_periode:"+ إضافة فترة",
@@ -955,7 +961,7 @@ function ActivationScreen({onDone}) {
 // ── ONBOARDING ────────────────────────────────────────────────────────────────
 function Onboarding({codeActivation,onDone}) {
   const [step,setStep]=useState(1);
-  const [ecole,setEcole]=useState({nom:"",devise:"GNF",annee:"",adresse:"",telephone:"",email:"",codeMEN:"",prefixe:"",systeme:"trimestre",devise_txt:"",fraisInscription:"",mensualite:""});
+  const [ecole,setEcole]=useState({nom:"",devise:"GNF",annee:"",adresse:"",telephone:"",email:"",codeMEN:"",prefixe:"",systeme:"trimestre",devise_txt:"",fraisInscription:"",mensualite:"",formule:"basique"});
   const [admin,setAdmin]=useState({nom:"",prenom:"",identifiant:"",password:"",confirm:""});
   const [err,setErr]=useState("");const [loading,setLoading]=useState(false);
 
@@ -1004,6 +1010,10 @@ function Onboarding({codeActivation,onDone}) {
               <Inp label="Préfixe matricule" value={ecole.prefixe} onChange={e=>setEcole(f=>({...f,prefixe:e.target.value}))} placeholder="CMC"/>
               <Inp label="Frais inscription (défaut)" type="number" value={ecole.fraisInscription} onChange={e=>setEcole(f=>({...f,fraisInscription:e.target.value}))} placeholder="500000"/>
               <Inp label="Mensualité (défaut)" type="number" value={ecole.mensualite} onChange={e=>setEcole(f=>({...f,mensualite:e.target.value}))} placeholder="150000"/>
+              <div style={{gridColumn:"1/-1",marginTop:4}}>
+                <Slt label="Formule d'abonnement *" value={ecole.formule} onChange={e=>setEcole(f=>({...f,formule:e.target.value}))} opts={[{v:"basique",l:"Basique — 1 administrateur"},{v:"standard",l:"Standard — 3 administrateurs"},{v:"premium",l:"Premium — administrateurs illimités"}]}/>
+                <div style={{fontSize:11,color:"#64748b",marginTop:4}}>Détermine le nombre d'administrateurs autorisés. L'école ne pourra pas changer sa formule elle-même.</div>
+              </div>
             </div>
           </>
         ):(
@@ -3146,15 +3156,17 @@ function Messagerie({data,ops,currentUser}) {
 }
 
 // ── UTILISATEURS ──────────────────────────────────────────────────────────────
-function Utilisateurs({data,ops,currentUser}) {
+function Utilisateurs({data,ops,currentUser,etab={}}) {
   const roleBase=(role)=>navForRole(role).map(n=>n.id).filter(id=>id!=="dashboard");
-  const [modal,setModal]=useState(null);const [form,setForm]=useState({nom:"",prenom:"",genre:"",identifiant:"",password:"",role:"Professeur",matieres_autorisees:[],classes_autorisees:[],pages_autorisees:roleBase("Professeur")});const [loading,setLoading]=useState(false);
+  const [modal,setModal]=useState(null);const [form,setForm]=useState({nom:"",prenom:"",genre:"",identifiant:"",password:"",role:"Professeur",matieres_autorisees:[],classes_autorisees:[],pages_autorisees:roleBase("Professeur")});const [loading,setLoading]=useState(false);const [err,setErr]=useState("");
   const toggleMat=id=>setForm(f=>({...f,matieres_autorisees:(f.matieres_autorisees||[]).includes(id)?f.matieres_autorisees.filter(x=>x!==id):[...(f.matieres_autorisees||[]),id]}));
   const toggleClasse=id=>setForm(f=>({...f,classes_autorisees:(f.classes_autorisees||[]).includes(id)?f.classes_autorisees.filter(x=>x!==id):[...(f.classes_autorisees||[]),id]}));
   const togglePage=id=>setForm(f=>({...f,pages_autorisees:(f.pages_autorisees||[]).includes(id)?f.pages_autorisees.filter(x=>x!==id):[...(f.pages_autorisees||[]),id]}));
   // Pages accessibles d'un utilisateur (pour l'aperçu dans la liste)
   const accessOf=(u)=>{const ids=u.role==="Administrateur"?NAV.map(n=>n.id):((Array.isArray(u.pages_autorisees)&&u.pages_autorisees.length)?["dashboard",...u.pages_autorisees]:navForRole(u.role).map(n=>n.id));return NAV.filter(n=>ids.includes(n.id));};
-  const save=async()=>{if(!form.nom||!form.identifiant)return;setLoading(true);const payload={nom:form.nom,prenom:form.prenom,genre:form.genre,identifiant:form.identifiant,role:form.role,matieres_autorisees:form.role==="Professeur"?(form.matieres_autorisees||[]):[],classes_autorisees:form.role==="Professeur"?(form.classes_autorisees||[]):[],pages_autorisees:form.role==="Administrateur"?[]:(form.pages_autorisees||[])};if(modal==="add")await ops.addUser({...payload,password:form.password});else await ops.updateUser(modal,{...payload,...(form.password?{password:form.password}:{})});setLoading(false);setModal(null);};
+  const save=async()=>{if(!form.nom||!form.identifiant)return;setErr("");
+    if(form.role==="Administrateur"){const adminMax=adminLimitOf(etab);const autres=(data.utilisateurs||[]).filter(u=>u.role==="Administrateur"&&u.id!==modal).length;if(autres>=adminMax){setErr(t("us_admin_limit").replace("{f}",formuleLabel(etab)||"—").replace("{n}",adminMax===Infinity?"∞":adminMax));return;}}
+    setLoading(true);const payload={nom:form.nom,prenom:form.prenom,genre:form.genre,identifiant:form.identifiant,role:form.role,matieres_autorisees:form.role==="Professeur"?(form.matieres_autorisees||[]):[],classes_autorisees:form.role==="Professeur"?(form.classes_autorisees||[]):[],pages_autorisees:form.role==="Administrateur"?[]:(form.pages_autorisees||[])};if(modal==="add")await ops.addUser({...payload,password:form.password});else await ops.updateUser(modal,{...payload,...(form.password?{password:form.password}:{})});setLoading(false);setModal(null);};
   return(
     <div>
       <SHdr title={t("nav_utilisateurs")+" 👤"} sub={t("us_sub")} action={currentUser.role==="Administrateur"?<Btn ch={t("btn_new_user")} v="primary" onClick={()=>{setForm({nom:"",prenom:"",genre:"",identifiant:"",password:"",role:"Professeur",matieres_autorisees:[],classes_autorisees:[],pages_autorisees:roleBase("Professeur")});setModal("add");}}/>:null}/>
@@ -3171,7 +3183,8 @@ function Utilisateurs({data,ops,currentUser}) {
           </TR>
         ))}
       />
-      {modal&&<Modal title={modal==="add"?t("us_new_titre"):t("us_edit_titre")} onClose={()=>setModal(null)}>
+      {modal&&<Modal title={modal==="add"?t("us_new_titre"):t("us_edit_titre")} onClose={()=>{setErr("");setModal(null);}}>
+        {err&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",color:"#dc2626",borderRadius:10,padding:"10px 13px",fontSize:12,fontWeight:600,marginBottom:13,lineHeight:1.45}}>⚠️ {err}</div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
           <Inp label={t("el_nom")} value={form.nom} onChange={e=>setForm(f=>({...f,nom:e.target.value}))}/>
           <Inp label={t("us_prenom")} value={form.prenom} onChange={e=>setForm(f=>({...f,prenom:e.target.value}))}/>
@@ -3179,7 +3192,7 @@ function Utilisateurs({data,ops,currentUser}) {
         <Inp label={t("us_ident")} value={form.identifiant} onChange={e=>setForm(f=>({...f,identifiant:e.target.value}))}/>
         <Slt label={t("el_genre")} value={form.genre} onChange={e=>setForm(f=>({...f,genre:e.target.value}))} opts={[{v:"",l:t("el_choisir")},{v:"M",l:t("el_masculin")},{v:"F",l:t("el_feminin")}]}/>
         <Lbl t={modal==="add"?t("us_mdp"):t("us_mdp_new")}><input type="password" value={form.password} onChange={e=>setForm(f=>({...f,password:e.target.value}))} style={iSt()}/></Lbl>
-        <Slt label={t("us_role")} value={form.role} onChange={e=>{const r=e.target.value;setForm(f=>({...f,role:r,pages_autorisees:roleBase(r)}));}} opts={["Administrateur","Directeur","Secrétaire","Professeur","Comptable"]}/>
+        <Slt label={t("us_role")} value={form.role} onChange={e=>{const r=e.target.value;setErr("");setForm(f=>({...f,role:r,pages_autorisees:roleBase(r)}));}} opts={["Administrateur","Directeur","Secrétaire","Professeur","Comptable"]}/>
         {form.role!=="Administrateur"&&<Lbl t={t("us_pages")}>
           <div style={{display:"flex",flexWrap:"wrap",gap:7,maxHeight:180,overflowY:"auto",padding:"2px"}}>
             {NAV.filter(n=>n.id!=="dashboard").map(n=>{const on=(form.pages_autorisees||[]).includes(n.id);return(
@@ -3627,6 +3640,10 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
           <Inp label={t("st_frais_insc_def")} type="number" value={form.fraisInscription} onChange={set("fraisInscription")}/>
           <Inp label={t("st_mensualite_def")} type="number" value={form.mensualite} onChange={set("mensualite")}/>
         </div>
+        <div style={{marginTop:14,display:"flex",alignItems:"center",gap:10,background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:11,padding:"11px 14px"}}>
+          <span style={{fontSize:17}}>🎟️</span>
+          <div style={{fontSize:12.5,color:"#1e40af",fontWeight:600}}>{t("st_formule")} : <b>{FORMULES[etab.formule]?.l||t("st_formule_nd")}</b>{FORMULES[etab.formule]?` — ${FORMULES[etab.formule].admins===Infinity?t("st_admins_illimite"):FORMULES[etab.formule].admins+" "+t("st_admins_mot")}`:""}</div>
+        </div>
         <div style={{marginTop:16,background:"#f8fafc",border:"1px solid #eef2f7",borderRadius:11,padding:14}}>
           <div style={{fontSize:13,fontWeight:800,color:"#0f172a",marginBottom:3}}>{t("st_periodes")}</div>
           <div style={{fontSize:11,color:"#64748b",marginBottom:11}}>{t("st_periodes_d")}</div>
@@ -3983,7 +4000,7 @@ function App() {
     depenses:<Depenses data={data} ops={ops} etab={etab||{}}/>,
     presences:<Presences data={scopedData} ops={ops} etab={etab||{}}/>,
     messagerie:<Messagerie data={data} ops={ops} currentUser={currentUser}/>,
-    utilisateurs:<Utilisateurs data={data} ops={ops} currentUser={currentUser}/>,
+    utilisateurs:<Utilisateurs data={data} ops={ops} currentUser={currentUser} etab={etab||{}}/>,
     parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser}/>,
   };
 
