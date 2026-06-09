@@ -3045,7 +3045,7 @@ function Messagerie({data,ops,currentUser}) {
   return(
     <div>
       <SHdr title={t("nav_messagerie")+" 💬"} sub={t("msg_sub")} action={<Btn ch={t("btn_new_groupe")} v="primary" onClick={()=>{setGrpNom("");setGrpMembres([]);setModalGroupe(true);}}/>}/>
-      <div style={{display:"grid",gridTemplateColumns:"230px 1fr",gap:14,height:500}}>
+      <div className="me-msg-grid" style={{display:"grid",gridTemplateColumns:"230px 1fr",gap:14,height:500}}>
         {/* Liste des conversations */}
         <Card s={{padding:10,overflowY:"auto"}}>
           <div style={{fontSize:10,fontWeight:800,color:"#94a3b8",textTransform:"uppercase",padding:"4px 8px 8px"}}>{t("msg_canaux")}</div>
@@ -3903,6 +3903,10 @@ function App() {
     if(document.getElementById("me-responsive")) return;
     const st=document.createElement("style"); st.id="me-responsive";
     st.textContent=`
+      html,body{max-width:100%;overflow-x:hidden;}
+      .me-main{min-width:0;}
+      .me-page{max-width:100%;}
+      .me-page img{max-width:100%;height:auto;}
       body{zoom:1.12;}
       @media (max-width:860px){
         body{zoom:1.06;}
@@ -3910,6 +3914,9 @@ function App() {
         .me-shdr h2{font-size:19px !important}
         .me-page table{font-size:11.5px}
         .me-page td,.me-page th{padding:7px 8px !important}
+        .me-msg-grid{grid-template-columns:1fr !important;height:auto !important;}
+        .me-msg-grid > .me-card:first-child{max-height:38vh;}
+        .me-msg-grid > .me-card:last-child{min-height:60vh;}
       }
       @media (max-width:420px){ .me-card{padding:14px !important} }
     `;
