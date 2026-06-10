@@ -318,7 +318,7 @@ const I18N = {
     bu_toutes_classes:"Toutes classes", bu_tout_imprimer:"🖨️ Tout imprimer", bu_aucun_eleve:"Aucun élève.",
     fn_align_g:"Gauche", fn_align_c:"Centre", fn_align_d:"Droite",
     fn_sub:"Composez et imprimez une fiche à remplir à la main", fn_creez:"Créez d'abord des classes.",
-    fn_titre:"Titre du document", fn_lignes:"Lignes vides en bas", fn_nb_pages:"Nombre de pages", fn_stat_inclure:"Inclure le tableau statistique (dernière page)", fn_stat_recalc:"🔄 Recalculer", fn_stat_ligne:"+ Ligne", fn_stat_libelle:"Libellé", fn_stat_pos:"Position", fn_stat_taille:"Taille", fn_taille_p:"Petite", fn_taille_m:"Moyenne", fn_taille_g:"Grande", fn_stat_vpos:"Vertical", fn_vpos_apres:"Après la grille", fn_vpos_bas:"Bas de page",
+    fn_titre:"Titre du document", fn_lignes:"Lignes vides en bas", fn_nb_pages:"Nombre de pages", fn_mode_impr:"Impression", fn_mode_noms:"Avec les noms des élèves", fn_mode_vierge:"Fiche vierge (sans noms)", fn_stat_inclure:"Inclure le tableau statistique (dernière page)", fn_stat_recalc:"🔄 Recalculer", fn_stat_ligne:"+ Ligne", fn_stat_libelle:"Libellé", fn_stat_pos:"Position", fn_stat_taille:"Taille", fn_taille_p:"Petite", fn_taille_m:"Moyenne", fn_taille_g:"Grande", fn_stat_vpos:"Vertical", fn_vpos_apres:"Après la grille", fn_vpos_bas:"Bas de page",
     fn_prefill_a:"seront pré-remplis, plus", fn_prefill_b:"ligne(s) vide(s).",
     fn_colonnes:"📐 Colonnes de la fiche", fn_add_col:"+ Ajouter une colonne", fn_col_nom_ph:"Nom colonne", fn_largeur:"Largeur",
     fn_apercu:"👁️ Aperçu", fn_autres_b:"autre(s) élève(s)",
@@ -499,7 +499,7 @@ const I18N = {
     bu_toutes_classes:"كل الأقسام", bu_tout_imprimer:"🖨️ طباعة الكل", bu_aucun_eleve:"لا تلاميذ.",
     fn_align_g:"يسار", fn_align_c:"وسط", fn_align_d:"يمين",
     fn_sub:"صمّم واطبع ورقة لملئها يدويًا", fn_creez:"أنشئ أقسامًا أولًا.",
-    fn_titre:"عنوان الوثيقة", fn_lignes:"أسطر فارغة في الأسفل", fn_nb_pages:"عدد الصفحات", fn_stat_inclure:"إدراج الجدول الإحصائي (الصفحة الأخيرة)", fn_stat_recalc:"🔄 إعادة الحساب", fn_stat_ligne:"+ سطر", fn_stat_libelle:"التسمية", fn_stat_pos:"الموضع", fn_stat_taille:"الحجم", fn_taille_p:"صغير", fn_taille_m:"متوسط", fn_taille_g:"كبير", fn_stat_vpos:"عمودي", fn_vpos_apres:"بعد الجدول", fn_vpos_bas:"أسفل الصفحة",
+    fn_titre:"عنوان الوثيقة", fn_lignes:"أسطر فارغة في الأسفل", fn_nb_pages:"عدد الصفحات", fn_mode_impr:"الطباعة", fn_mode_noms:"بأسماء التلاميذ", fn_mode_vierge:"بطاقة فارغة (دون أسماء)", fn_stat_inclure:"إدراج الجدول الإحصائي (الصفحة الأخيرة)", fn_stat_recalc:"🔄 إعادة الحساب", fn_stat_ligne:"+ سطر", fn_stat_libelle:"التسمية", fn_stat_pos:"الموضع", fn_stat_taille:"الحجم", fn_taille_p:"صغير", fn_taille_m:"متوسط", fn_taille_g:"كبير", fn_stat_vpos:"عمودي", fn_vpos_apres:"بعد الجدول", fn_vpos_bas:"أسفل الصفحة",
     fn_prefill_a:"سيُملأون مسبقًا، بالإضافة إلى", fn_prefill_b:"سطر فارغ.",
     fn_colonnes:"📐 أعمدة الورقة", fn_add_col:"+ إضافة عمود", fn_col_nom_ph:"اسم العمود", fn_largeur:"العرض",
     fn_apercu:"👁️ معاينة", fn_autres_b:"تلميذ آخر",
@@ -1937,7 +1937,16 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
       {label:t("stat_pourcentage"), total:pct(moy.length,comp.length), filles:pct(moyF.length,compF.length)},
     ];
   };
-  const [statRows,setStatRows]=useState(()=>computeStatRows(data.classes[0]?.id||0, fnPeriodes[0]));
+  const blankStatRows=()=>([
+    {label:t("stat_inscrit"),total:"",filles:""},
+    {label:t("stat_ont_compose"),total:"",filles:""},
+    {label:t("stat_pas_compose"),total:"",filles:""},
+    {label:t("stat_ont_moyenne"),total:"",filles:""},
+    {label:t("stat_pas_moyenne"),total:"",filles:""},
+    {label:t("stat_pourcentage"),total:"",filles:""},
+  ]);
+  const [statRows,setStatRows]=useState(()=>blankStatRows());
+  const [modeImpr,setModeImpr]=useState("noms"); // "noms" = avec élèves · "vierge" = sans noms
   const setStatCell=(i,k,v)=>setStatRows(rs=>{const n=[...rs];n[i]={...n[i],[k]:v};return n;});
   const addStatRow=()=>setStatRows(rs=>[...rs,{label:"",total:"",filles:""}]);
   const delStatRow=i=>setStatRows(rs=>rs.filter((_,j)=>j!==i));
@@ -1979,7 +1988,15 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
       const val=(c.nom==="N°"||c.auto==="num")?(eleves.length+k+1):"";
       return `<td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:11px;text-align:${c.align};height:24px">${val}</td>`;
     }).join("")}</tr>`).join("");
-    const grid=`<table style="width:100%;border-collapse:collapse;margin-top:8px"><thead><tr>${th}</tr></thead><tbody>${rowsEleves}${rowsVides}</tbody></table>`;
+    let corps;
+    if(modeImpr==="vierge"){
+      const n=Math.max(1,eleves.length+(parseInt(lignesVides)||0));
+      corps=Array.from({length:n}).map((_,k)=>`<tr>${cols.map(c=>{
+        const val=(c.nom==="N°"||c.auto==="num")?(k+1):"";
+        return `<td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:11px;text-align:${c.align};height:24px">${val}</td>`;
+      }).join("")}</tr>`).join("");
+    } else { corps=rowsEleves+rowsVides; }
+    const grid=`<table style="width:100%;border-collapse:collapse;margin-top:8px"><thead><tr>${th}</tr></thead><tbody>${corps}</tbody></table>`;
     const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     const SZ={p:{fs:9.5,pad:"3px 9px"},m:{fs:11,pad:"5px 12px"},g:{fs:13,pad:"8px 16px"}}[statTaille]||{fs:11,pad:"5px 12px"};
     const statHTML=(statActif&&statRows.length)?`<div style="text-align:${statPos}"><table style="border-collapse:collapse;margin-top:22px;display:inline-block;text-align:left">
@@ -2017,6 +2034,12 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
             <Inp label={t("fn_titre")} value={titre} onChange={e=>setTitre(e.target.value)}/>
             <Inp label={t("fn_lignes")} type="number" value={lignesVides} onChange={e=>setLignesVides(Math.max(0,parseInt(e.target.value)||0))}/>
             <Inp label={t("fn_nb_pages")} type="number" value={nbPages} onChange={e=>setNbPages(Math.max(1,parseInt(e.target.value)||1))}/>
+            <div>
+              <Lbl t={t("fn_mode_impr")}><select value={modeImpr} onChange={e=>setModeImpr(e.target.value)} style={{width:"100%",padding:"9px 12px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:13,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+                <option value="noms">{t("fn_mode_noms")}</option>
+                <option value="vierge">{t("fn_mode_vierge")}</option>
+              </select></Lbl>
+            </div>
           </div>
           <div style={{fontSize:12,color:"#64748b",marginTop:6}}>👥 {eleves.length} {t("db_eleves")} {t("fn_prefill_a")} {lignesVides} {t("fn_prefill_b")}</div>
         </Card>
@@ -4134,3 +4157,4 @@ if (ReactDOM.createRoot) {
 </script>
 </body>
 </html>
+
