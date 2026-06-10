@@ -4169,6 +4169,7 @@ const THEMES={
   menthe:{l:"Menthe",sw:"#ddf1e6",dark:false,v:{bg:"linear-gradient(135deg,#e9f6ee,#ddf1e6)",surface:"#ffffff",s2:"#ecf7f0",border:"#d5ecdd",border2:"#c4e3cf",text:"#0f2a1e",text2:"#5b6f64",text3:"#8aa396"}},
   ardoise:{l:"Ardoise",sw:"#dde1e8",dark:false,v:{bg:"linear-gradient(135deg,#e6e9ee,#dde1e8)",surface:"#ffffff",s2:"#eef1f5",border:"#dde2ea",border2:"#cfd6e0",text:"#1e293b",text2:"#5b6675",text3:"#8b95a5"}},
   lavande:{l:"Lavande",sw:"#e7e3f7",dark:false,v:{bg:"linear-gradient(135deg,#efecfa,#e7e3f7)",surface:"#ffffff",s2:"#f3f1fb",border:"#e6e1f4",border2:"#d6cfeb",text:"#241f3a",text2:"#655d80",text3:"#9389b0"}},
+  sombre:{l:"Sombre",sw:"#1a2336",dark:true,v:{bg:"linear-gradient(135deg,#0b1220,#0e1626)",surface:"#1a2336",s2:"#141d2e",border:"#2a3650",border2:"#33415f",text:"#ffffff",text2:"#c7d2e0",text3:"#9aa7ba"}},
 };
 function App() {
   // Mode création (éditeur) seulement si l'URL contient #admin-create
@@ -4186,7 +4187,7 @@ function App() {
   const [isMobile,setIsMobile]=useState(()=>{try{return window.innerWidth<860;}catch(_){return false;}});
   const [navOpen,setNavOpen]=useState(false);
   const [quickOpen,setQuickOpen]=useState(false);
-  const [theme,setTheme]=useState(()=>{try{const v=localStorage.getItem("monecole_theme");if(v==="dark"||v==="sombre")return "clair";if(!v||v==="light")return "clair";return THEMES[v]?v:"clair";}catch(_){return "clair";}});
+  const [theme,setTheme]=useState(()=>{try{const v=localStorage.getItem("monecole_theme");if(v==="dark")return "sombre";if(!v||v==="light")return "clair";return THEMES[v]?v:"clair";}catch(_){return "clair";}});
   useEffect(()=>{try{localStorage.setItem("monecole_theme",theme);}catch(_){}},[theme]);
   const TH=THEMES[theme]||THEMES.clair;
   useEffect(()=>{const onR=()=>{try{setIsMobile(window.innerWidth<860);}catch(_){}};window.addEventListener("resize",onR);return ()=>window.removeEventListener("resize",onR);},[]);
