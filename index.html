@@ -380,7 +380,7 @@ const I18N = {
     st_eval_mat:"Évaluation Maternelle", st_eval_note:"Notes chiffrées (/10)", st_eval_app:"Appréciations (Acquis...)",
     st_devise_mon:"Devise monétaire", st_gnf:"GNF — Franc Guinéen", st_xof:"FCFA — Franc CFA",
     st_code_men:"Code MEN", st_adresse:"Adresse", st_prefixe:"Préfixe matricule", st_frais_insc_def:"Frais inscription (défaut)", st_mensualite_def:"Mensualité (défaut)",
-    st_formule:"Formule", st_formule_nd:"non définie", st_admins_mot:"administrateur(s)", st_admins_illimite:"administrateurs illimités", us_admin_limit:"Votre formule actuelle ({f}) autorise {n} administrateur(s). Pour en ajouter, vous devez passer à une formule supérieure — contactez-nous. Vous pouvez aussi attribuer un autre rôle (Directeur, Secrétaire, Comptable…).",
+    us_fondateur:"Fondateur", st_formule:"Formule", st_formule_nd:"non définie", st_admins_mot:"administrateur(s)", st_admins_illimite:"administrateurs illimités", us_admin_limit:"Votre formule actuelle ({f}) autorise {n} administrateur(s). Pour en ajouter, vous devez passer à une formule supérieure — contactez-nous. Vous pouvez aussi attribuer un autre rôle (Directeur, Secrétaire, Comptable…).",
     st_periodes:"🗓️ Périodes / Compositions de l'année", st_periodes_d:"Structurez l'année selon votre pays et votre organisation (trimestres, semestres, compositions, séquences…). Ces intitulés deviennent les colonnes des bulletins.",
     st_preset_3trim:"3 trimestres", st_preset_2sem:"2 semestres", st_preset_2comp:"2 compositions", st_preset_3comp:"3 compositions", st_preset_6seq:"6 séquences",
     st_selon_systeme:"Selon système", st_2sem:"2 sem.", st_3trim:"3 trim.", st_periode:"Période", st_add_periode:"+ Ajouter une période",
@@ -561,7 +561,7 @@ const I18N = {
     st_eval_mat:"تقييم الروضة", st_eval_note:"نقاط رقمية (/10)", st_eval_app:"تقديرات (مكتسب...)",
     st_devise_mon:"العملة", st_gnf:"GNF — الفرنك الغيني", st_xof:"FCFA — فرنك سيفا",
     st_code_men:"رمز MEN", st_adresse:"العنوان", st_prefixe:"بادئة رقم التسجيل", st_frais_insc_def:"رسوم التسجيل (افتراضي)", st_mensualite_def:"القسط الشهري (افتراضي)",
-    st_formule:"الباقة", st_formule_nd:"غير محددة", st_admins_mot:"مدير", st_admins_illimite:"مديرون بلا حدّ", us_admin_limit:"باقتك الحالية ({f}) تسمح بـ {n} مدير. لإضافة المزيد، يجب الترقية إلى باقة أعلى — تواصل معنا. يمكنك أيضًا إسناد دور آخر (مدير الدراسة، أمانة، محاسبة…).",
+    us_fondateur:"المؤسس", st_formule:"الباقة", st_formule_nd:"غير محددة", st_admins_mot:"مدير", st_admins_illimite:"مديرون بلا حدّ", us_admin_limit:"باقتك الحالية ({f}) تسمح بـ {n} مدير. لإضافة المزيد، يجب الترقية إلى باقة أعلى — تواصل معنا. يمكنك أيضًا إسناد دور آخر (مدير الدراسة، أمانة، محاسبة…).",
     st_periodes:"🗓️ فترات / فروض السنة", st_periodes_d:"نظّم السنة حسب بلدك وتنظيمك (فصول، سداسيات، فروض، تسلسلات…). تصبح هذه التسميات أعمدة الكشوف.",
     st_preset_3trim:"3 فصول", st_preset_2sem:"سداسيان", st_preset_2comp:"فرضان", st_preset_3comp:"3 فروض", st_preset_6seq:"6 تسلسلات",
     st_selon_systeme:"حسب النظام", st_2sem:"سداسيان", st_3trim:"3 فصول", st_periode:"الفترة", st_add_periode:"+ إضافة فترة",
@@ -3195,13 +3195,13 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
       <Tbl cols={[t("us_th_user"),t("us_th_ident"),t("us_th_role"),t("us_th_actions")]} empty={<Empty icon="👤" text={t("us_empty")}/>}
         rows={data.utilisateurs.map(u=>(
           <TR key={u.id}>
-            <TD><div style={{display:"flex",alignItems:"center",gap:9}}><div style={{width:32,height:32,borderRadius:9,background:(ROLE_CLR[u.role]||"#6b7280")+"20",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:ROLE_CLR[u.role]||"#6b7280",fontSize:11}}>{u.prenom?.[0]}{u.nom[0]}</div><div><div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{u.prenom} {u.nom}</div><div style={{fontSize:10.5,color:"#94a3b8",marginTop:2,lineHeight:1.35}}>{accessOf(u).map(n=>t("nav_"+n.id)).join(" · ")}</div></div></div></TD>
+            <TD><div style={{display:"flex",alignItems:"center",gap:9}}><div style={{width:32,height:32,borderRadius:9,background:(ROLE_CLR[u.role]||"#6b7280")+"20",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:ROLE_CLR[u.role]||"#6b7280",fontSize:11}}>{u.prenom?.[0]}{u.nom[0]}</div><div><div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{u.prenom} {u.nom}{u.fondateur&&<span style={{marginLeft:6,fontSize:9,fontWeight:800,color:"#b45309",background:"#fef3c7",padding:"1px 6px",borderRadius:20,verticalAlign:"middle"}}>{t("us_fondateur")}</span>}</div><div style={{fontSize:10.5,color:"#94a3b8",marginTop:2,lineHeight:1.35}}>{accessOf(u).map(n=>t("nav_"+n.id)).join(" · ")}</div></div></div></TD>
             <TD mono>{u.identifiant}</TD>
             <TD><Badge role={u.role}/></TD>
-            <TD>{currentUser.role==="Administrateur"&&<div style={{display:"flex",gap:6}}>
+            <TD>{currentUser.role==="Administrateur"&&((u.fondateur&&u.id!==currentUser.id)?<span style={{fontSize:11,fontWeight:700,color:"#94a3b8",display:"inline-flex",alignItems:"center",gap:5}}>🔒 {t("us_fondateur")}</span>:<div style={{display:"flex",gap:6}}>
               <button onClick={()=>{setForm({nom:u.nom,prenom:u.prenom||"",genre:u.genre||"",identifiant:u.identifiant,password:"",role:u.role,matieres_autorisees:Array.isArray(u.matieres_autorisees)?u.matieres_autorisees:[],classes_autorisees:Array.isArray(u.classes_autorisees)?u.classes_autorisees:[],pages_autorisees:(Array.isArray(u.pages_autorisees)&&u.pages_autorisees.length)?u.pages_autorisees:roleBase(u.role)});setModal(u.id);}} style={{background:"#f1f5f9",color:"#475569",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
-              {u.id!==currentUser.id&&<button onClick={()=>ops.deleteUser(u.id)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_supprimer")}</button>}
-            </div>}</TD>
+              {u.id!==currentUser.id&&!u.fondateur&&<button onClick={()=>ops.deleteUser(u.id)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_supprimer")}</button>}
+            </div>)}</TD>
           </TR>
         ))}
       />
