@@ -983,19 +983,22 @@ function Onboarding({codeActivation,onDone}) {
   const finish=async()=>{
     if(!admin.nom||!admin.identifiant||!admin.password)return setErr("Tous les champs sont requis.");
     if(admin.password!==admin.confirm)return setErr("Mots de passe différents.");
-    setLoading(true);
+    setLoading(true);setErr("");
     try {
-      // Sauvegarder établissement
-      const {data:etabData,error:etabErr}=await sb.from("etablissements").upsert({...ecole,code_activation:codeActivation,created_at:new Date().toISOString()}).select().single();
-      if(etabErr)throw etabErr;
-      // Sauvegarder admin (mot de passe haché)
-      const adminPayload=await withHashedPw({nom:admin.nom,prenom:admin.prenom,identifiant:admin.identifiant,password:admin.password,role:"Administrateur",etablissement_id:etabData.id});
-      const {data:userData,error:userErr}=await sb.from("utilisateurs").insert(adminPayload).select().single();
-      if(userErr)throw userErr;
-      // Marquer le code d'activation comme utilisé (libre -> utilisé)
-      try{await sb.from("codes_activation").update({statut:"utilise",etablissement_id:etabData.id,used_at:new Date().toISOString()}).eq("code",codeActivation).eq("statut","libre");}catch(_){}
-      onDone(etabData,userData||{...admin,role:"Administrateur",etablissement_id:etabData.id});
-    } catch(e){setErr("Erreur de connexion : "+e.message);}
+      const {data,error}=await sb.functions.invoke("creer-ecole",{body:{code:codeActivation,ecole,admin:{nom:admin.nom,prenom:admin.prenom,identifiant:admin.identifiant,password:admin.password}}});
+      if(error){let m="Création impossible.";try{const j=await error.context.json();if(j&&j.error)m=j.error;}catch(_){}throw new Error(m);}
+      if(!data||!data.ok||!data.etablissement)throw new Error((data&&data.error)||"Réponse inattendue du serveur.");
+      // Connexion automatique du nouvel administrateur (établit la session Auth pour le RLS)
+      const email=`${String(admin.identifiant).trim().toLowerCase()}@monecole.app`;
+      const {data:authData}=await sb.auth.signInWithPassword({email,password:admin.password});
+      let userRow=data.user;
+      if(authData&&authData.user){
+        const {data:row}=await sb.from("utilisateurs").select("*,etablissements(*)").eq("auth_id",authData.user.id).limit(1).maybeSingle();
+        if(row)userRow=row;
+      }
+      const etabFinal=(userRow&&userRow.etablissements)||data.etablissement;
+      onDone(etabFinal,userRow||{...admin,role:"Administrateur",etablissement_id:data.etablissement.id});
+    } catch(e){setErr("Erreur : "+(e.message||e));}
     setLoading(false);
   };
 
