@@ -4111,6 +4111,14 @@ function EditorHub({onCreate,masterPw}) {
   );
 }
 
+const THEMES={
+  clair:{l:"Clair",sw:"#eef2f7",dark:false,v:{bg:"linear-gradient(135deg,#eef2f7,#e8eef6)",surface:"#ffffff",s2:"#f8fafc",border:"#eef2f7",border2:"#e2e8f0",text:"#0f172a",text2:"#64748b",text3:"#94a3b8"}},
+  creme:{l:"Crème",sw:"#f3ead8",dark:false,v:{bg:"linear-gradient(135deg,#f7f1e6,#f3ead8)",surface:"#fffdf8",s2:"#f6efe2",border:"#ece2cf",border2:"#e2d6bf",text:"#1f2937",text2:"#6b6356",text3:"#9c9384"}},
+  ocean:{l:"Océan",sw:"#dceafa",dark:false,v:{bg:"linear-gradient(135deg,#eaf2fb,#dceafa)",surface:"#ffffff",s2:"#eef5fd",border:"#d7e6f8",border2:"#c8dcf2",text:"#0f2540",text2:"#5a6b80",text3:"#8aa0b8"}},
+  menthe:{l:"Menthe",sw:"#ddf1e6",dark:false,v:{bg:"linear-gradient(135deg,#e9f6ee,#ddf1e6)",surface:"#ffffff",s2:"#ecf7f0",border:"#d5ecdd",border2:"#c4e3cf",text:"#0f2a1e",text2:"#5b6f64",text3:"#8aa396"}},
+  ardoise:{l:"Ardoise",sw:"#dde1e8",dark:false,v:{bg:"linear-gradient(135deg,#e6e9ee,#dde1e8)",surface:"#ffffff",s2:"#eef1f5",border:"#dde2ea",border2:"#cfd6e0",text:"#1e293b",text2:"#5b6675",text3:"#8b95a5"}},
+  sombre:{l:"Sombre",sw:"#1a2336",dark:true,v:{bg:"linear-gradient(135deg,#0b1220,#0e1626)",surface:"#1a2336",s2:"#141d2e",border:"#26324a",border2:"#2c3a55",text:"#e7edf6",text2:"#9fb0c7",text3:"#7e8ea6"}},
+};
 function App() {
   // Mode création (éditeur) seulement si l'URL contient #admin-create
   const adminMode = isAdminCreateMode();
@@ -4126,8 +4134,9 @@ function App() {
   const [uiZoom,setUiZoom]=useState(()=>{try{const v=parseFloat(localStorage.getItem("monecole_zoom"));return v&&v>=0.85&&v<=1.6?v:1.1;}catch(_){return 1.1;}});
   const [isMobile,setIsMobile]=useState(()=>{try{return window.innerWidth<860;}catch(_){return false;}});
   const [navOpen,setNavOpen]=useState(false);
-  const [dark,setDark]=useState(()=>{try{return localStorage.getItem("monecole_theme")==="dark";}catch(_){return false;}});
-  useEffect(()=>{try{localStorage.setItem("monecole_theme",dark?"dark":"light");}catch(_){}},[dark]);
+  const [theme,setTheme]=useState(()=>{try{const v=localStorage.getItem("monecole_theme");if(v==="dark")return "sombre";if(!v||v==="light")return "clair";return THEMES[v]?v:"clair";}catch(_){return "clair";}});
+  useEffect(()=>{try{localStorage.setItem("monecole_theme",theme);}catch(_){}},[theme]);
+  const TH=THEMES[theme]||THEMES.clair;
   useEffect(()=>{const onR=()=>{try{setIsMobile(window.innerWidth<860);}catch(_){}};window.addEventListener("resize",onR);return ()=>window.removeEventListener("resize",onR);},[]);
   useEffect(()=>{try{localStorage.setItem("monecole_page",page);}catch(_){}},[page]);
   useEffect(()=>{try{localStorage.setItem("monecole_zoom",String(uiZoom));}catch(_){}},[uiZoom]);
@@ -4277,11 +4286,10 @@ function App() {
   };
 
   return(
-    <div className={dark?"me-dark":""} style={{display:"flex",height:"100dvh",overflow:"hidden",fontFamily:"'Plus Jakarta Sans',sans-serif",background:"var(--me-bg)"}}>
+    <div className={TH.dark?"me-dark":""} style={{display:"flex",height:"100dvh",overflow:"hidden",fontFamily:"'Plus Jakarta Sans',sans-serif",background:"var(--me-bg)","--me-bg":TH.v.bg,"--me-surface":TH.v.surface,"--me-surface-2":TH.v.s2,"--me-border":TH.v.border,"--me-border-2":TH.v.border2,"--me-text":TH.v.text,"--me-text-2":TH.v.text2,"--me-text-3":TH.v.text3}}>
       <style>{`:root{--me-bg:linear-gradient(135deg,#eef2f7 0%,#e8eef6 100%);--me-surface:#fff;--me-surface-2:#f8fafc;--me-border:#eef2f7;--me-border-2:#e2e8f0;--me-text:#0f172a;--me-text-2:#64748b;--me-text-3:#94a3b8;}
-.me-dark{--me-bg:linear-gradient(135deg,#0b1220 0%,#0e1626 100%);--me-surface:#1a2336;--me-surface-2:#141d2e;--me-border:#26324a;--me-border-2:#2c3a55;--me-text:#e7edf6;--me-text-2:#9fb0c7;--me-text-3:#7e8ea6;}
-.me-dark .me-main{color:var(--me-text);}
-.me-dark .me-row:hover td{background:var(--me-surface-2)!important;}`}</style>
+.me-main{color:var(--me-text);}
+.me-row:hover td{background:var(--me-surface-2)!important;}`}</style>
       {toast&&<Toast msg={toast.msg} type={toast.type}/>}
       {isMobile&&<div style={{position:"fixed",top:0,left:0,right:0,height:50,background:"linear-gradient(180deg,#0f172a,#13203a)",zIndex:50,display:"flex",alignItems:"center",gap:11,padding:"0 12px",boxShadow:"0 2px 12px rgba(0,0,0,.3)"}}>
         <button onClick={()=>setNavOpen(true)} aria-label="Menu" style={{background:"rgba(255,255,255,0.12)",border:"none",color:"#fff",borderRadius:9,width:38,height:38,fontSize:19,cursor:"pointer",lineHeight:1}}>☰</button>
@@ -4319,9 +4327,12 @@ function App() {
           </div>
           <div style={{display:"flex",justifyContent:"center",marginBottom:9}}><LangToggle lang={lang} setLang={setLang} dark/></div>
           <div style={{fontSize:9,color:"rgba(255,255,255,0.37)",textAlign:"center",marginBottom:5,textTransform:"uppercase",letterSpacing:.5}}>{t("ui_apparence")}</div>
-          <div style={{display:"flex",gap:6,marginBottom:9}}>
-            <button onClick={()=>setDark(false)} style={{flex:1,padding:"7px",borderRadius:9,border:"none",cursor:"pointer",fontSize:10.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",background:!dark?"rgba(255,255,255,0.92)":"rgba(255,255,255,0.08)",color:!dark?"#0f172a":"rgba(255,255,255,0.7)"}}>☀️ {t("ui_clair")}</button>
-            <button onClick={()=>setDark(true)} style={{flex:1,padding:"7px",borderRadius:9,border:"none",cursor:"pointer",fontSize:10.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",background:dark?"rgba(26,86,219,0.95)":"rgba(255,255,255,0.08)",color:dark?"#fff":"rgba(255,255,255,0.7)"}}>🌙 {t("ui_sombre")}</button>
+          <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:9}}>
+            {Object.entries(THEMES).map(([id,th])=>(
+              <button key={id} onClick={()=>setTheme(id)} title={th.l} style={{flex:"1 1 30%",minWidth:0,display:"flex",alignItems:"center",gap:5,padding:"6px 7px",borderRadius:8,cursor:"pointer",border:theme===id?"2px solid #fff":"1.5px solid rgba(255,255,255,0.14)",background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.85)",fontSize:9.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+                <span style={{width:12,height:12,borderRadius:4,background:th.sw,flexShrink:0,border:"1px solid rgba(0,0,0,0.2)"}}/>{th.l}
+              </button>
+            ))}
           </div>
           <button className="me-btn" onClick={async()=>{if(notifEnabled){try{localStorage.setItem("monecole_notifs","0");}catch(_){}setNotifEnabled(false);}else{const ok=await askNotif();setNotifEnabled(ok);if(ok)notify(t("notif_actif_titre"),t("notif_actif_corps"),"monecole-test");else alert(t("notif_refus"));}}} style={{width:"100%",background:notifEnabled?"rgba(16,185,129,0.16)":"rgba(255,255,255,0.08)",color:notifEnabled?"#6ee7b7":"rgba(255,255,255,0.72)",border:notifEnabled?"1px solid rgba(16,185,129,0.25)":"1px solid rgba(255,255,255,0.12)",borderRadius:9,padding:"8px",cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",marginBottom:8}}>{notifEnabled?"🔔 "+t("notif_on"):"🔕 "+t("notif_off")}</button>
           <button className="me-btn" onClick={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}} style={{width:"100%",background:"rgba(239,68,68,0.13)",color:"#fca5a5",border:"1px solid rgba(239,68,68,0.17)",borderRadius:9,padding:"8px",cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>🚪 {t("logout")}</button>
