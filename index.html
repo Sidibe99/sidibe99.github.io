@@ -2382,7 +2382,7 @@ function Eleves({data,ops,etab}) {
       </div>
       <div style={{display:"flex",gap:8,marginBottom:18}}>
         {CYCLES.map(cyc=>{const actif=cycle===cyc;const n=countCycle(cyc);return(
-          <button key={cyc} onClick={()=>setCycle(cyc)} style={{flex:1,padding:"13px 16px",borderRadius:13,border:actif?"2px solid #1a56db":"1.5px solid #e2e8f0",background:actif?"#eff6ff":"#fff",cursor:"pointer",textAlign:"left",transition:"all .15s",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+          <button key={cyc} onClick={()=>setCycle(cyc)} style={{flex:1,padding:"13px 16px",borderRadius:13,border:actif?"2px solid #1a56db":"1.5px solid var(--me-border-2)",background:actif?"rgba(26,86,219,0.13)":"var(--me-surface)",cursor:"pointer",textAlign:"left",transition:"all .15s",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
             <div style={{fontSize:13,fontWeight:800,color:actif?"#1a56db":"var(--me-text)"}}>{cyc==="Primaire"?"🟦":cyc==="Collège"?"🟪":"🟩"} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}</div>
             <div style={{fontSize:22,fontWeight:900,color:actif?"#1a56db":"var(--me-text)",marginTop:2}}>{n}<span style={{fontSize:11,color:"var(--me-text-3)",fontWeight:600}}> {t("db_eleves")}</span></div>
           </button>
@@ -4187,6 +4187,7 @@ function App() {
   const [isMobile,setIsMobile]=useState(()=>{try{return window.innerWidth<860;}catch(_){return false;}});
   const [navOpen,setNavOpen]=useState(false);
   const [quickOpen,setQuickOpen]=useState(false);
+  const [themeOpen,setThemeOpen]=useState(false);
   const [theme,setTheme]=useState(()=>{try{const v=localStorage.getItem("monecole_theme");if(v==="dark")return "sombre";if(!v||v==="light")return "clair";return THEMES[v]?v:"clair";}catch(_){return "clair";}});
   useEffect(()=>{try{localStorage.setItem("monecole_theme",theme);}catch(_){}},[theme]);
   const TH=THEMES[theme]||THEMES.clair;
@@ -4399,7 +4400,24 @@ function App() {
         const fabBottom=base+(msgFab?68:0);
         const toggleNotif=async()=>{if(notifEnabled){try{localStorage.setItem("monecole_notifs","0");}catch(_){}setNotifEnabled(false);}else{const ok=await askNotif();setNotifEnabled(ok);if(ok)notify(t("notif_actif_titre"),t("notif_actif_corps"),"monecole-test");else alert(t("notif_refus"));}};
         return <>
-          <button onClick={()=>setQuickOpen(o=>!o)} title={t("st_prefs")} aria-label={t("st_prefs")} style={{position:"fixed",right:base,bottom:fabBottom,zIndex:80,width:48,height:48,borderRadius:"50%",border:"none",cursor:"pointer",background:"var(--me-surface)",color:"var(--me-text)",fontSize:21,boxShadow:"0 8px 22px -6px rgba(15,23,42,.4)",display:"flex",alignItems:"center",justifyContent:"center"}}>⚙️</button>
+          <button onClick={()=>{setQuickOpen(o=>!o);setThemeOpen(false);}} title={t("st_prefs")} aria-label={t("st_prefs")} style={{position:"fixed",right:base,bottom:fabBottom,zIndex:80,width:48,height:48,borderRadius:"50%",border:"none",cursor:"pointer",background:"var(--me-surface)",color:"var(--me-text)",fontSize:21,boxShadow:"0 8px 22px -6px rgba(15,23,42,.4)",display:"flex",alignItems:"center",justifyContent:"center"}}>⚙️</button>
+          <button onClick={()=>{setThemeOpen(o=>!o);setQuickOpen(false);}} title={t("ui_apparence")} aria-label={t("ui_apparence")} style={{position:"fixed",right:base,bottom:fabBottom+60,zIndex:80,width:48,height:48,borderRadius:"50%",border:"none",cursor:"pointer",background:"var(--me-surface)",color:"var(--me-text)",fontSize:20,boxShadow:"0 8px 22px -6px rgba(15,23,42,.4)",display:"flex",alignItems:"center",justifyContent:"center"}}>🎨</button>
+          {themeOpen&&<>
+            <div onClick={()=>setThemeOpen(false)} style={{position:"fixed",inset:0,zIndex:88}}/>
+            <div style={{position:"fixed",right:base,bottom:fabBottom+118,zIndex:89,width:232,maxWidth:"90vw",background:"var(--me-surface)",borderRadius:16,border:"1px solid var(--me-border)",boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",padding:14}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:11}}>
+                <div style={{fontWeight:800,fontSize:13.5,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>🎨 {t("ui_apparence")}</div>
+                <button onClick={()=>setThemeOpen(false)} style={{background:"var(--me-surface-2)",color:"var(--me-text-2)",border:"none",borderRadius:8,width:26,height:26,cursor:"pointer",fontSize:12}}>✕</button>
+              </div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+                {Object.entries(THEMES).map(([id,th])=>(
+                  <button key={id} onClick={()=>setTheme(id)} title={th.l} style={{flex:"1 1 46%",minWidth:0,display:"flex",alignItems:"center",gap:7,padding:"8px 9px",borderRadius:10,cursor:"pointer",border:theme===id?"2px solid #1a56db":"1.5px solid var(--me-border-2)",background:theme===id?"rgba(26,86,219,0.08)":"var(--me-surface)",color:"var(--me-text)",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+                    <span style={{width:15,height:15,borderRadius:5,background:th.v.bg,flexShrink:0,border:"1px solid var(--me-border-2)",boxShadow:"inset 0 0 0 2px "+th.v.surface}}/>{th.l}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>}
           {quickOpen&&<>
             <div onClick={()=>setQuickOpen(false)} style={{position:"fixed",inset:0,zIndex:88}}/>
             <div style={{position:"fixed",right:base,bottom:fabBottom+58,zIndex:89,width:286,maxWidth:"92vw",background:"var(--me-surface)",borderRadius:18,border:"1px solid var(--me-border)",boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",padding:16}}>
