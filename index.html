@@ -2087,28 +2087,15 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
 
   const imprimer=()=>{
     if(!classe)return;
-    const th=cols.map(c=>`<th style="border:1px solid #94a3b8;padding:6px 8px;background:${c.couleur};color:#fff;font-size:11px;text-align:${c.align};width:${c.largeur}px">${c.nom}</th>`).join("");
-    const rowsEleves=eleves.map((e,i)=>`<tr>${cols.map(c=>{
-      let val="";
-      if(c.auto==="nom")val=`${e.prenom||""} ${e.nom||""}`;
-      else if(c.auto==="matricule")val=e.matricule||"";
-      else if(c.nom==="N°"||c.auto==="num")val=i+1;
-      return `<td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:11px;text-align:${c.align};height:24px">${val}</td>`;
-    }).join("")}</tr>`).join("");
-    const rowsVides=Array.from({length:lignesVides}).map((_,k)=>`<tr>${cols.map(c=>{
-      const val=(c.nom==="N°"||c.auto==="num")?(eleves.length+k+1):"";
-      return `<td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:11px;text-align:${c.align};height:24px">${val}</td>`;
-    }).join("")}</tr>`).join("");
-    let corps;
-    if(modeImpr==="vierge"){
-      const n=Math.max(1,eleves.length+(parseInt(lignesVides)||0));
-      corps=Array.from({length:n}).map((_,k)=>`<tr>${cols.map(c=>{
-        const val=(c.nom==="N°"||c.auto==="num")?(k+1):"";
-        return `<td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:11px;text-align:${c.align};height:24px">${val}</td>`;
-      }).join("")}</tr>`).join("");
-    } else { corps=rowsEleves+rowsVides; }
-    const grid=`<table style="width:100%;border-collapse:collapse;margin-top:8px"><thead><tr>${th}</tr></thead><tbody>${corps}</tbody></table>`;
     const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    const colgroup=`<colgroup>${cols.map(c=>`<col style="width:${c.largeur}px">`).join("")}</colgroup>`;
+    const headRow=`<tr>${cols.map(c=>`<th style="border:1px solid #94a3b8;padding:6px 8px;background:${c.couleur};color:#fff;font-size:11px;text-align:${c.align}">${esc(c.nom)}</th>`).join("")}</tr>`;
+    const rowHTML=(k)=>`<tr>${cols.map(c=>{
+      let val="";
+      if(c.nom==="N°"||c.auto==="num")val=k+1;
+      else if(modeImpr==="noms"&&k<eleves.length){const e=eleves[k];if(c.auto==="nom")val=`${esc(e.prenom||"")} ${esc(e.nom||"")}`;else if(c.auto==="matricule")val=esc(e.matricule||"");}
+      return `<td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:11px;text-align:${c.align};height:24px">${val}</td>`;
+    }).join("")}</tr>`;
     const SZ={p:{fs:9.5,pad:"3px 9px"},m:{fs:11,pad:"5px 12px"},g:{fs:13,pad:"8px 16px"}}[statTaille]||{fs:11,pad:"5px 12px"};
     const statHTML=(statActif&&statRows.length)?`<div style="text-align:${statPos}"><table style="border-collapse:collapse;margin-top:22px;display:inline-block;width:auto;text-align:left">
       <thead><tr>
@@ -2118,16 +2105,24 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
       </tr></thead>
       <tbody>${statRows.map(r=>`<tr><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;font-weight:600">${esc(r.label)}</td><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;text-align:center">${esc(r.total)}</td><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;text-align:center">${esc(r.filles)}</td></tr>`).join("")}</tbody>
     </table></div>`:"";
+    // Pagination continue : numérotation suivie sur N pages, en-tête une seule fois, place réservée pour le tableau stat en bas
     const N=Math.max(1,parseInt(nbPages)||1);
-    let body="";
+    const PER=34, HEADROWS=7, STATRES=statActif?9:1;
+    const counts=[];
+    for(let p=0;p<N;p++){let c=PER;if(p===0)c-=HEADROWS;if(p===N-1)c-=STATRES;counts.push(Math.max(1,c));}
+    let total=counts.reduce((a,b)=>a+b,0);
+    if(modeImpr==="noms"&&eleves.length>total){counts[counts.length-1]+=eleves.length-total;total=eleves.length;}
+    let k=0,body="";
     for(let p=0;p<N;p++){
-      const first=p===0;
-      const last=p===N-1;
+      const first=p===0,last=p===N-1;
+      let rows="";for(let r=0;r<counts[p];r++){rows+=rowHTML(k);k++;}
       const head=first?officialHeader(etab,{classe:classe.nom,docTitle:titre}):"";
+      const thead=first?`<thead>${headRow}</thead>`:"";
+      const table=`<table style="width:100%;border-collapse:collapse;table-layout:fixed;margin-top:8px">${colgroup}${thead}<tbody>${rows}</tbody></table>`;
       if(last&&statHTML&&statVPos==="bas"){
-        body+=`<div style="min-height:96vh;display:flex;flex-direction:column">${head}${grid}<div style="margin-top:auto">${statHTML}</div></div>`;
+        body+=`<div style="min-height:96vh;display:flex;flex-direction:column">${head}${table}<div style="margin-top:auto">${statHTML}</div></div>`;
       } else {
-        body+=`<div style="${last?"":"page-break-after:always"}">${head}${grid}${last?statHTML:""}</div>`;
+        body+=`<div style="${last?"":"page-break-after:always"}">${head}${table}${last?statHTML:""}</div>`;
       }
     }
     printHTML(body,`${titre} ${classe.nom}`,{etab});
@@ -2155,7 +2150,6 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
             </div>
           </div>
           <div style={{fontSize:12,color:"#64748b",marginTop:6}}>👥 {eleves.length} {t("db_eleves")} {t("fn_prefill_a")} {lignesVides} {t("fn_prefill_b")}</div>
-          {classe&&<div style={{marginTop:12}}><Btn ch={t("btn_print_fiche")} v="primary" onClick={imprimer}/></div>}
         </Card>
 
         <Card s={{marginBottom:16}}>
