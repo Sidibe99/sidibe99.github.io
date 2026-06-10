@@ -4185,6 +4185,7 @@ function App() {
   const [uiZoom,setUiZoom]=useState(()=>{try{const v=parseFloat(localStorage.getItem("monecole_zoom"));return v&&v>=0.85&&v<=1.6?v:1.1;}catch(_){return 1.1;}});
   const [isMobile,setIsMobile]=useState(()=>{try{return window.innerWidth<860;}catch(_){return false;}});
   const [navOpen,setNavOpen]=useState(false);
+  const [quickOpen,setQuickOpen]=useState(false);
   const [theme,setTheme]=useState(()=>{try{const v=localStorage.getItem("monecole_theme");if(v==="dark")return "sombre";if(!v||v==="light")return "clair";return THEMES[v]?v:"clair";}catch(_){return "clair";}});
   useEffect(()=>{try{localStorage.setItem("monecole_theme",theme);}catch(_){}},[theme]);
   const TH=THEMES[theme]||THEMES.clair;
@@ -4390,6 +4391,42 @@ function App() {
           💬
           {unread>0&&<span style={{position:"absolute",top:-3,right:-3,minWidth:21,height:21,padding:"0 5px",borderRadius:11,background:"#ef4444",color:"#fff",fontSize:11,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",border:"2px solid #fff",boxSizing:"border-box"}}>{unread>99?"99+":unread}</span>}
         </button>;
+      })()}
+      {(()=>{
+        const msgFab=allowed.includes("messagerie")&&safePage!=="messagerie";
+        const base=isMobile?16:26;
+        const fabBottom=base+(msgFab?68:0);
+        const toggleNotif=async()=>{if(notifEnabled){try{localStorage.setItem("monecole_notifs","0");}catch(_){}setNotifEnabled(false);}else{const ok=await askNotif();setNotifEnabled(ok);if(ok)notify(t("notif_actif_titre"),t("notif_actif_corps"),"monecole-test");else alert(t("notif_refus"));}};
+        return <>
+          <button onClick={()=>setQuickOpen(o=>!o)} title={t("st_prefs")} aria-label={t("st_prefs")} style={{position:"fixed",right:base,bottom:fabBottom,zIndex:80,width:48,height:48,borderRadius:"50%",border:"none",cursor:"pointer",background:"var(--me-surface)",color:"var(--me-text)",fontSize:21,boxShadow:"0 8px 22px -6px rgba(15,23,42,.4)",display:"flex",alignItems:"center",justifyContent:"center"}}>⚙️</button>
+          {quickOpen&&<>
+            <div onClick={()=>setQuickOpen(false)} style={{position:"fixed",inset:0,zIndex:88}}/>
+            <div style={{position:"fixed",right:base,bottom:fabBottom+58,zIndex:89,width:286,maxWidth:"92vw",background:"var(--me-surface)",borderRadius:18,border:"1px solid var(--me-border)",boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",padding:16}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:13}}>
+                <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>⚙️ {t("st_prefs")}</div>
+                <button onClick={()=>setQuickOpen(false)} style={{background:"var(--me-surface-2)",color:"var(--me-text-2)",border:"none",borderRadius:8,width:27,height:27,cursor:"pointer",fontSize:13}}>✕</button>
+              </div>
+              <div style={{fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase",letterSpacing:.5,marginBottom:6}}>{t("ui_taille")}</div>
+              <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:14}}>
+                <span style={{fontSize:11,color:"var(--me-text-2)",fontWeight:700}}>{t("pref_petit")}</span>
+                <input type="range" min={85} max={150} step={5} value={Math.round(uiZoom*100)} onChange={e=>setUiZoom(parseInt(e.target.value)/100)} style={{flex:1,accentColor:"#1a56db",height:6}}/>
+                <span style={{fontSize:14,color:"var(--me-text-2)",fontWeight:700}}>{t("pref_grand")}</span>
+              </div>
+              <div style={{fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase",letterSpacing:.5,marginBottom:6}}>{t("ui_langue")}</div>
+              <div style={{display:"flex",gap:8,marginBottom:14}}>
+                {[{v:"fr",f:"🇫🇷",l:"Français"},{v:"ar",f:"🇸🇦",l:"العربية"}].map(o=>(
+                  <button key={o.v} onClick={()=>setLang(o.v)} style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"8px",borderRadius:10,cursor:"pointer",border:lang===o.v?"2px solid #1a56db":"1.5px solid var(--me-border-2)",background:lang===o.v?"rgba(26,86,219,0.07)":"var(--me-surface)",color:"var(--me-text)",fontSize:12.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}><span style={{fontSize:17}}>{o.f}</span>{o.l}</button>
+                ))}
+              </div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10}}>
+                <div style={{fontSize:12.5,fontWeight:700,color:"var(--me-text)"}}>🔔 {t("st_notif_titre")}</div>
+                <button onClick={toggleNotif} role="switch" aria-checked={notifEnabled} style={{width:50,height:29,borderRadius:15,border:"none",cursor:"pointer",background:notifEnabled?"#34c759":"#cbd5e1",position:"relative",transition:"background .2s",flexShrink:0,padding:0}}>
+                  <span style={{position:"absolute",top:3,left:notifEnabled?24:3,width:23,height:23,borderRadius:"50%",background:"#fff",boxShadow:"0 1px 3px rgba(0,0,0,.3)",transition:"left .2s"}}/>
+                </button>
+              </div>
+            </div>
+          </>}
+        </>;
       })()}
     </div>
   );
