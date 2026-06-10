@@ -215,7 +215,7 @@ const I18N = {
   fr:{
     login_sub:"Connectez-vous pour continuer", login_id:"Identifiant", login_pw:"Mot de passe",
     login_btn:"Se connecter →", login_btn_loading:"Connexion...", login_err:"Identifiant ou mot de passe incorrect.",
-    logout:"Déconnexion", reconnect:"Reconnexion…", ui_taille:"Taille du texte", ui_langue:"Langue", ui_apparence:"Affichage", ui_clair:"Clair", ui_sombre:"Sombre",
+    logout:"Déconnexion", reconnect:"Reconnexion…", ui_taille:"Taille du texte", ui_langue:"Langue", ui_apparence:"Affichage", ui_clair:"Clair", ui_sombre:"Sombre", st_theme_aide:"Choisissez l'apparence de l'application. Les thèmes clairs gardent un texte foncé bien lisible.",
     notif_on:"Notifications activées", notif_off:"Activer les notifications", notif_refus:"Les notifications ont été refusées. Autorisez-les dans les réglages du navigateur pour ce site.",
     notif_actif_titre:"MonEcole", notif_actif_corps:"Notifications activées ✓", notif_msg_titre:"Nouveau message", notif_msg_plus:"nouveaux messages",
     notif_jour_titre:"Vos cours aujourd'hui", notif_jour_cours:"cours prévu", notif_jour_cours_p:"cours prévus", notif_cours_titre:"Cours dans 15 min",
@@ -397,7 +397,7 @@ const I18N = {
   ar:{
     login_sub:"سجّل الدخول للمتابعة", login_id:"اسم المستخدم", login_pw:"كلمة المرور",
     login_btn:"تسجيل الدخول ←", login_btn_loading:"جارٍ الدخول...", login_err:"اسم المستخدم أو كلمة المرور غير صحيحة.",
-    logout:"تسجيل الخروج", reconnect:"إعادة الاتصال…", ui_taille:"حجم النص", ui_langue:"اللغة", ui_apparence:"العرض", ui_clair:"فاتح", ui_sombre:"داكن",
+    logout:"تسجيل الخروج", reconnect:"إعادة الاتصال…", ui_taille:"حجم النص", ui_langue:"اللغة", ui_apparence:"العرض", ui_clair:"فاتح", ui_sombre:"داكن", st_theme_aide:"اختر مظهر التطبيق. السمات الفاتحة تحافظ على نص داكن واضح القراءة.",
     notif_on:"الإشعارات مفعّلة", notif_off:"تفعيل الإشعارات", notif_refus:"تم رفض الإشعارات. فعّلها من إعدادات المتصفح لهذا الموقع.",
     notif_actif_titre:"مدرستي", notif_actif_corps:"تم تفعيل الإشعارات ✓", notif_msg_titre:"رسالة جديدة", notif_msg_plus:"رسائل جديدة",
     notif_jour_titre:"حصصك اليوم", notif_jour_cours:"حصة", notif_jour_cours_p:"حصص", notif_cours_titre:"حصة بعد 15 دقيقة",
@@ -907,7 +907,7 @@ const StatCard = ({icon,label,value,sub,color,onClick}) => (
     <div><div style={{fontSize:23,fontWeight:800,color:"var(--me-text)",lineHeight:1,fontFamily:"'Sora',sans-serif"}}>{value}</div><div style={{fontSize:12,fontWeight:600,color:"var(--me-text-2)",marginTop:3}}>{label}</div>{sub&&<div style={{fontSize:11,color,marginTop:2}}>{sub}</div>}</div>
   </div>
 );
-const Empty = ({icon,text}) => <div style={{textAlign:"center",padding:"60px 20px",color:"#94a3b8"}}><div style={{fontSize:44,marginBottom:12}}>{icon}</div><p style={{margin:0,fontSize:14}}>{text}</p></div>;
+const Empty = ({icon,text}) => <div style={{textAlign:"center",padding:"60px 20px",color:"var(--me-text-3)"}}><div style={{fontSize:44,marginBottom:12}}>{icon}</div><p style={{margin:0,fontSize:14}}>{text}</p></div>;
 const Tbl = ({cols,rows,empty}) => (
   <div style={{background:"var(--me-surface)",borderRadius:14,overflow:"hidden",boxShadow:"0 1px 8px rgba(0,0,0,0.06)",border:"1px solid var(--me-border)"}}>
     {rows.length===0?empty:(
@@ -1020,7 +1020,7 @@ function Onboarding({codeActivation,onDone}) {
         </div>
         {step===1?(
           <>
-            <div style={{marginBottom:20}}><h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"#0f172a"}}>Votre établissement 🏫</h2><p style={{margin:0,color:"#64748b",fontSize:13}}>Ces infos apparaîtront sur les bulletins et reçus.</p></div>
+            <div style={{marginBottom:20}}><h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"var(--me-text)"}}>Votre établissement 🏫</h2><p style={{margin:0,color:"var(--me-text-2)",fontSize:13}}>Ces infos apparaîtront sur les bulletins et reçus.</p></div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 16px"}}>
               <div style={{gridColumn:"1/-1"}}><Inp label="Nom de l'établissement *" value={ecole.nom} onChange={e=>setEcole(f=>({...f,nom:e.target.value}))} placeholder="Collège Moderne de..."/></div>
               <Inp label="Devise / Slogan" value={ecole.devise_txt} onChange={e=>setEcole(f=>({...f,devise_txt:e.target.value}))} placeholder="L'excellence avant tout"/>
@@ -1044,7 +1044,7 @@ function Onboarding({codeActivation,onDone}) {
           </>
         ):(
           <>
-            <div style={{marginBottom:20}}><h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"#0f172a"}}>Compte administrateur 🔐</h2><p style={{margin:0,color:"#64748b",fontSize:13}}>Accès complet à toutes les fonctionnalités.</p></div>
+            <div style={{marginBottom:20}}><h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"var(--me-text)"}}>Compte administrateur 🔐</h2><p style={{margin:0,color:"var(--me-text-2)",fontSize:13}}>Accès complet à toutes les fonctionnalités.</p></div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 16px"}}>
               <Inp label="Nom *" value={admin.nom} onChange={e=>setAdmin(f=>({...f,nom:e.target.value}))}/>
               <Inp label="Prénom" value={admin.prenom} onChange={e=>setAdmin(f=>({...f,prenom:e.target.value}))}/>
@@ -1105,8 +1105,8 @@ function Login({onLogin,lang,setLang}) {
         <div style={{display:"flex",justifyContent:"flex-end",marginBottom:6}}><LangToggle lang={lang} setLang={setLang}/></div>
         <div style={{textAlign:"center",marginBottom:26}}>
           <div style={{width:56,height:56,borderRadius:15,background:"#eff6ff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,margin:"0 auto 12px"}}>🎓</div>
-          <h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"#0f172a"}}>MonEcole</h2>
-          <p style={{margin:0,color:"#94a3b8",fontSize:12}}>{t("login_sub")}</p>
+          <h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"var(--me-text)"}}>MonEcole</h2>
+          <p style={{margin:0,color:"var(--me-text-3)",fontSize:12}}>{t("login_sub")}</p>
         </div>
         <Inp label={t("login_id")} value={id} onChange={e=>setId(e.target.value)} placeholder="votre.identifiant"/>
         <Lbl t={t("login_pw")}><input type="password" value={pw} onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()} style={iSt()} placeholder="••••••••"/></Lbl>
@@ -1346,16 +1346,16 @@ function Calculatrice({onClose}){
     if(t2==="back")return{background:"#fef3c7",color:"#b45309"};
     if(t2==="mode")return{background:"#dcfce7",color:"#15803d"};
     if(t2==="op")return{background:"#e0e7ff",color:"#1a56db"};
-    if(t2==="fn")return{background:"#f1f5f9",color:"#475569",fontSize:13};
-    return{background:"#f8fafc",color:"#0f172a"};
+    if(t2==="fn")return{background:"#f1f5f9",color:"var(--me-text-2)",fontSize:13};
+    return{background:"#f8fafc",color:"var(--me-text)"};
   };
   return(
     <>
       <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:900}}/>
       <div style={{position:"fixed",top:74,right:16,zIndex:901,width:316,maxWidth:"94vw",background:"#fff",borderRadius:18,boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",border:"1px solid #e2e8f0",padding:16}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-          <div style={{fontWeight:800,fontSize:14,color:"#0f172a",fontFamily:"'Sora',sans-serif"}}>{t("calc_titre")}</div>
-          <button onClick={onClose} style={{background:"#f1f5f9",border:"none",borderRadius:8,width:28,height:28,cursor:"pointer",fontSize:14,color:"#64748b"}}>✕</button>
+          <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>{t("calc_titre")}</div>
+          <button onClick={onClose} style={{background:"#f1f5f9",border:"none",borderRadius:8,width:28,height:28,cursor:"pointer",fontSize:14,color:"var(--me-text-2)"}}>✕</button>
         </div>
         <div style={{background:"#0f172a",borderRadius:13,padding:"12px 14px",marginBottom:12,minHeight:46,textAlign:"right",overflowWrap:"anywhere"}}>
           <div style={{color:"#fff",fontSize:22,fontWeight:800,fontFamily:"'Sora',sans-serif",lineHeight:1.25,minHeight:28}}>{expr||"0"}</div>
@@ -1393,7 +1393,7 @@ function Dashboard({data,etab,setPage,currentUser}) {
   const allowed=pagesForUser(currentUser);
   const dashHeader=(
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:18,flexWrap:"wrap",gap:12}}>
-      <div><h2 style={{margin:0,fontSize:22,fontWeight:800,color:"#0f172a",fontFamily:"'Sora',sans-serif",letterSpacing:-0.5}}>{t("nav_dashboard")} 📊</h2><p style={{margin:"5px 0 0",color:"#64748b",fontSize:13}}>{etab.annee||""} · {etab.systeme==="semestre"?t("sys_sem"):t("sys_trim")} · {t("db_realtime")}</p></div>
+      <div><h2 style={{margin:0,fontSize:22,fontWeight:800,color:"var(--me-text)",fontFamily:"'Sora',sans-serif",letterSpacing:-0.5}}>{t("nav_dashboard")} 📊</h2><p style={{margin:"5px 0 0",color:"var(--me-text-2)",fontSize:13}}>{etab.annee||""} · {etab.systeme==="semestre"?t("sys_sem"):t("sys_trim")} · {t("db_realtime")}</p></div>
       <div style={{display:"flex",alignItems:"center",gap:10}}>
         <button onClick={()=>setShowCalc(true)} title={t("calc_titre")} style={{background:"#fff",border:"1.5px solid #e2e8f0",borderRadius:13,width:46,height:46,cursor:"pointer",boxShadow:"0 4px 12px -7px rgba(0,0,0,.25)",display:"flex",alignItems:"center",justifyContent:"center"}}>
           <svg width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="3" fill="#1a56db"/><rect x="6.5" y="4.2" width="11" height="4.3" rx="1.4" fill="#bfdbfe"/><circle cx="8" cy="12" r="1.15" fill="#fff"/><circle cx="12" cy="12" r="1.15" fill="#fff"/><circle cx="16" cy="12" r="1.15" fill="#fff"/><circle cx="8" cy="15.6" r="1.15" fill="#fff"/><circle cx="12" cy="15.6" r="1.15" fill="#fff"/><circle cx="16" cy="15.6" r="1.15" fill="#fff"/><circle cx="8" cy="19.2" r="1.15" fill="#fff"/><circle cx="12" cy="19.2" r="1.15" fill="#fff"/><circle cx="16" cy="19.2" r="1.15" fill="#fde047"/></svg>
@@ -1408,17 +1408,17 @@ function Dashboard({data,etab,setPage,currentUser}) {
   const scheduleCard=(
     <Card s={{marginBottom:16}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-        <div style={{fontWeight:800,fontSize:14,color:"#0f172a",fontFamily:"'Sora',sans-serif"}}>🗓️ {t("db_cours_jour")} — {jourNom}</div>
-        <span style={{fontSize:11,color:"#94a3b8",fontWeight:600}}>{coursDuJour.length} {t("db_cours")}{isProf?" ("+t("db_mes_matieres")+")":""}</span>
+        <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>🗓️ {t("db_cours_jour")} — {jourNom}</div>
+        <span style={{fontSize:11,color:"var(--me-text-3)",fontWeight:600}}>{coursDuJour.length} {t("db_cours")}{isProf?" ("+t("db_mes_matieres")+")":""}</span>
       </div>
-      {coursDuJour.length===0?<div style={{fontSize:12,color:"#94a3b8",textAlign:"center",padding:"14px 0"}}>{jourNom==="Dimanche"?t("db_repos"):t("db_aucun_cours")}</div>:(
+      {coursDuJour.length===0?<div style={{fontSize:12,color:"var(--me-text-3)",textAlign:"center",padding:"14px 0"}}>{jourNom==="Dimanche"?t("db_repos"):t("db_aucun_cours")}</div>:(
         <div style={{display:"flex",flexDirection:"column",gap:7}}>
           {coursDuJour.map(c=>(
             <div key={c.id} style={{display:"flex",alignItems:"center",gap:12,padding:"9px 13px",background:"#f8fafc",borderRadius:10,borderLeft:"3px solid #1a56db"}}>
               <div style={{fontSize:12,fontWeight:800,color:"#1a56db",minWidth:95}}>{c.debut} - {c.fin}</div>
               <div style={{flex:1}}>
-                <div style={{fontSize:13,fontWeight:700,color:"#0f172a"}}>{matNom(c.matiere_id)} <span style={{fontWeight:600,color:"#94a3b8"}}>· {classeNom(c.classe_id)}</span></div>
-                <div style={{fontSize:11,color:"#64748b"}}>{profNom(c.prof_id)?`👨‍🏫 ${profNom(c.prof_id)}`:""}{c.salle?`${profNom(c.prof_id)?" · ":""}📍 ${c.salle}`:""}</div>
+                <div style={{fontSize:13,fontWeight:700,color:"var(--me-text)"}}>{matNom(c.matiere_id)} <span style={{fontWeight:600,color:"var(--me-text-3)"}}>· {classeNom(c.classe_id)}</span></div>
+                <div style={{fontSize:11,color:"var(--me-text-2)"}}>{profNom(c.prof_id)?`👨‍🏫 ${profNom(c.prof_id)}`:""}{c.salle?`${profNom(c.prof_id)?" · ":""}📍 ${c.salle}`:""}</div>
               </div>
             </div>
           ))}
@@ -1431,7 +1431,7 @@ function Dashboard({data,etab,setPage,currentUser}) {
       {NAV.filter(n=>n.id!=="dashboard"&&allowed.includes(n.id)).map(n=>(
         <div key={n.id} onClick={()=>setPage(n.id)} style={{background:"#fff",borderRadius:14,padding:22,border:"2px dashed #e2e8f0",textAlign:"center",cursor:"pointer",transition:"all 0.2s"}} onMouseOver={e=>{e.currentTarget.style.borderColor="#1a56db";e.currentTarget.style.background="#1a56db0a";}} onMouseOut={e=>{e.currentTarget.style.borderColor="#e2e8f0";e.currentTarget.style.background="#fff";}}>
           <div style={{fontSize:30,marginBottom:8}}>{n.icon}</div>
-          <div style={{fontSize:13,fontWeight:700,color:"#475569"}}>{t("nav_"+n.id)}</div>
+          <div style={{fontSize:13,fontWeight:700,color:"var(--me-text-2)"}}>{t("nav_"+n.id)}</div>
         </div>
       ))}
     </div>
@@ -1467,11 +1467,11 @@ function Dashboard({data,etab,setPage,currentUser}) {
       {(totG+totF)>0&&<div style={{display:"flex",gap:13,marginBottom:14,flexWrap:"wrap"}}>
         <div style={{flex:1,minWidth:150,background:"linear-gradient(135deg,#eff6ff,#fff)",borderRadius:16,padding:"16px 20px",border:"1px solid #3b82f622"}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:26,height:26,borderRadius:8,background:"#2563eb",color:"#fff",fontWeight:900,fontSize:14}}>M</span><span style={{fontSize:12,fontWeight:800,color:"#2563eb"}}>{t("db_masculin")}</span></div>
-          <div style={{fontSize:30,fontWeight:900,color:"#0f172a"}}>{totG}<span style={{fontSize:13,color:"#94a3b8",fontWeight:600}}> · {data.eleves.length?Math.round(totG/data.eleves.length*100):0}%</span></div>
+          <div style={{fontSize:30,fontWeight:900,color:"var(--me-text)"}}>{totG}<span style={{fontSize:13,color:"var(--me-text-3)",fontWeight:600}}> · {data.eleves.length?Math.round(totG/data.eleves.length*100):0}%</span></div>
         </div>
         <div style={{flex:1,minWidth:150,background:"linear-gradient(135deg,#fdf2f8,#fff)",borderRadius:16,padding:"16px 20px",border:"1px solid #db277722"}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:26,height:26,borderRadius:8,background:"#db2777",color:"#fff",fontWeight:900,fontSize:14}}>F</span><span style={{fontSize:12,fontWeight:800,color:"#db2777"}}>{t("db_feminin")}</span></div>
-          <div style={{fontSize:30,fontWeight:900,color:"#0f172a"}}>{totF}<span style={{fontSize:13,color:"#94a3b8",fontWeight:600}}> · {data.eleves.length?Math.round(totF/data.eleves.length*100):0}%</span></div>
+          <div style={{fontSize:30,fontWeight:900,color:"var(--me-text)"}}>{totF}<span style={{fontSize:13,color:"var(--me-text-3)",fontWeight:600}}> · {data.eleves.length?Math.round(totF/data.eleves.length*100):0}%</span></div>
         </div>
       </div>}
       {/* Répartition des effectifs par cycle (uniquement cycles présents) */}
@@ -1479,8 +1479,8 @@ function Dashboard({data,etab,setPage,currentUser}) {
         {cycleInfo.map(ci=>{const n=countCycle(ci.cyc);const pct=data.eleves.length?Math.round(n/data.eleves.length*100):0;const g=genreCycle(ci.cyc,"M");const f=genreCycle(ci.cyc,"F");return(
           <div key={ci.cyc} onClick={()=>setPage("eleves")} style={{background:`linear-gradient(135deg,${ci.bg},#ffffff)`,borderRadius:16,padding:"18px 20px",border:`1px solid ${ci.c}22`,cursor:"pointer",position:"relative",overflow:"hidden"}}>
             <div style={{fontSize:12,fontWeight:800,color:ci.c,letterSpacing:.3}}>{ci.emoji} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[ci.cyc]||ci.cyc).toUpperCase()}</div>
-            <div style={{fontSize:34,fontWeight:900,color:"#0f172a",lineHeight:1.1,marginTop:6}}>{n}</div>
-            <div style={{fontSize:11,color:"#94a3b8",fontWeight:600}}>{t("db_eleves")} · {pct}%</div>
+            <div style={{fontSize:34,fontWeight:900,color:"var(--me-text)",lineHeight:1.1,marginTop:6}}>{n}</div>
+            <div style={{fontSize:11,color:"var(--me-text-3)",fontWeight:600}}>{t("db_eleves")} · {pct}%</div>
             {(g+f)>0&&<div style={{display:"flex",gap:6,marginTop:5}}><span style={{fontSize:11,fontWeight:700,color:"#2563eb",background:"#eff6ff",borderRadius:6,padding:"1px 7px"}}>M : {g}</span><span style={{fontSize:11,fontWeight:700,color:"#db2777",background:"#fdf2f8",borderRadius:6,padding:"1px 7px"}}>F : {f}</span></div>}
             <div style={{position:"absolute",right:-10,bottom:-10,fontSize:64,opacity:0.06}}>{ci.emoji}</div>
           </div>
@@ -1495,23 +1495,23 @@ function Dashboard({data,etab,setPage,currentUser}) {
       </div>
       {moyennes.length>0&&(
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
-          <Card><div style={{fontWeight:700,fontSize:13,color:"#0f172a",marginBottom:14}}>{t("db_moy_matiere")} — {periodeLabel(etab,lastP)}</div>
+          <Card><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)",marginBottom:14}}>{t("db_moy_matiere")} — {periodeLabel(etab,lastP)}</div>
             <ResponsiveContainer width="100%" height={170}><BarChart data={matiereData}><CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/><XAxis dataKey="name" tick={{fontSize:10}}/><YAxis domain={[0,20]} tick={{fontSize:10}}/><Tooltip/><Bar dataKey="moy" fill="#1a56db" radius={[5,5,0,0]}/></BarChart></ResponsiveContainer>
           </Card>
-          <Card><div style={{fontWeight:700,fontSize:13,color:"#0f172a",marginBottom:14}}>{t("db_mentions")}</div>
+          <Card><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)",marginBottom:14}}>{t("db_mentions")}</div>
             <ResponsiveContainer width="100%" height={130}><PieChart><Pie data={repartition.map(r=>({name:r.name,value:r.v}))} cx="50%" cy="50%" outerRadius={60} dataKey="value">{repartition.map((r,i)=><Cell key={i} fill={r.c}/>)}</Pie><Tooltip/></PieChart></ResponsiveContainer>
-            <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:6}}>{repartition.map((r,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:4,fontSize:10,color:"#64748b"}}><div style={{width:7,height:7,borderRadius:2,background:r.c}}/>{r.name} ({r.v})</div>)}</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:6}}>{repartition.map((r,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:4,fontSize:10,color:"var(--me-text-2)"}}><div style={{width:7,height:7,borderRadius:2,background:r.c}}/>{r.name} ({r.v})</div>)}</div>
           </Card>
         </div>
       )}
       {moyennes.length>0&&(
-        <Card><div style={{fontWeight:700,fontSize:13,color:"#0f172a",marginBottom:12}}>🥇 {t("db_meilleurs")} — {periodeLabel(etab,lastP)}</div>
+        <Card><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)",marginBottom:12}}>🥇 {t("db_meilleurs")} — {periodeLabel(etab,lastP)}</div>
           <div style={{display:"flex",flexDirection:"column",gap:7}}>
             {data.eleves.map(e=>({...e,moy:parseFloat(calcMoy(e.notes||{},data.matieres,lastP))||0})).sort((a,b)=>b.moy-a.moy).slice(0,5).map((e,i)=>{
               const cl=data.classes.find(c=>c.id===e.classe_id);const m=MENTION(e.moy,baremeOf(cl?.niveau));
               return(<div key={e.id} style={{display:"flex",alignItems:"center",gap:11,padding:"9px 13px",borderRadius:10,background:i===0?"#fef9c3":"#f8fafc",border:i===0?"1px solid #fde047":"1px solid #f1f5f9"}}>
                 <span style={{fontSize:16}}>{["🥇","🥈","🥉"][i]||`${i+1}.`}</span>
-                <div style={{flex:1}}><div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{e.prenom} {e.nom}</div><div style={{fontSize:11,color:"#94a3b8"}}>{cl?.nom} · {e.matricule}</div></div>
+                <div style={{flex:1}}><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{e.prenom} {e.nom}</div><div style={{fontSize:11,color:"var(--me-text-3)"}}>{cl?.nom} · {e.matricule}</div></div>
                 <div style={{textAlign:"right"}}><div style={{fontWeight:800,fontSize:16,color:m.c}}>{e.moy.toFixed(2)}</div><span style={{background:m.bg,color:m.c,borderRadius:5,padding:"1px 7px",fontSize:10,fontWeight:700}}>{m.t}</span></div>
               </div>);
             })}
@@ -1576,18 +1576,18 @@ function Classes({data,ops,etab}) {
             const classesCyc=data.classes.filter(c=>(c.niveau||"Primaire")===cyc);
             if(classesCyc.length===0)return null;
             return(<div key={cyc}>
-              <div style={{fontSize:13,fontWeight:800,color:"#475569",marginBottom:10,textTransform:"uppercase",letterSpacing:.5}}>{cyc==="Primaire"?"🟦":cyc==="Collège"?"🟪":"🟩"} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}</div>
+              <div style={{fontSize:13,fontWeight:800,color:"var(--me-text-2)",marginBottom:10,textTransform:"uppercase",letterSpacing:.5}}>{cyc==="Primaire"?"🟦":cyc==="Collège"?"🟪":"🟩"} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}</div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(195px,1fr))",gap:13}}>
                 {classesCyc.map(c=>(
                   <Card key={c.id}>
                     <div style={{fontSize:26,marginBottom:8}}>📓</div>
-                    <div style={{fontWeight:800,fontSize:15,color:"#0f172a",marginBottom:3}}>{txt(c.nom,c.nom_ar)}</div>
-                    <div style={{fontSize:12,color:"#64748b",marginBottom:6}}>{c.niveau_detail||c.niveau}{c.serie?` · ${c.serie}`:""}</div>
+                    <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)",marginBottom:3}}>{txt(c.nom,c.nom_ar)}</div>
+                    <div style={{fontSize:12,color:"var(--me-text-2)",marginBottom:6}}>{c.niveau_detail||c.niveau}{c.serie?` · ${c.serie}`:""}</div>
                     {(c.frais_annuel_classe||c.frais_inscription_classe)&&<div style={{fontSize:11,color:"#059669",fontWeight:600,marginBottom:10}}>💰 {c.frais_annuel_classe?fmtMoney(c.frais_annuel_classe,devise):"—"}{t("cl_an")}</div>}
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:6}}>
                       <span style={{background:"#eff6ff",color:"#1a56db",borderRadius:7,padding:"3px 9px",fontSize:11,fontWeight:700}}>👤 {data.eleves.filter(e=>e.classe_id===c.id).length}</span>
                       <div style={{display:"flex",gap:5}}>
-                        <button onClick={()=>{setErr("");setForm({nom:c.nom,nom_ar:c.nom_ar||"",niveau:c.niveau||"",niveau_detail:c.niveau_detail||"",serie:c.serie||"",effectif:c.effectif||"",frais_annuel_classe:c.frais_annuel_classe??"",frais_inscription_classe:c.frais_inscription_classe??"",classe_suivante_id:c.classe_suivante_id??""});setModal(c.id);}} style={{background:"#f1f5f9",color:"#475569",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
+                        <button onClick={()=>{setErr("");setForm({nom:c.nom,nom_ar:c.nom_ar||"",niveau:c.niveau||"",niveau_detail:c.niveau_detail||"",serie:c.serie||"",effectif:c.effectif||"",frais_annuel_classe:c.frais_annuel_classe??"",frais_inscription_classe:c.frais_inscription_classe??"",classe_suivante_id:c.classe_suivante_id??""});setModal(c.id);}} style={{background:"#f1f5f9",color:"var(--me-text-2)",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
                         <button onClick={()=>ops.deleteClass(c.id)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_supprimer")}</button>
                       </div>
                     </div>
@@ -1614,12 +1614,12 @@ function Classes({data,ops,etab}) {
         <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:6}}><Btn ch={t("btn_annuler")} v="ghost" onClick={()=>setModal(null)}/><Btn ch={loading?"...":t("btn_save")} v="success" onClick={save} disabled={loading}/></div>
       </Modal>}
       {promo&&<Modal title={t("cl_passage_titre")} onClose={()=>setPromo(false)} w={560}>
-        <div style={{fontSize:12,color:"#64748b",marginBottom:14}}>{t("cl_passage_intro")}</div>
-        {promoInfos.length===0?<div style={{fontSize:12,color:"#94a3b8",background:"#fffbeb",border:"1px solid #fde68a",borderRadius:9,padding:"11px 13px"}}>{t("cl_passage_aucune_def")}</div>:(<>
+        <div style={{fontSize:12,color:"var(--me-text-2)",marginBottom:14}}>{t("cl_passage_intro")}</div>
+        {promoInfos.length===0?<div style={{fontSize:12,color:"var(--me-text-3)",background:"#fffbeb",border:"1px solid #fde68a",borderRadius:9,padding:"11px 13px"}}>{t("cl_passage_aucune_def")}</div>:(<>
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
             {promoInfos.map(p=>(
               <div key={p.cl.id} style={{background:"#f8fafc",borderRadius:10,padding:"10px 13px"}}>
-                <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{txt(p.cl.nom,p.cl.nom_ar)} <span style={{color:"#94a3b8",fontWeight:600}}>{t("cl_vers")} {txt(p.suiv?.nom,p.suiv?.nom_ar)}</span></div>
+                <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{txt(p.cl.nom,p.cl.nom_ar)} <span style={{color:"var(--me-text-3)",fontWeight:600}}>{t("cl_vers")} {txt(p.suiv?.nom,p.suiv?.nom_ar)}</span></div>
                 <div style={{fontSize:12,marginTop:3}}><span style={{color:"#059669",fontWeight:700}}>{p.admis} {t("cl_admis")}</span> · <span style={{color:"#dc2626"}}>{p.redouble} {t("cl_redoublants")}</span>{p.sansNote>0?` · ${p.sansNote} ${t("cl_sans_notes")}`:""}</div>
               </div>
             ))}
@@ -1661,16 +1661,16 @@ function Matieres({data,ops}) {
             const mats=matCycle(cyc);
             if(mats.length===0)return null;
             return(<div key={cyc}>
-              <div style={{fontSize:13,fontWeight:800,color:"#475569",marginBottom:10,textTransform:"uppercase",letterSpacing:.5}}>{cyc==="Maternelle"?"🟨":cyc==="Primaire"?"🟦":cyc==="Collège"?"🟪":"🟩"} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}</div>
+              <div style={{fontSize:13,fontWeight:800,color:"var(--me-text-2)",marginBottom:10,textTransform:"uppercase",letterSpacing:.5}}>{cyc==="Maternelle"?"🟨":cyc==="Primaire"?"🟦":cyc==="Collège"?"🟪":"🟩"} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}</div>
               <Card s={{padding:0,overflow:"hidden"}}>
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
-                  <thead><tr style={{background:"#f8fafc"}}>{[t("ma_th_matiere"),t("ma_th_coeff"),t("ma_th_ens"),t("ma_th_cycles"),""].map((h,hi)=><th key={hi} style={{padding:"9px 14px",textAlign:"left",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
+                  <thead><tr style={{background:"#f8fafc"}}>{[t("ma_th_matiere"),t("ma_th_coeff"),t("ma_th_ens"),t("ma_th_cycles"),""].map((h,hi)=><th key={hi} style={{padding:"9px 14px",textAlign:"left",fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
                   <tbody>{mats.map((m,i)=>(
                     <tr key={m.id} style={{borderTop:i>0?"1px solid #f8fafc":"none"}}>
-                      <td style={{padding:"10px 14px",fontWeight:700,fontSize:13,color:"#0f172a"}}>{txt(m.nom,m.nom_ar)}</td>
+                      <td style={{padding:"10px 14px",fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{txt(m.nom,m.nom_ar)}</td>
                       <td style={{padding:"10px 14px"}}><span style={{background:"#eff6ff",color:"#1a56db",borderRadius:7,padding:"2px 9px",fontSize:12,fontWeight:700}}>×{m.coefficient}</span></td>
-                      <td style={{padding:"10px 14px",fontSize:12,color:"#64748b"}}>{m.enseignant||"—"}</td>
-                      <td style={{padding:"10px 14px",fontSize:11,color:"#94a3b8"}}>{(!m.cycles||m.cycles.length===0)?t("ma_tous"):m.cycles.map(c=>(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[c]||c)).join(", ")}</td>
+                      <td style={{padding:"10px 14px",fontSize:12,color:"var(--me-text-2)"}}>{m.enseignant||"—"}</td>
+                      <td style={{padding:"10px 14px",fontSize:11,color:"var(--me-text-3)"}}>{(!m.cycles||m.cycles.length===0)?t("ma_tous"):m.cycles.map(c=>(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[c]||c)).join(", ")}</td>
                       <td style={{padding:"10px 14px",textAlign:"right"}}><div style={{display:"inline-flex",gap:6}}>
                         <button onClick={()=>{setErr("");setForm({nom:m.nom,nom_ar:m.nom_ar||"",coefficient:m.coefficient,enseignant:m.enseignant||"",cycles:m.cycles||[]});setModal(m.id);}} style={{background:"#f1f5f9",border:"none",borderRadius:7,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_modifier")}</button>
                         <button onClick={()=>ops.deleteMat(m.id)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:7,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_supprimer")}</button>
@@ -1743,11 +1743,11 @@ function Professeurs({data,ops,etab}) {
                 <div style={{display:"flex",alignItems:"center",gap:11,marginBottom:10}}>
                   <div style={{width:42,height:42,borderRadius:11,background:"#eff6ff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:"#1a56db",fontSize:15}}>{p.prenom?.[0]}{p.nom?.[0]}</div>
                   <div style={{flex:1}}>
-                    <div style={{fontWeight:800,fontSize:14,color:"#0f172a"}}>{p.prenom} {p.nom}</div>
-                    <div style={{fontSize:11,color:"#94a3b8"}}>{p.matieres_txt||"—"}</div>
+                    <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)"}}>{p.prenom} {p.nom}</div>
+                    <div style={{fontSize:11,color:"var(--me-text-3)"}}>{p.matieres_txt||"—"}</div>
                   </div>
                 </div>
-                <div style={{fontSize:12,color:"#64748b",lineHeight:1.7}}>
+                <div style={{fontSize:12,color:"var(--me-text-2)",lineHeight:1.7}}>
                   {p.telephone&&<div>📞 {p.telephone}</div>}
                   <div>💰 {p.type_salaire==="horaire"?`${fmtMoney(p.taux_horaire,devise)}${t("pf_h")}`:`${fmtMoney(p.salaire,devise)}${t("pf_mois")}`}</div>
                   {abs>0&&<div style={{color:"#c2410c"}}>🚫 {abs} {t("pr_absences")}</div>}
@@ -1755,7 +1755,7 @@ function Professeurs({data,ops,etab}) {
               </div>
               <div style={{display:"flex",gap:6,marginTop:11,paddingTop:11,borderTop:"1px solid #f1f5f9"}}>
                 <button onClick={()=>setSel(p.id)} style={{flex:1,background:"#eff6ff",color:"#1a56db",border:"none",borderRadius:8,padding:"7px",cursor:"pointer",fontSize:12,fontWeight:700}}>{t("pf_gerer")}</button>
-                <button onClick={()=>openEdit(p)} style={{background:"#f1f5f9",color:"#475569",border:"none",borderRadius:8,padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
+                <button onClick={()=>openEdit(p)} style={{background:"#f1f5f9",color:"var(--me-text-2)",border:"none",borderRadius:8,padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
                 <button onClick={()=>ops.deleteProf(p.id)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:8,padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_supprimer")}</button>
               </div>
             </Card>
@@ -1809,9 +1809,9 @@ function ProfDetail({prof,data,ops,etab,devise,onBack}) {
         <div style={{display:"flex",alignItems:"center",gap:14}}>
           <div style={{width:54,height:54,borderRadius:14,background:"#eff6ff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:"#1a56db",fontSize:19}}>{prof.prenom?.[0]}{prof.nom?.[0]}</div>
           <div style={{flex:1}}>
-            <div style={{fontWeight:800,fontSize:18,color:"#0f172a"}}>{prof.prenom} {prof.nom}</div>
-            <div style={{fontSize:12,color:"#64748b"}}>{prof.matieres_txt||"—"}{prof.telephone?` · 📞 ${prof.telephone}`:""}</div>
-            <div style={{fontSize:12,color:"#64748b"}}>{prof.type_salaire==="horaire"?`${t("pf_taux_label")} ${fmtMoney(prof.taux_horaire,devise)}${t("pf_h")}`:`${t("pf_salaire_label")} ${fmtMoney(prof.salaire,devise)}${t("pf_mois")}`}{prof.date_embauche?` · ${t("pf_embauche_le")} ${prof.date_embauche}`:""}</div>
+            <div style={{fontWeight:800,fontSize:18,color:"var(--me-text)"}}>{prof.prenom} {prof.nom}</div>
+            <div style={{fontSize:12,color:"var(--me-text-2)"}}>{prof.matieres_txt||"—"}{prof.telephone?` · 📞 ${prof.telephone}`:""}</div>
+            <div style={{fontSize:12,color:"var(--me-text-2)"}}>{prof.type_salaire==="horaire"?`${t("pf_taux_label")} ${fmtMoney(prof.taux_horaire,devise)}${t("pf_h")}`:`${t("pf_salaire_label")} ${fmtMoney(prof.salaire,devise)}${t("pf_mois")}`}{prof.date_embauche?` · ${t("pf_embauche_le")} ${prof.date_embauche}`:""}</div>
           </div>
         </div>
       </Card>
@@ -1819,20 +1819,20 @@ function ProfDetail({prof,data,ops,etab,devise,onBack}) {
         {/* Salaires */}
         <Card>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-            <div style={{fontWeight:800,fontSize:14,color:"#0f172a"}}>{t("pf_salaires")}</div>
+            <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)"}}>{t("pf_salaires")}</div>
             <Btn ch={t("pf_verser")} v="primary" s={{padding:"6px 12px",fontSize:12}} onClick={()=>{setSalForm(blankSal);setModalSal(true);}}/>
           </div>
           <div style={{background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:10,padding:"10px 14px",marginBottom:12}}>
             <div style={{fontSize:11,color:"#047857",fontWeight:700,textTransform:"uppercase"}}>{t("pf_total_verse")}</div>
             <div style={{fontSize:20,fontWeight:900,color:"#047857"}}>{fmtMoney(totalVerse,devise)}</div>
           </div>
-          {salaires.length===0?<div style={{fontSize:12,color:"#94a3b8",textAlign:"center",padding:10}}>{t("pa_aucun_versement")}</div>:(
+          {salaires.length===0?<div style={{fontSize:12,color:"var(--me-text-3)",textAlign:"center",padding:10}}>{t("pa_aucun_versement")}</div>:(
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {salaires.map(s=>(
                 <div key={s.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 12px",background:"#f8fafc",borderRadius:9}}>
                   <div>
-                    <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{fmtMoney(s.montant,devise)}</div>
-                    <div style={{fontSize:11,color:"#94a3b8"}}>{s.mois||"—"} · {s.date}{s.heures?` · ${s.heures}h`:""}</div>
+                    <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{fmtMoney(s.montant,devise)}</div>
+                    <div style={{fontSize:11,color:"var(--me-text-3)"}}>{s.mois||"—"} · {s.date}{s.heures?` · ${s.heures}h`:""}</div>
                   </div>
                   <button onClick={()=>ops.deleteSalaire(s.id)} style={{background:"#fef2f2",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11}}>{t("btn_supprimer")}</button>
                 </div>
@@ -1842,19 +1842,19 @@ function ProfDetail({prof,data,ops,etab,devise,onBack}) {
         </Card>
         {/* Absences */}
         <Card>
-          <div style={{fontWeight:800,fontSize:14,color:"#0f172a",marginBottom:12}}>{t("pf_absences")}</div>
+          <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)",marginBottom:12}}>{t("pf_absences")}</div>
           <div style={{background:"#f8fafc",borderRadius:10,padding:12,marginBottom:12}}>
-            <div style={{fontSize:11,fontWeight:700,color:"#64748b",marginBottom:7}}>{t("pf_marquer_abs")}</div>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--me-text-2)",marginBottom:7}}>{t("pf_marquer_abs")}</div>
             <input type="date" value={absDate} onChange={e=>setAbsDate(e.target.value)} style={{width:"100%",padding:"8px 11px",borderRadius:8,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",marginBottom:7}}/>
             <input value={absMotif} onChange={e=>setAbsMotif(e.target.value)} placeholder={t("pf_motif_ph")} style={{width:"100%",padding:"8px 11px",borderRadius:8,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",marginBottom:7,boxSizing:"border-box"}}/>
             <Btn ch={t("pf_marquer_absent")} v="ghost" s={{width:"100%"}} onClick={marquerAbsent}/>
           </div>
-          {absences.length===0?<div style={{fontSize:12,color:"#94a3b8",textAlign:"center",padding:10}}>{t("pf_aucune_abs")}</div>:(
+          {absences.length===0?<div style={{fontSize:12,color:"var(--me-text-3)",textAlign:"center",padding:10}}>{t("pf_aucune_abs")}</div>:(
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {absences.map(a=>(
                 <div key={a.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 12px",background:"#fff7ed",borderRadius:9}}>
                   <div>
-                    <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{a.date}</div>
+                    <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{a.date}</div>
                     {a.motif&&<div style={{fontSize:11,color:"#c2410c"}}>{a.motif}</div>}
                   </div>
                   <button onClick={()=>ops.setProfPresence(prof.id,a.date,"present")} style={{background:"#f1f5f9",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11}}>↩️</button>
@@ -1930,7 +1930,7 @@ function EmploiTemps({data,ops,etab,currentUser}) {
       <SHdr title={t("nav_emploi")+" 🗓️"} sub={classe?`${t("no_classe")} : ${txt(classe.nom,classe.nom_ar)}`:t("edt_choisir_classe")} action={creneaux.length>0&&<Btn ch={t("btn_print")} v="ghost" onClick={printEDT}/>}/>
       {data.classes.length===0?<Card><Empty icon="🏫" text={t("fn_creez")}/></Card>:(<>
         <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:18,flexWrap:"wrap"}}>
-          <select value={classeId} onChange={e=>setClasseId(e.target.value)} style={{padding:"9px 13px",borderRadius:10,border:"1.5px solid #e2e8f0",fontSize:13,fontWeight:700,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",color:"#0f172a"}}>
+          <select value={classeId} onChange={e=>setClasseId(e.target.value)} style={{padding:"9px 13px",borderRadius:10,border:"1.5px solid #e2e8f0",fontSize:13,fontWeight:700,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",color:"var(--me-text)"}}>
             {CYCLES.map(cyc=>{const cls=data.classes.filter(c=>(c.niveau||"Primaire")===cyc);if(cls.length===0)return null;return(
               <optgroup key={cyc} label={(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}>{cls.map(c=><option key={c.id} value={c.id}>{txt(c.nom,c.nom_ar)}</option>)}</optgroup>
             );})}
@@ -1954,9 +1954,9 @@ function EmploiTemps({data,ops,etab,currentUser}) {
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                             <div style={{flex:1}}>
                               <div style={{fontSize:11,fontWeight:800,color:"#1a56db"}}>{c.debut} - {c.fin}</div>
-                              <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{matNom(c.matiere_id)}</div>
-                              {profNom(c.prof_id)&&<div style={{fontSize:11,color:"#64748b"}}>👨‍🏫 {profNom(c.prof_id)}</div>}
-                              {c.salle&&<div style={{fontSize:11,color:"#64748b"}}>📍 {c.salle}</div>}
+                              <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{matNom(c.matiere_id)}</div>
+                              {profNom(c.prof_id)&&<div style={{fontSize:11,color:"var(--me-text-2)"}}>👨‍🏫 {profNom(c.prof_id)}</div>}
+                              {c.salle&&<div style={{fontSize:11,color:"var(--me-text-2)"}}>📍 {c.salle}</div>}
                             </div>
                             <div style={{display:"flex",gap:4}}>
                               <button onClick={()=>{setForm({jour:c.jour,debut:c.debut,fin:c.fin,matiere_id:String(c.matiere_id||""),prof_id:String(c.prof_id||""),salle:c.salle||""});setModal(c.id);}} style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:6,padding:"3px 6px",cursor:"pointer",fontSize:10}}>{t("btn_modifier")}</button>
@@ -1974,19 +1974,19 @@ function EmploiTemps({data,ops,etab,currentUser}) {
         </div>
         {/* Cahier de texte / Leçon du jour */}
         <Card s={{marginTop:18}}>
-          <div style={{fontWeight:800,fontSize:14,color:"#0f172a",marginBottom:4,fontFamily:"'Sora',sans-serif"}}>{t("edt_cahier")}</div>
-          <div style={{fontSize:11,color:"#64748b",marginBottom:14}}>{t("edt_cahier_note_a")} {txt(classe?.nom,classe?.nom_ar)} {t("edt_cahier_note_b")}</div>
+          <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)",marginBottom:4,fontFamily:"'Sora',sans-serif"}}>{t("edt_cahier")}</div>
+          <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:14}}>{t("edt_cahier_note_a")} {txt(classe?.nom,classe?.nom_ar)} {t("edt_cahier_note_b")}</div>
           <div style={{display:"flex",gap:10,alignItems:"flex-end",flexWrap:"wrap",marginBottom:14}}>
             <div style={{width:170}}><Inp label={t("pa_th_date")} type="date" value={ctDate} onChange={e=>setCtDate(e.target.value)}/></div>
             <div style={{flex:1,minWidth:220}}><Inp label={t("edt_lecon")} value={ctTitre} onChange={e=>setCtTitre(e.target.value)} placeholder={t("edt_lecon_ph")}/></div>
             <Btn ch={t("edt_save_lecon")} v="success" onClick={()=>{if(ctTitre.trim()){ops.setTitreJour(parseInt(classeId),ctDate,ctTitre,`${currentUser?.prenom||""} ${currentUser?.nom||""}`.trim());setCtTitre("");}}} disabled={!ctTitre.trim()}/>
           </div>
-          {(()=>{const list=(data.titres_jour||[]).filter(t=>t.classe_id===parseInt(classeId));return list.length===0?<div style={{fontSize:12,color:"#94a3b8"}}>{I18N[CURRENT_LANG]?.edt_aucune_lecon||I18N.fr.edt_aucune_lecon}</div>:(
+          {(()=>{const list=(data.titres_jour||[]).filter(t=>t.classe_id===parseInt(classeId));return list.length===0?<div style={{fontSize:12,color:"var(--me-text-3)"}}>{I18N[CURRENT_LANG]?.edt_aucune_lecon||I18N.fr.edt_aucune_lecon}</div>:(
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {list.slice(0,12).map(tj=>(
                 <div key={tj.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 13px",background:"#f8fafc",borderRadius:10,borderLeft:"3px solid #1a56db"}}>
                   <div style={{fontSize:11,fontWeight:800,color:"#1a56db",minWidth:88}}>{tj.date}</div>
-                  <div style={{flex:1}}><div style={{fontSize:13,color:"#0f172a",fontWeight:600}}>{tj.titre}</div>{tj.auteur&&<div style={{fontSize:10.5,color:"#94a3b8"}}>✍️ {tj.auteur}</div>}</div>
+                  <div style={{flex:1}}><div style={{fontSize:13,color:"var(--me-text)",fontWeight:600}}>{tj.titre}</div>{tj.auteur&&<div style={{fontSize:10.5,color:"var(--me-text-3)"}}>✍️ {tj.auteur}</div>}</div>
                   <button onClick={()=>ops.setTitreJour(parseInt(classeId),tj.date,"",tj.auteur)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11}}>{t("btn_supprimer")}</button>
                 </div>
               ))}
@@ -2189,15 +2189,15 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
               </select></Lbl>
             </div>
           </div>
-          <div style={{fontSize:12,color:"#64748b",marginTop:6}}>👥 {eleves.length} {t("db_eleves")} {t("fn_prefill_a")} {lignesVides} {t("fn_prefill_b")}</div>
+          <div style={{fontSize:12,color:"var(--me-text-2)",marginTop:6}}>👥 {eleves.length} {t("db_eleves")} {t("fn_prefill_a")} {lignesVides} {t("fn_prefill_b")}</div>
         </Card>
 
         <Card s={{marginBottom:16}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-            <div style={{fontWeight:800,fontSize:14,color:"#0f172a"}}>{t("fn_colonnes")}</div>
+            <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)"}}>{t("fn_colonnes")}</div>
             <Btn ch={t("fn_add_col")} v="ghost" s={{padding:"6px 12px",fontSize:12}} onClick={addCol}/>
           </div>
-          <div style={{fontSize:11,color:"#94a3b8",marginBottom:11,marginTop:-4}}>{t("fn_groupe_aide")}</div>
+          <div style={{fontSize:11,color:"var(--me-text-3)",marginBottom:11,marginTop:-4}}>{t("fn_groupe_aide")}</div>
           <div style={{display:"flex",flexDirection:"column",gap:9}}>
             {cols.map((c,i)=>(
               <div key={i} style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",background:"#f8fafc",borderRadius:10,padding:"8px 10px"}}>
@@ -2208,7 +2208,7 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
                 <input value={c.nom} onChange={e=>setCol(i,"nom",e.target.value)} placeholder={t("fn_col_nom_ph")} style={{flex:1,minWidth:120,padding:"7px 10px",borderRadius:8,border:"1.5px solid #e2e8f0",fontSize:12,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
                 <input value={c.groupe||""} onChange={e=>setCol(i,"groupe",e.target.value)} placeholder={t("fn_groupe_ph")} title={t("fn_groupe_ph")} style={{width:110,padding:"7px 10px",borderRadius:8,border:"1.5px dashed #cbd5e1",fontSize:12,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
                 {(()=>{const kind=colKind(c);return kind?<span style={{fontSize:10,background:"#dbeafe",color:"#1a56db",borderRadius:6,padding:"2px 7px",fontWeight:700}}>auto : {kind}</span>:null;})()}
-                <label style={{fontSize:10,color:"#94a3b8",display:"flex",alignItems:"center",gap:4}}>{t("fn_largeur")}<input type="number" value={c.largeur} onChange={e=>setCol(i,"largeur",parseInt(e.target.value)||60)} style={{width:54,padding:"6px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none"}}/></label>
+                <label style={{fontSize:10,color:"var(--me-text-3)",display:"flex",alignItems:"center",gap:4}}>{t("fn_largeur")}<input type="number" value={c.largeur} onChange={e=>setCol(i,"largeur",parseInt(e.target.value)||60)} style={{width:54,padding:"6px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none"}}/></label>
                 <select value={c.align} onChange={e=>setCol(i,"align",e.target.value)} style={{padding:"6px 8px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:11,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{ALIGNS.map(a=><option key={a.v} value={a.v}>{a.l}</option>)}</select>
                 <select title={t("fn_rotation")} value={c.rot||0} onChange={e=>setCol(i,"rot",parseInt(e.target.value)||0)} style={{padding:"6px 8px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:11,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}><option value={0}>⟳ 0°</option><option value={90}>⟳ 90°</option><option value={180}>⟳ 180°</option><option value={270}>⟳ 270°</option></select>
                 <div style={{display:"flex",gap:3}}>{COULEURS.map(col=>(
@@ -2222,7 +2222,7 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
 
         {/* Aperçu */}
         <Card s={{marginBottom:16}}>
-          <div style={{fontWeight:800,fontSize:14,color:"#0f172a",marginBottom:12}}>{t("fn_apercu")}</div>
+          <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)",marginBottom:12}}>{t("fn_apercu")}</div>
           <div style={{overflowX:"auto"}}>
             <table style={{borderCollapse:"collapse",width:"100%"}}>
               <thead>{(()=>{
@@ -2235,7 +2235,7 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
               })()}</thead>
               <tbody>
                 {eleves.slice(0,3).map((e,i)=><tr key={e.id}>{cols.map((c,j)=>{const kind=colKind(c);let v="";if(kind==="num")v=i+1;else if(modeImpr==="noms"){if(kind==="nom")v=`${e.prenom||""} ${e.nom||""}`.trim();else if(kind==="prenom")v=e.prenom||"";else if(kind==="matricule")v=e.matricule||"";}return <td key={j} style={{border:"1px solid #cbd5e1",padding:"6px 8px",fontSize:11,textAlign:c.align}}>{v}</td>;})}</tr>)}
-                {eleves.length>3&&<tr><td colSpan={cols.length} style={{textAlign:"center",fontSize:11,color:"#94a3b8",padding:6}}>… +{eleves.length-3} {t("fn_autres_b")}</td></tr>}
+                {eleves.length>3&&<tr><td colSpan={cols.length} style={{textAlign:"center",fontSize:11,color:"var(--me-text-3)",padding:6}}>… +{eleves.length-3} {t("fn_autres_b")}</td></tr>}
               </tbody>
             </table>
           </div>
@@ -2243,12 +2243,12 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
 
         {/* Modèles */}
         <Card>
-          <div style={{fontWeight:800,fontSize:14,color:"#0f172a",marginBottom:12}}>{t("fn_modeles")}</div>
+          <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)",marginBottom:12}}>{t("fn_modeles")}</div>
           <div style={{display:"flex",gap:8,marginBottom:12,flexWrap:"wrap"}}>
             <input value={modeleNom} onChange={e=>setModeleNom(e.target.value)} placeholder={t("fn_modele_ph")} style={{flex:1,minWidth:180,padding:"9px 12px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:13,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
             <Btn ch={t("fn_save_modele")} v="success" onClick={saveModele}/>
           </div>
-          {modeles.length===0?<div style={{fontSize:12,color:"#94a3b8"}}>{t("fn_aucun_modele")}</div>:(
+          {modeles.length===0?<div style={{fontSize:12,color:"var(--me-text-3)"}}>{t("fn_aucun_modele")}</div>:(
             <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
               {modeles.map(m=>(
                 <div key={m.nom} style={{display:"flex",alignItems:"center",gap:8,background:"#f8fafc",border:"1.5px solid #e2e8f0",borderRadius:9,padding:"6px 6px 6px 12px"}}>
@@ -2264,22 +2264,22 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
         {classe&&(
           <Card>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:11}}>
-              <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{t("stat_tableau")} — {txt(classe.nom,classe.nom_ar)}</div>
+              <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{t("stat_tableau")} — {txt(classe.nom,classe.nom_ar)}</div>
             </div>
             <div style={{display:"flex",alignItems:"center",gap:14,flexWrap:"wrap",marginBottom:11}}>
-              <label style={{display:"flex",alignItems:"center",gap:8,fontSize:12,fontWeight:600,color:"#334155",cursor:"pointer"}}>
+              <label style={{display:"flex",alignItems:"center",gap:8,fontSize:12,fontWeight:600,color:"var(--me-text)",cursor:"pointer"}}>
                 <input type="checkbox" checked={statActif} onChange={e=>setStatActif(e.target.checked)}/>{t("fn_stat_inclure")}
               </label>
               {statActif&&<div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-                <span style={{fontSize:11,fontWeight:700,color:"#94a3b8"}}>{t("fn_stat_pos")}</span>
+                <span style={{fontSize:11,fontWeight:700,color:"var(--me-text-3)"}}>{t("fn_stat_pos")}</span>
                 <select value={statPos} onChange={e=>setStatPos(e.target.value)} style={{padding:"5px 9px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
                   <option value="left">{t("fn_align_g")}</option><option value="center">{t("fn_align_c")}</option><option value="right">{t("fn_align_d")}</option>
                 </select>
-                <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",marginLeft:4}}>{t("fn_stat_taille")}</span>
+                <span style={{fontSize:11,fontWeight:700,color:"var(--me-text-3)",marginLeft:4}}>{t("fn_stat_taille")}</span>
                 <select value={statTaille} onChange={e=>setStatTaille(e.target.value)} style={{padding:"5px 9px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
                   <option value="p">{t("fn_taille_p")}</option><option value="m">{t("fn_taille_m")}</option><option value="g">{t("fn_taille_g")}</option>
                 </select>
-                <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",marginLeft:4}}>{t("fn_stat_vpos")}</span>
+                <span style={{fontSize:11,fontWeight:700,color:"var(--me-text-3)",marginLeft:4}}>{t("fn_stat_vpos")}</span>
                 <select value={statVPos} onChange={e=>setStatVPos(e.target.value)} style={{padding:"5px 9px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
                   <option value="apres">{t("fn_vpos_apres")}</option><option value="bas">{t("fn_vpos_bas")}</option>
                 </select>
@@ -2287,7 +2287,7 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
             </div>
             <div style={{overflowX:"auto",display:"flex",justifyContent:statPos==="center"?"center":statPos==="right"?"flex-end":"flex-start"}}>
               <table style={{borderCollapse:"collapse",width:"auto"}}>
-                <thead><tr>{[t("fn_stat_libelle"),t("stat_total"),t("stat_filles"),""].map((h,i)=><th key={i} style={{padding:"6px 9px",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",textAlign:"left"}}>{h}</th>)}</tr></thead>
+                <thead><tr>{[t("fn_stat_libelle"),t("stat_total"),t("stat_filles"),""].map((h,i)=><th key={i} style={{padding:"6px 9px",fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase",textAlign:"left"}}>{h}</th>)}</tr></thead>
                 <tbody>{statRows.map((r,i)=>(
                   <tr key={i}>
                     <td style={{padding:"3px 6px"}}><input value={r.label} onChange={e=>setStatCell(i,"label",e.target.value)} style={{width:170,padding:"6px 9px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/></td>
@@ -2382,7 +2382,7 @@ function Eleves({data,ops,etab}) {
         {CYCLES.map(cyc=>{const actif=cycle===cyc;const n=countCycle(cyc);return(
           <button key={cyc} onClick={()=>setCycle(cyc)} style={{flex:1,padding:"13px 16px",borderRadius:13,border:actif?"2px solid #1a56db":"1.5px solid #e2e8f0",background:actif?"#eff6ff":"#fff",cursor:"pointer",textAlign:"left",transition:"all .15s",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
             <div style={{fontSize:13,fontWeight:800,color:actif?"#1a56db":"#0f172a"}}>{cyc==="Primaire"?"🟦":cyc==="Collège"?"🟪":"🟩"} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}</div>
-            <div style={{fontSize:22,fontWeight:900,color:actif?"#1a56db":"#334155",marginTop:2}}>{n}<span style={{fontSize:11,color:"#94a3b8",fontWeight:600}}> {t("db_eleves")}</span></div>
+            <div style={{fontSize:22,fontWeight:900,color:actif?"#1a56db":"#334155",marginTop:2}}>{n}<span style={{fontSize:11,color:"var(--me-text-3)",fontWeight:600}}> {t("db_eleves")}</span></div>
           </button>
         );})}
       </div>
@@ -2393,22 +2393,22 @@ function Eleves({data,ops,etab}) {
             return(
               <Card key={cl.id} s={{padding:0,overflow:"hidden"}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"13px 18px",background:"#f8fafc",borderBottom:"1px solid #eef2f7"}}>
-                  <div style={{fontWeight:800,fontSize:14,color:"#0f172a"}}>🏫 {txt(cl.nom,cl.nom_ar)}</div>
+                  <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)"}}>🏫 {txt(cl.nom,cl.nom_ar)}</div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
                     {(()=>{const g=elevesClasse.filter(e=>e.genre==="M").length;const f=elevesClasse.filter(e=>e.genre==="F").length;return (g+f)>0?<span style={{display:"inline-flex",gap:5}}><span style={{fontSize:11,fontWeight:700,color:"#2563eb",background:"#eff6ff",borderRadius:6,padding:"1px 7px"}}>M : {g}</span><span style={{fontSize:11,fontWeight:700,color:"#db2777",background:"#fdf2f8",borderRadius:6,padding:"1px 7px"}}>F : {f}</span></span>:null;})()}
                     <span style={{background:"#1a56db",color:"#fff",borderRadius:20,padding:"3px 13px",fontSize:12,fontWeight:800}}>{elevesClasse.length} {t("db_eleves")}</span>
                   </div>
                 </div>
-                {elevesClasse.length===0?<div style={{padding:"18px",textAlign:"center",color:"#94a3b8",fontSize:12}}>{search?t("el_aucun_resultat"):t("el_aucun_eleve")}</div>:(
+                {elevesClasse.length===0?<div style={{padding:"18px",textAlign:"center",color:"var(--me-text-3)",fontSize:12}}>{search?t("el_aucun_resultat"):t("el_aucun_eleve")}</div>:(
                   <table style={{width:"100%",borderCollapse:"collapse"}}>
                     <tbody>{elevesClasse.map((e,i)=>(
                       <tr key={e.id} style={{borderTop:i>0?"1px solid #f8fafc":"none"}}>
                         <td style={{padding:"10px 18px",width:36,color:"#cbd5e1",fontSize:12}}>{i+1}</td>
                         <td style={{padding:"10px 6px"}}><div style={{display:"flex",alignItems:"center",gap:9}}>
                           <div style={{width:31,height:31,borderRadius:9,background:"#eff6ff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:"#1a56db",fontSize:11}}>{e.prenom?.[0]}{e.nom?.[0]}</div>
-                          <div><div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{e.prenom} {e.nom}</div>{e.tuteur&&<div style={{fontSize:11,color:"#94a3b8"}}>👤 {e.tuteur}</div>}</div>
+                          <div><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{e.prenom} {e.nom}</div>{e.tuteur&&<div style={{fontSize:11,color:"var(--me-text-3)"}}>👤 {e.tuteur}</div>}</div>
                         </div></td>
-                        <td style={{padding:"10px 6px",fontFamily:"monospace",fontSize:12,color:"#64748b"}}>{e.matricule}</td>
+                        <td style={{padding:"10px 6px",fontFamily:"monospace",fontSize:12,color:"var(--me-text-2)"}}>{e.matricule}</td>
                         <td style={{padding:"10px 18px",textAlign:"right"}}><div style={{display:"inline-flex",gap:6}}>
                           <button onClick={()=>{setErr("");setForm({nom:e.nom,prenom:e.prenom,genre:e.genre||"",classe_id:e.classe_id,date_naissance:e.date_naissance||"",lieu_naissance:e.lieu_naissance||"",tuteur:e.tuteur||"",pere:e.pere||"",tel_pere:e.tel_pere||"",mere:e.mere||"",tel_mere:e.tel_mere||"",telephone:e.telephone||"",frais_annuel:e.frais_annuel??"",frais_inscription_eleve:e.frais_inscription_eleve??"",inscPayee:false});setModal(e.id);}} style={{background:"#f1f5f9",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_modifier")}</button>
                           <button onClick={()=>ops.deleteEleve(e.id)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_supprimer")}</button>
@@ -2447,7 +2447,7 @@ function Eleves({data,ops,etab}) {
         <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:6}}><Btn ch={t("btn_annuler")} v="ghost" onClick={()=>setModal(null)}/><Btn ch={loading?"...":t("btn_save")} v="success" onClick={save} disabled={loading}/></div>
       </Modal>}
       {impOpen&&<Modal title={t("imp_titre")} onClose={()=>setImpOpen(false)} w={540}>
-        <div style={{fontSize:12,color:"#64748b",marginBottom:12}}>{t("imp_intro")}</div>
+        <div style={{fontSize:12,color:"var(--me-text-2)",marginBottom:12}}>{t("imp_intro")}</div>
         <Slt label={t("el_classe")} value={impClasse} onChange={e=>setImpClasse(e.target.value)} opts={data.classes.map(c=>({v:c.id,l:txt(c.nom,c.nom_ar)}))}/>
         <label style={{display:"inline-block",padding:"9px 14px",background:"#1a56db",color:"#fff",borderRadius:9,fontSize:12,fontWeight:700,cursor:"pointer",marginTop:2}}>{t("imp_choisir_fichier")}
           <input ref={impFileRef} type="file" accept=".xlsx,.xls,.csv" style={{display:"none"}} onChange={pickImport}/>
@@ -2457,7 +2457,7 @@ function Eleves({data,ops,etab}) {
           <div style={{fontSize:11,color:"#15803d",marginTop:3}}>{impRows.slice(0,6).map(r=>`${r.prenom} ${r.nom}`).join(", ")}{impRows.length>6?"…":""}</div>
         </div>}
         {impErr&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:9,padding:"9px 13px",color:"#dc2626",fontSize:12,marginTop:8}}>{impErr}</div>}
-        <div style={{fontSize:11,color:"#94a3b8",marginTop:10}}>{t("imp_colonnes")}</div>
+        <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:10}}>{t("imp_colonnes")}</div>
         <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:10}}><Btn ch={t("btn_annuler")} v="ghost" onClick={()=>setImpOpen(false)}/><Btn ch={impLoading?"...":t("imp_importer")} v="success" onClick={confirmImport} disabled={impLoading||impRows.length===0}/></div>
       </Modal>}
     </div>
@@ -2605,31 +2605,31 @@ function Notes({data,ops,etab,currentUser}) {
         <>
           {/* Statistiques en direct */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:11,marginBottom:14}}>
-            <div style={{background:"#fff",borderRadius:14,padding:"13px 16px",border:"1px solid #eef2f7"}}><div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase"}}>{t("no_moy_classe")}</div><div style={{fontSize:21,fontWeight:900,color:moyClasse!=null?(moyClasse>=bareme/2?"#059669":"#dc2626"):"#cbd5e1",fontFamily:"'Sora',sans-serif"}}>{moyClasse!=null?moyClasse.toFixed(2):"—"}<span style={{fontSize:12,color:"#cbd5e1",fontWeight:600}}>/{bareme}</span></div></div>
-            <div style={{background:"#fff",borderRadius:14,padding:"13px 16px",border:"1px solid #eef2f7"}}><div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase"}}>{t("no_plus_haute")}</div><div style={{fontSize:21,fontWeight:900,color:"#059669",fontFamily:"'Sora',sans-serif"}}>{plusHaut!=null?plusHaut:"—"}</div></div>
-            <div style={{background:"#fff",borderRadius:14,padding:"13px 16px",border:"1px solid #eef2f7"}}><div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase"}}>{t("no_plus_basse")}</div><div style={{fontSize:21,fontWeight:900,color:"#dc2626",fontFamily:"'Sora',sans-serif"}}>{plusBas!=null?plusBas:"—"}</div></div>
-            <div style={{background:"#fff",borderRadius:14,padding:"13px 16px",border:"1px solid #eef2f7"}}><div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase"}}>{t("no_admis")} (≥{bareme/2})</div><div style={{fontSize:21,fontWeight:900,color:"#1a56db",fontFamily:"'Sora',sans-serif"}}>{nbAdmis}<span style={{fontSize:12,color:"#cbd5e1",fontWeight:600}}>/{nbRemplies}</span></div></div>
-            <div style={{background:"#fff",borderRadius:14,padding:"13px 16px",border:"1px solid #eef2f7"}}><div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase"}}>{t("no_saisies")}</div><div style={{fontSize:21,fontWeight:900,color:"#0f172a",fontFamily:"'Sora',sans-serif"}}>{nbRemplies}<span style={{fontSize:12,color:"#cbd5e1",fontWeight:600}}>/{totalEleves}</span></div></div>
+            <div style={{background:"#fff",borderRadius:14,padding:"13px 16px",border:"1px solid #eef2f7"}}><div style={{fontSize:10,color:"var(--me-text-3)",fontWeight:700,textTransform:"uppercase"}}>{t("no_moy_classe")}</div><div style={{fontSize:21,fontWeight:900,color:moyClasse!=null?(moyClasse>=bareme/2?"#059669":"#dc2626"):"#cbd5e1",fontFamily:"'Sora',sans-serif"}}>{moyClasse!=null?moyClasse.toFixed(2):"—"}<span style={{fontSize:12,color:"#cbd5e1",fontWeight:600}}>/{bareme}</span></div></div>
+            <div style={{background:"#fff",borderRadius:14,padding:"13px 16px",border:"1px solid #eef2f7"}}><div style={{fontSize:10,color:"var(--me-text-3)",fontWeight:700,textTransform:"uppercase"}}>{t("no_plus_haute")}</div><div style={{fontSize:21,fontWeight:900,color:"#059669",fontFamily:"'Sora',sans-serif"}}>{plusHaut!=null?plusHaut:"—"}</div></div>
+            <div style={{background:"#fff",borderRadius:14,padding:"13px 16px",border:"1px solid #eef2f7"}}><div style={{fontSize:10,color:"var(--me-text-3)",fontWeight:700,textTransform:"uppercase"}}>{t("no_plus_basse")}</div><div style={{fontSize:21,fontWeight:900,color:"#dc2626",fontFamily:"'Sora',sans-serif"}}>{plusBas!=null?plusBas:"—"}</div></div>
+            <div style={{background:"#fff",borderRadius:14,padding:"13px 16px",border:"1px solid #eef2f7"}}><div style={{fontSize:10,color:"var(--me-text-3)",fontWeight:700,textTransform:"uppercase"}}>{t("no_admis")} (≥{bareme/2})</div><div style={{fontSize:21,fontWeight:900,color:"#1a56db",fontFamily:"'Sora',sans-serif"}}>{nbAdmis}<span style={{fontSize:12,color:"#cbd5e1",fontWeight:600}}>/{nbRemplies}</span></div></div>
+            <div style={{background:"#fff",borderRadius:14,padding:"13px 16px",border:"1px solid #eef2f7"}}><div style={{fontSize:10,color:"var(--me-text-3)",fontWeight:700,textTransform:"uppercase"}}>{t("no_saisies")}</div><div style={{fontSize:21,fontWeight:900,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>{nbRemplies}<span style={{fontSize:12,color:"#cbd5e1",fontWeight:600}}>/{totalEleves}</span></div></div>
           </div>
 
           <Card>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,flexWrap:"wrap",gap:8}}>
-              <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>📋 {txt(matiere?.nom,matiere?.nom_ar)} — {periodeLabel(etab,periode)}</div>
+              <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>📋 {txt(matiere?.nom,matiere?.nom_ar)} — {periodeLabel(etab,periode)}</div>
               <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t("no_search")} style={{padding:"7px 12px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",width:210}}/>
             </div>
             <table style={{width:"100%",borderCollapse:"collapse"}}>
-              <thead><tr style={{background:"#f8fafc"}}>{["N°",t("no_eleve"),`${t("no_note")} /${bareme}`,t("no_appreciation")].map(h=><th key={h} style={{padding:"10px 13px",textAlign:"left",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
+              <thead><tr style={{background:"#f8fafc"}}>{["N°",t("no_eleve"),`${t("no_note")} /${bareme}`,t("no_appreciation")].map(h=><th key={h} style={{padding:"10px 13px",textAlign:"left",fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
               <tbody>{classeEleves.map((e,i)=>{
                 const note=localNotes[e.id]??"";const m=note!==""?MENTION(note,bareme):null;
                 return(<tr key={e.id} className="me-row" style={{borderTop:"1px solid #f4f7fb"}}>
-                  <td style={{padding:"9px 13px",fontSize:12,color:"#94a3b8"}}>{i+1}</td>
-                  <td style={{padding:"9px 13px"}}><div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{e.prenom} {e.nom}</div><div style={{fontSize:11,color:"#94a3b8"}}>{e.matricule}</div></td>
+                  <td style={{padding:"9px 13px",fontSize:12,color:"var(--me-text-3)"}}>{i+1}</td>
+                  <td style={{padding:"9px 13px"}}><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{e.prenom} {e.nom}</div><div style={{fontSize:11,color:"var(--me-text-3)"}}>{e.matricule}</div></td>
                   <td style={{padding:"7px 13px"}}><input ref={el=>inputsRef.current[i]=el} onKeyDown={ev=>onKey(ev,i)} type="number" min="0" max={bareme} step="0.25" value={note} onChange={ev=>setNote(e.id,ev.target.value)} style={{width:80,padding:"8px 10px",borderRadius:9,border:`2px solid ${note!==""&&parseFloat(note)<bareme/2?"#fca5a5":"#e2e8f0"}`,fontSize:14,fontWeight:700,textAlign:"center",outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",color:m?.c||"#0f172a"}}/></td>
                   <td style={{padding:"9px 13px"}}>{m&&<span style={{background:m.bg,color:m.c,borderRadius:7,padding:"3px 9px",fontSize:11,fontWeight:700}}>{m.t}</span>}</td>
                 </tr>);
               })}</tbody>
             </table>
-            {classeEleves.length===0&&<div style={{padding:18,textAlign:"center",color:"#94a3b8",fontSize:12}}>{t("no_no_result")}</div>}
+            {classeEleves.length===0&&<div style={{padding:18,textAlign:"center",color:"var(--me-text-3)",fontSize:12}}>{t("no_no_result")}</div>}
           </Card>
           {/* Tableau statistique (mise à jour automatique) · imprimé au bas de la fiche */}
           {(()=>{
@@ -2639,16 +2639,16 @@ function Notes({data,ops,etab,currentUser}) {
             return(
               <Card s={{marginTop:14}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:3}}>
-                  <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{t("stat_tableau")}</div>
+                  <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{t("stat_tableau")}</div>
                   <div style={{display:"flex",gap:5}}><Seg v="matiere" lbl={t("stat_mode_matiere")}/><Seg v="generale" lbl={t("stat_mode_generale")}/></div>
                 </div>
-                <div style={{fontSize:11,color:"#94a3b8",marginBottom:11}}>{statBase==="generale"?periodeLabel(etab,periode):`${txt(matiere?.nom,matiere?.nom_ar)} — ${periodeLabel(etab,periode)}`}</div>
+                <div style={{fontSize:11,color:"var(--me-text-3)",marginBottom:11}}>{statBase==="generale"?periodeLabel(etab,periode):`${txt(matiere?.nom,matiere?.nom_ar)} — ${periodeLabel(etab,periode)}`}</div>
                 <div style={{display:"flex",gap:7,flexWrap:"wrap",alignItems:"center",marginBottom:11}}>
-                  <span style={{fontSize:11,fontWeight:700,color:"#94a3b8"}}>{t("fn_stat_pos")}</span>
+                  <span style={{fontSize:11,fontWeight:700,color:"var(--me-text-3)"}}>{t("fn_stat_pos")}</span>
                   <select value={statPos} onChange={e=>setStatPos(e.target.value)} style={selSt}>
                     <option value="left">{t("fn_align_g")}</option><option value="center">{t("fn_align_c")}</option><option value="right">{t("fn_align_d")}</option>
                   </select>
-                  <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",marginLeft:4}}>{t("fn_stat_taille")}</span>
+                  <span style={{fontSize:11,fontWeight:700,color:"var(--me-text-3)",marginLeft:4}}>{t("fn_stat_taille")}</span>
                   <select value={statTaille} onChange={e=>setStatTaille(e.target.value)} style={selSt}>
                     <option value="p">{t("fn_taille_p")}</option><option value="m">{t("fn_taille_m")}</option><option value="g">{t("fn_taille_g")}</option>
                   </select>
@@ -2662,8 +2662,8 @@ function Notes({data,ops,etab,currentUser}) {
         </>
       )}
       {impNotesOpen&&<Modal title={t("impn_titre")} onClose={()=>setImpNotesOpen(false)} w={540}>
-        <div style={{fontSize:12,color:"#64748b",marginBottom:6}}>{t("impn_intro")}</div>
-        <div style={{fontSize:12,fontWeight:700,color:"#0f172a",background:"#f8fafc",borderRadius:9,padding:"9px 12px",marginBottom:12}}>{t("no_periode")} : {periodeLabel(etab,periode)} · {t("no_classe")} : {txt(classeSel?.nom,classeSel?.nom_ar)}</div>
+        <div style={{fontSize:12,color:"var(--me-text-2)",marginBottom:6}}>{t("impn_intro")}</div>
+        <div style={{fontSize:12,fontWeight:700,color:"var(--me-text)",background:"#f8fafc",borderRadius:9,padding:"9px 12px",marginBottom:12}}>{t("no_periode")} : {periodeLabel(etab,periode)} · {t("no_classe")} : {txt(classeSel?.nom,classeSel?.nom_ar)}</div>
         <label style={{display:"inline-block",padding:"9px 14px",background:"#1a56db",color:"#fff",borderRadius:9,fontSize:12,fontWeight:700,cursor:"pointer"}}>{t("imp_choisir_fichier")}
           <input ref={impNotesRef} type="file" accept=".xlsx,.xls,.csv" style={{display:"none"}} onChange={pickNotesFile}/>
         </label>
@@ -2672,7 +2672,7 @@ function Notes({data,ops,etab,currentUser}) {
           <div style={{fontSize:11,color:"#15803d",marginTop:3}}>{impNotesData.subjects} {t("impn_mats")}</div>
         </div>}
         {impNotesErr&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:9,padding:"9px 13px",color:"#dc2626",fontSize:12,marginTop:8}}>{impNotesErr}</div>}
-        <div style={{fontSize:11,color:"#94a3b8",marginTop:10}}>{t("impn_colonnes")}</div>
+        <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:10}}>{t("impn_colonnes")}</div>
         <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:10}}><Btn ch={t("btn_annuler")} v="ghost" onClick={()=>setImpNotesOpen(false)}/><Btn ch={impNotesLoading?"...":t("impn_importer")} v="success" onClick={confirmNotesImport} disabled={impNotesLoading||!impNotesData||!impNotesData.noteCount}/></div>
       </Modal>}
     </div>
@@ -2796,7 +2796,7 @@ function Bulletins({data,etab}) {
             <div key={e.id} onClick={()=>setSelected(e)} style={{background:"#fff",borderRadius:12,padding:"13px 17px",boxShadow:"0 1px 6px rgba(0,0,0,0.05)",border:"1.5px solid #f1f5f9",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",transition:"all 0.15s"}} onMouseOver={ev=>{ev.currentTarget.style.borderColor="#1a56db";}} onMouseOut={ev=>{ev.currentTarget.style.borderColor="#f1f5f9";}}>
               <div style={{display:"flex",alignItems:"center",gap:11}}>
                 <div style={{width:36,height:36,borderRadius:10,background:"#eff6ff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:"#1a56db",fontSize:12}}>{e.prenom?.[0]}{e.nom?.[0]}</div>
-                <div><div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{e.prenom} {e.nom}</div><div style={{fontSize:11,color:"#94a3b8"}}>{txt(cl?.nom,cl?.nom_ar)} · {e.matricule}</div></div>
+                <div><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{e.prenom} {e.nom}</div><div style={{fontSize:11,color:"var(--me-text-3)"}}>{txt(cl?.nom,cl?.nom_ar)} · {e.matricule}</div></div>
               </div>
               <div style={{display:"flex",alignItems:"center",gap:13}}>
                 <div style={{textAlign:"right"}}><div style={{fontWeight:800,fontSize:16,color:m.c}}>{moy}/{bareme}</div><span style={{background:m.bg,color:m.c,borderRadius:5,padding:"1px 7px",fontSize:10,fontWeight:700}}>{m.t}</span></div>
@@ -2921,34 +2921,34 @@ function Paiements({data,ops,etab}) {
       <div>
         <div style={{display:"flex",gap:9,marginBottom:16,alignItems:"center"}}>
           <Btn ch={t("pa_retour")} v="ghost" onClick={()=>setSelEleve("")}/>
-          <div style={{flex:1}}><div style={{fontWeight:800,fontSize:16,color:"#0f172a"}}>{el.prenom} {el.nom}</div><div style={{fontSize:12,color:"#94a3b8"}}>{txt(cl?.nom,cl?.nom_ar)} · {el.matricule}</div></div>
+          <div style={{flex:1}}><div style={{fontWeight:800,fontSize:16,color:"var(--me-text)"}}>{el.prenom} {el.nom}</div><div style={{fontSize:12,color:"var(--me-text-3)"}}>{txt(cl?.nom,cl?.nom_ar)} · {el.matricule}</div></div>
           <Btn ch={t("pa_encaisser")} v="primary" onClick={()=>{setForm({eleve_id:el.id,type:"Scolarité",montant:"",date:TODAY,mois:echeances[0]||"",note:""});setModal("add");}}/>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:16}}>
-          <Card s={{padding:16}}><div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase"}}>{t("pa_total_du")}</div><div style={{fontSize:20,fontWeight:900,color:"#0f172a"}}>{fmtMoney(totalDu,devise)}</div></Card>
-          <Card s={{padding:16}}><div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase"}}>{t("pa_paye")}</div><div style={{fontSize:20,fontWeight:900,color:"#059669"}}>{fmtMoney(totalPaye,devise)}</div></Card>
-          <Card s={{padding:16}}><div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase"}}>{t("pa_reste_total")}</div><div style={{fontSize:20,fontWeight:900,color:resteTotal>0?"#c2410c":"#059669"}}>{fmtMoney(resteTotal,devise)}</div></Card>
+          <Card s={{padding:16}}><div style={{fontSize:10,color:"var(--me-text-3)",fontWeight:700,textTransform:"uppercase"}}>{t("pa_total_du")}</div><div style={{fontSize:20,fontWeight:900,color:"var(--me-text)"}}>{fmtMoney(totalDu,devise)}</div></Card>
+          <Card s={{padding:16}}><div style={{fontSize:10,color:"var(--me-text-3)",fontWeight:700,textTransform:"uppercase"}}>{t("pa_paye")}</div><div style={{fontSize:20,fontWeight:900,color:"#059669"}}>{fmtMoney(totalPaye,devise)}</div></Card>
+          <Card s={{padding:16}}><div style={{fontSize:10,color:"var(--me-text-3)",fontWeight:700,textTransform:"uppercase"}}>{t("pa_reste_total")}</div><div style={{fontSize:20,fontWeight:900,color:resteTotal>0?"#c2410c":"#059669"}}>{fmtMoney(resteTotal,devise)}</div></Card>
         </div>
         {insc>0&&<Card s={{marginBottom:14}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div>
-              <div style={{fontWeight:800,fontSize:13,color:"#0f172a"}}>🎫 {t("pa_frais_insc")} {resteInsc===0&&<span style={{color:"#059669",fontSize:11}}>{t("pa_regle")}</span>}</div>
-              <div style={{fontSize:12,color:"#64748b",marginTop:3}}>{t("pa_paye")} {fmtMoney(payeInsc,devise)} / {fmtMoney(insc,devise)}{resteInsc>0&&<span style={{color:"#c2410c"}}> · {t("pa_reste")} {fmtMoney(resteInsc,devise)}</span>}</div>
+              <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)"}}>🎫 {t("pa_frais_insc")} {resteInsc===0&&<span style={{color:"#059669",fontSize:11}}>{t("pa_regle")}</span>}</div>
+              <div style={{fontSize:12,color:"var(--me-text-2)",marginTop:3}}>{t("pa_paye")} {fmtMoney(payeInsc,devise)} / {fmtMoney(insc,devise)}{resteInsc>0&&<span style={{color:"#c2410c"}}> · {t("pa_reste")} {fmtMoney(resteInsc,devise)}</span>}</div>
             </div>
             {resteInsc>0&&<Btn ch={t("pa_payer_insc")} v="ghost" s={{padding:"6px 13px",fontSize:11}} onClick={()=>{setForm({eleve_id:el.id,type:"Frais d'inscription",montant:resteInsc||"",date:TODAY,mois:"",note:""});setModal("add");}}/>}
           </div>
         </Card>}
         <Card s={{marginBottom:14}}>
-          <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:12}}>📅 {t("pa_suivi_par")} {isTranche?t("pa_tranche"):t("pa_mois")}</div>
+          <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:12}}>📅 {t("pa_suivi_par")} {isTranche?t("pa_tranche"):t("pa_mois")}</div>
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
             {echeances.map(ech=>{
               const paye=payeEcheance(el.id,ech);const reste=partEch?Math.max(0,partEch-paye):0;const pct=partEch?Math.min(100,Math.round(paye/partEch*100)):0;
               const solde=partEch>0&&paye>=partEch;
               return(<div key={ech} style={{border:"1px solid #f1f5f9",borderRadius:10,padding:"10px 13px"}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                  <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{ech} {solde&&<span style={{color:"#059669",fontSize:11}}>{t("pa_solde")}</span>}</div>
+                  <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{ech} {solde&&<span style={{color:"#059669",fontSize:11}}>{t("pa_solde")}</span>}</div>
                   <div style={{display:"flex",alignItems:"center",gap:10}}>
-                    <span style={{fontSize:12,color:"#64748b"}}>{fmtMoney(paye,devise)}{partEch?` / ${fmtMoney(partEch,devise)}`:""}</span>
+                    <span style={{fontSize:12,color:"var(--me-text-2)"}}>{fmtMoney(paye,devise)}{partEch?` / ${fmtMoney(partEch,devise)}`:""}</span>
                     <Btn ch={t("pa_payer")} v="ghost" s={{padding:"5px 12px",fontSize:11}} onClick={()=>{setForm({eleve_id:el.id,type:"Scolarité",montant:reste||"",date:TODAY,mois:ech,note:""});setModal("add");}}/>
                   </div>
                 </div>
@@ -2959,16 +2959,16 @@ function Paiements({data,ops,etab}) {
           </div>
         </Card>
         <Card>
-          <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:12}}>🧾 {t("pa_histo")}</div>
+          <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:12}}>🧾 {t("pa_histo")}</div>
           {histo.length===0?<Empty icon="💰" text={t("pa_aucun_versement")}/>:(
             <table style={{width:"100%",borderCollapse:"collapse"}}>
-              <thead><tr style={{background:"#f8fafc"}}>{[t("pa_th_recu"),t("pa_th_type"),isTranche?t("pa_th_tranche"):t("pa_th_mois"),t("pa_th_montant"),t("pa_th_date"),""].map((h,hi)=><th key={hi} style={{padding:"8px 11px",textAlign:"left",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
+              <thead><tr style={{background:"#f8fafc"}}>{[t("pa_th_recu"),t("pa_th_type"),isTranche?t("pa_th_tranche"):t("pa_th_mois"),t("pa_th_montant"),t("pa_th_date"),""].map((h,hi)=><th key={hi} style={{padding:"8px 11px",textAlign:"left",fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
               <tbody>{histo.map(p=>(<tr key={p.id} style={{borderTop:"1px solid #f8fafc"}}>
                 <td style={{padding:"8px 11px",fontFamily:"monospace",fontSize:12,fontWeight:700}}>{p.recu}</td>
                 <td style={{padding:"8px 11px",fontSize:12}}>{p.type}</td>
-                <td style={{padding:"8px 11px",fontSize:12,color:"#64748b"}}>{p.mois||"—"}</td>
+                <td style={{padding:"8px 11px",fontSize:12,color:"var(--me-text-2)"}}>{p.mois||"—"}</td>
                 <td style={{padding:"8px 11px",fontSize:13,fontWeight:700,color:"#059669"}}>{fmtMoney(p.montant,devise)}</td>
-                <td style={{padding:"8px 11px",fontSize:12,color:"#64748b"}}>{p.date}</td>
+                <td style={{padding:"8px 11px",fontSize:12,color:"var(--me-text-2)"}}>{p.date}</td>
                 <td style={{padding:"8px 11px"}}><div style={{display:"flex",gap:6}}>
                   <button onClick={()=>printRecu(p)} style={{background:"#eff6ff",color:"#1a56db",border:"none",borderRadius:7,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🖨️</button>
                   <button onClick={()=>ops.deletePaiement(p.id)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:7,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_supprimer")}</button>
@@ -2991,7 +2991,7 @@ function Paiements({data,ops,etab}) {
     const annuel=fraisAnnuelEleve(el,etab,cl)+insc;const paye=totalPayeEleve(el.id)+payeInsc;const reste=Math.max(0,annuel-paye);
     const solde=annuel>0&&paye>=annuel;const pct=annuel?Math.min(100,Math.round(paye/annuel*100)):0;
     return(<tr key={el.id} style={{borderTop:"1px solid #f8fafc",cursor:"pointer"}} onClick={()=>setSelEleve(String(el.id))} onMouseOver={e=>{e.currentTarget.style.background="#f8fafc";}} onMouseOut={e=>{e.currentTarget.style.background="transparent";}}>
-      <td style={{padding:"10px 14px"}}><div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{el.prenom} {el.nom}</div><div style={{fontSize:11,color:"#94a3b8"}}>{el.matricule}</div></td>
+      <td style={{padding:"10px 14px"}}><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{el.prenom} {el.nom}</div><div style={{fontSize:11,color:"var(--me-text-3)"}}>{el.matricule}</div></td>
       <td style={{padding:"10px 8px",fontSize:12}}>{fmtMoney(annuel,devise)}</td>
       <td style={{padding:"10px 8px",fontSize:12,fontWeight:700,color:"#059669"}}>{fmtMoney(paye,devise)}</td>
       <td style={{padding:"10px 8px",fontSize:12,fontWeight:700,color:reste>0?"#c2410c":"#059669"}}>{fmtMoney(reste,devise)}</td>
@@ -3026,15 +3026,15 @@ function Paiements({data,ops,etab}) {
                 <Card key={cl.id} s={{padding:0,overflow:"hidden"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 18px",background:"#f8fafc",borderBottom:"1px solid #eef2f7",flexWrap:"wrap",gap:8}}>
                     <div>
-                      <div style={{fontWeight:800,fontSize:14,color:"#0f172a"}}>🏫 {txt(cl.nom,cl.nom_ar)} <span style={{fontWeight:600,fontSize:12,color:"#94a3b8"}}>· {elevesClasse.length} {t("db_eleves")}</span></div>
+                      <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)"}}>🏫 {txt(cl.nom,cl.nom_ar)} <span style={{fontWeight:600,fontSize:12,color:"var(--me-text-3)"}}>· {elevesClasse.length} {t("db_eleves")}</span></div>
                       <div style={{fontSize:11,color:"#059669",fontWeight:600,marginTop:2}}>💰 {t("pa_scolarite")} {fraisCl>0?fmtMoney(fraisCl,devise):t("pa_non_definie")}{t("cl_an")}{cl.frais_inscription_classe?` · ${t("pa_inscription")} ${fmtMoney(cl.frais_inscription_classe,devise)}`:""}</div>
                     </div>
                     <div style={{textAlign:"right",fontSize:11}}>
-                      <div style={{color:"#64748b"}}>{t("pa_encaisse")} : <b style={{color:"#059669"}}>{fmtMoney(totPaye,devise)}</b></div>
-                      <div style={{color:"#64748b"}}>{t("pa_reste")} : <b style={{color:totReste>0?"#c2410c":"#059669"}}>{fmtMoney(totReste,devise)}</b></div>
+                      <div style={{color:"var(--me-text-2)"}}>{t("pa_encaisse")} : <b style={{color:"#059669"}}>{fmtMoney(totPaye,devise)}</b></div>
+                      <div style={{color:"var(--me-text-2)"}}>{t("pa_reste")} : <b style={{color:totReste>0?"#c2410c":"#059669"}}>{fmtMoney(totReste,devise)}</b></div>
                     </div>
                   </div>
-                  {elevesClasse.length===0?<div style={{padding:18,textAlign:"center",color:"#94a3b8",fontSize:12}}>{t("el_aucun_eleve")}</div>:(
+                  {elevesClasse.length===0?<div style={{padding:18,textAlign:"center",color:"var(--me-text-3)",fontSize:12}}>{t("el_aucun_eleve")}</div>:(
                     <table style={{width:"100%",borderCollapse:"collapse"}}>
                       <thead><tr style={{background:"#fff"}}>{[t("no_eleve"),t("pa_th_total_du"),t("pa_paye"),t("pa_reste"),t("pa_th_statut"),""].map((h,hi)=><th key={hi} style={{padding:"8px 8px",textAlign:"left",fontSize:10,fontWeight:700,color:"#cbd5e1",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
                       <tbody>{elevesClasse.map(ligneEleve)}</tbody>
@@ -3058,7 +3058,7 @@ function RecuApercu({html,onClose,onPrint,onPdf,onWa,onMail}) {
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.55)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,maxWidth:520,width:"100%",maxHeight:"90vh",overflow:"auto",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px",borderBottom:"1px solid #f1f5f9",position:"sticky",top:0,background:"#fff"}}>
-          <div style={{fontWeight:800,fontSize:15,color:"#0f172a"}}>{t("pa_paiement_ok")}</div>
+          <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)"}}>{t("pa_paiement_ok")}</div>
           <button onClick={onClose} style={{background:"#f1f5f9",border:"none",borderRadius:8,width:30,height:30,cursor:"pointer",fontSize:15}}>✕</button>
         </div>
         <div style={{padding:18}}>
@@ -3069,7 +3069,7 @@ function RecuApercu({html,onClose,onPrint,onPdf,onWa,onMail}) {
             <Btn ch={t("pa_whatsapp")} v="success" onClick={onWa}/>
             <Btn ch={t("pa_email")} v="ghost" onClick={onMail}/>
           </div>
-          <div style={{fontSize:10,color:"#94a3b8",textAlign:"center",marginTop:10}}>{t("pa_wa_note")}</div>
+          <div style={{fontSize:10,color:"var(--me-text-3)",textAlign:"center",marginTop:10}}>{t("pa_wa_note")}</div>
         </div>
       </div>
     </div>
@@ -3126,13 +3126,13 @@ function Presences({data,ops,etab}) {
       </Card>
       {eleves.length===0?<Card><Empty icon="📅" text={t("pr_select_classe")}/></Card>:(
         <Card s={{marginBottom:16}}>
-          <div style={{fontWeight:700,fontSize:13,color:"#0f172a",marginBottom:11}}>{t("pr_feuille_du")} {date}</div>
+          <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)",marginBottom:11}}>{t("pr_feuille_du")} {date}</div>
           <div style={{display:"flex",flexDirection:"column",gap:6}}>
             {eleves.map(e=>{const present=getP(e.id);return(
               <div key={e.id} onClick={()=>ops.togglePresence(e.id,parseInt(classeId),!present)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"11px 15px",borderRadius:10,background:present?"#f0fdf4":"#fef2f2",border:`1.5px solid ${present?"#bbf7d0":"#fecaca"}`,cursor:"pointer",transition:"all 0.15s"}}>
                 <div style={{display:"flex",alignItems:"center",gap:9}}>
                   <div style={{width:30,height:30,borderRadius:8,background:present?"#dcfce7":"#fee2e2",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:present?"#059669":"#dc2626",fontSize:11}}>{e.prenom?.[0]}{e.nom?.[0]}</div>
-                  <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{e.prenom} {e.nom}</div>
+                  <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{e.prenom} {e.nom}</div>
                 </div>
                 <span style={{fontSize:12,fontWeight:700,color:present?"#059669":"#dc2626"}}>{present?t("pr_present"):t("pr_absent")}</span>
               </div>
@@ -3140,12 +3140,12 @@ function Presences({data,ops,etab}) {
           </div>
         </Card>
       )}
-      {absHist.length>0&&<Card><div style={{fontWeight:700,fontSize:13,color:"#0f172a",marginBottom:11}}>{t("pr_histo")}</div>
+      {absHist.length>0&&<Card><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)",marginBottom:11}}>{t("pr_histo")}</div>
         <Tbl cols={[t("no_eleve"),t("no_classe"),t("pr_th_total")]} empty={null} rows={absHist.slice(0,10).map(e=>{const cl=data.classes.find(c=>c.id===e.classe_id);return(<TR key={e.id}><TD bold>{e.prenom} {e.nom}</TD><TD>{txt(cl?.nom,cl?.nom_ar)}</TD><TD><span style={{background:e.tot>=5?"#fee2e2":"#fef3c7",color:e.tot>=5?"#dc2626":"#d97706",borderRadius:7,padding:"2px 10px",fontSize:12,fontWeight:700}}>{e.tot} {t("pr_absences")}</span></TD></TR>);})}/>
       </Card>}
       <Card s={{marginTop:14}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:11}}>
-          <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{t("prs_titre")}</div>
+          <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{t("prs_titre")}</div>
           {moisRows.length>0&&<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
             <span style={{background:"#fef2f2",color:"#dc2626",borderRadius:8,padding:"4px 11px",fontSize:11.5,fontWeight:700}}>{t("prs_abs")} : {totAbs} ({tauxGlobal}%)</span>
             <span style={{background:"#fdf2f8",color:"#db2777",borderRadius:8,padding:"4px 11px",fontSize:11.5,fontWeight:700}}>{t("prs_filles")} : {pctFGlobal}%</span>
@@ -3158,7 +3158,7 @@ function Presences({data,ops,etab}) {
             <TD><span style={{background:r.taux>=20?"#fee2e2":"#fef3c7",color:r.taux>=20?"#dc2626":"#d97706",borderRadius:7,padding:"2px 10px",fontSize:12,fontWeight:700}}>{r.taux}%</span></TD>
             <TD><span style={{color:"#db2777",fontWeight:700}}>{r.pctF}%</span></TD>
           </TR>
-        ))}/>:<div style={{fontSize:12.5,color:"#94a3b8",padding:"6px 2px"}}>{t("prs_vide")}</div>}
+        ))}/>:<div style={{fontSize:12.5,color:"var(--me-text-3)",padding:"6px 2px"}}>{t("prs_vide")}</div>}
       </Card>
     </div>
   );
@@ -3273,7 +3273,7 @@ function Messagerie({data,ops,currentUser}) {
   const ConvBtn=({id,label,sub,active:act,onClick})=>(
     <button onClick={onClick} className="me-nav" style={{width:"100%",textAlign:"left",padding:"10px 12px",borderRadius:10,border:"none",cursor:"pointer",background:act?"#eff6ff":"transparent",marginBottom:3,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
       <div style={{fontWeight:700,fontSize:12.5,color:act?"#1a56db":"#0f172a"}}>{label}</div>
-      {sub&&<div style={{fontSize:10.5,color:"#94a3b8",marginTop:1}}>{sub}</div>}
+      {sub&&<div style={{fontSize:10.5,color:"var(--me-text-3)",marginTop:1}}>{sub}</div>}
     </button>
   );
 
@@ -3283,13 +3283,13 @@ function Messagerie({data,ops,currentUser}) {
       <div className="me-msg-grid" style={{display:"grid",gridTemplateColumns:"230px 1fr",gap:14,height:500}}>
         {/* Liste des conversations */}
         <Card s={{padding:10,overflowY:"auto"}}>
-          <div style={{fontSize:10,fontWeight:800,color:"#94a3b8",textTransform:"uppercase",padding:"4px 8px 8px"}}>{t("msg_canaux")}</div>
+          <div style={{fontSize:10,fontWeight:800,color:"var(--me-text-3)",textTransform:"uppercase",padding:"4px 8px 8px"}}>{t("msg_canaux")}</div>
           <ConvBtn label={t("msg_general")} sub={t("msg_tout_le_monde")} active={active==="general"} onClick={()=>setActive("general")}/>
-          {groupes.length>0&&<div style={{fontSize:10,fontWeight:800,color:"#94a3b8",textTransform:"uppercase",padding:"10px 8px 6px"}}>{t("msg_groupes")}</div>}
+          {groupes.length>0&&<div style={{fontSize:10,fontWeight:800,color:"var(--me-text-3)",textTransform:"uppercase",padding:"10px 8px 6px"}}>{t("msg_groupes")}</div>}
           {groupes.map(g=>(
             <ConvBtn key={g.id} label={"👥 "+g.nom} sub={`${(g.membres||[]).length} ${t("msg_membres")}`} active={active==="group:"+g.id} onClick={()=>setActive("group:"+g.id)}/>
           ))}
-          <div style={{fontSize:10,fontWeight:800,color:"#94a3b8",textTransform:"uppercase",padding:"10px 8px 6px"}}>{t("msg_prives")}</div>
+          <div style={{fontSize:10,fontWeight:800,color:"var(--me-text-3)",textTransform:"uppercase",padding:"10px 8px 6px"}}>{t("msg_prives")}</div>
           {autres.length===0?<div style={{fontSize:11,color:"#cbd5e1",padding:"4px 8px"}}>{t("msg_aucun_autre")}</div>:autres.map(u=>(
             <ConvBtn key={u.id} label={"👤 "+u.prenom+" "+u.nom} sub={u.role} active={active===dmKey(me.id,u.id)} onClick={()=>setActive(dmKey(me.id,u.id))}/>
           ))}
@@ -3297,16 +3297,16 @@ function Messagerie({data,ops,currentUser}) {
 
         {/* Zone de chat */}
         <Card s={{display:"flex",flexDirection:"column",padding:0,overflow:"hidden"}}>
-          <div style={{padding:"12px 16px",borderBottom:"1px solid #f1f5f9",fontWeight:800,fontSize:13,color:"#0f172a"}}>{activeTitle}</div>
+          <div style={{padding:"12px 16px",borderBottom:"1px solid #f1f5f9",fontWeight:800,fontSize:13,color:"var(--me-text)"}}>{activeTitle}</div>
           <div style={{flex:1,overflowY:"auto",padding:16,display:"flex",flexDirection:"column",gap:10}}>
-            {msgs.length===0?<div style={{textAlign:"center",color:"#94a3b8",padding:"40px 0"}}><div style={{fontSize:32}}>💬</div><p style={{fontSize:13}}>{t("msg_aucun_message")}</p></div>:
+            {msgs.length===0?<div style={{textAlign:"center",color:"var(--me-text-3)",padding:"40px 0"}}><div style={{fontSize:32}}>💬</div><p style={{fontSize:13}}>{t("msg_aucun_message")}</p></div>:
             msgs.map(m=>{const mine=m.auteur===myName;const fichiers=Array.isArray(m.fichiers)?m.fichiers:[];
               const others=mine?convOthers(active):[];const readers=mine?(Array.isArray(m.lu_par)?m.lu_par.filter(id=>others.includes(id)):[]):[];
               const someRead=mine&&readers.length>0;const allRead=mine&&others.length>0&&readers.length>=others.length;const isDm=active.startsWith("dm:");
               let status="";if(mine&&m.auteur_id){status=!someRead?"✓":((isDm||allRead)?"✓✓":"✓✓ "+readers.length);}
               return(
               <div key={m.id} style={{display:"flex",flexDirection:"column",alignItems:mine?"flex-end":"flex-start"}}>
-                {!mine&&<div style={{fontSize:10,color:"#94a3b8",marginBottom:3}}>{m.auteur} · <Badge role={m.role}/></div>}
+                {!mine&&<div style={{fontSize:10,color:"var(--me-text-3)",marginBottom:3}}>{m.auteur} · <Badge role={m.role}/></div>}
                 {m.texte&&<div style={{maxWidth:"72%",background:mine?"linear-gradient(135deg,#1a56db,#1e40af)":"#f1f5f9",color:mine?"#fff":"#0f172a",borderRadius:mine?"15px 15px 5px 15px":"15px 15px 15px 5px",padding:"9px 13px",fontSize:13,lineHeight:1.5,boxShadow:mine?"0 3px 10px -3px rgba(26,86,219,.5)":"none"}}>{m.texte}</div>}
                 {fichiers.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:7,marginTop:m.texte?5:0,justifyContent:mine?"flex-end":"flex-start",maxWidth:"72%"}}>
                   {fichiers.map((f,k)=>{const isImg=(f.type||"").startsWith("image/");const isAudio=(f.type||"").startsWith("audio/");return isAudio?(
@@ -3323,7 +3323,7 @@ function Messagerie({data,ops,currentUser}) {
                     <a key={k} href={f.url} target="_blank" rel="noreferrer" style={{display:"flex",alignItems:"center",gap:8,background:"#fff",border:"1px solid #e2e8f0",borderRadius:10,padding:"8px 12px",textDecoration:"none",color:"#1a56db",fontSize:12,fontWeight:700,maxWidth:200}}>📎 <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{f.nom}</span></a>
                   );})}
                 </div>}
-                <div style={{fontSize:10,color:"#94a3b8",marginTop:3,display:"flex",gap:5,alignItems:"center",justifyContent:mine?"flex-end":"flex-start"}}>
+                <div style={{fontSize:10,color:"var(--me-text-3)",marginTop:3,display:"flex",gap:5,alignItems:"center",justifyContent:mine?"flex-end":"flex-start"}}>
                   <span>{fmtTime(m.created_at)}</span>
                   {mine&&status&&<span style={{fontWeight:800,color:someRead?"#1a56db":"#94a3b8"}}>{status}</span>}
                 </div>
@@ -3365,14 +3365,14 @@ function Messagerie({data,ops,currentUser}) {
       {modalGroupe&&<Modal title={t("msg_creer_groupe")} onClose={()=>setModalGroupe(false)}>
         <Inp label={t("msg_nom_groupe")} value={grpNom} onChange={e=>setGrpNom(e.target.value)} placeholder={t("msg_nom_groupe_ph")}/>
         <Lbl t={t("msg_membres_groupe")}>
-          {autres.length===0?<div style={{fontSize:12,color:"#94a3b8"}}>{t("msg_aucun_a_ajouter")}</div>:(
+          {autres.length===0?<div style={{fontSize:12,color:"var(--me-text-3)"}}>{t("msg_aucun_a_ajouter")}</div>:(
             <div style={{display:"flex",flexWrap:"wrap",gap:7,maxHeight:200,overflowY:"auto"}}>
               {autres.map(u=>{const on=grpMembres.includes(u.id);return(
                 <button key={u.id} type="button" onClick={()=>toggleMembre(u.id)} style={{padding:"6px 12px",borderRadius:20,border:on?"2px solid #1a56db":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",color:on?"#1a56db":"#64748b",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{on?"✓ ":""}{u.prenom} {u.nom}</button>
               );})}
             </div>
           )}
-          <div style={{fontSize:11,color:"#94a3b8",marginTop:6}}>{t("msg_auto_ajout")}</div>
+          <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:6}}>{t("msg_auto_ajout")}</div>
         </Lbl>
         <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:6}}><Btn ch={t("btn_annuler")} v="ghost" onClick={()=>setModalGroupe(false)}/><Btn ch={t("msg_creer_btn")} v="success" onClick={creerGroupe} disabled={!grpNom.trim()||grpMembres.length===0}/></div>
       </Modal>}
@@ -3398,11 +3398,11 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
       <Tbl cols={[t("us_th_user"),t("us_th_ident"),t("us_th_role"),t("us_th_actions")]} empty={<Empty icon="👤" text={t("us_empty")}/>}
         rows={data.utilisateurs.map(u=>(
           <TR key={u.id}>
-            <TD><div style={{display:"flex",alignItems:"center",gap:9}}><div style={{width:32,height:32,borderRadius:9,background:(ROLE_CLR[u.role]||"#6b7280")+"20",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:ROLE_CLR[u.role]||"#6b7280",fontSize:11}}>{u.prenom?.[0]}{u.nom[0]}</div><div><div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{u.prenom} {u.nom}{u.fondateur&&<span style={{marginLeft:6,fontSize:9,fontWeight:800,color:"#b45309",background:"#fef3c7",padding:"1px 6px",borderRadius:20,verticalAlign:"middle"}}>{t("us_fondateur")}</span>}</div><div style={{fontSize:10.5,color:"#94a3b8",marginTop:2,lineHeight:1.35}}>{accessOf(u).map(n=>t("nav_"+n.id)).join(" · ")}</div></div></div></TD>
+            <TD><div style={{display:"flex",alignItems:"center",gap:9}}><div style={{width:32,height:32,borderRadius:9,background:(ROLE_CLR[u.role]||"#6b7280")+"20",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:ROLE_CLR[u.role]||"#6b7280",fontSize:11}}>{u.prenom?.[0]}{u.nom[0]}</div><div><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{u.prenom} {u.nom}{u.fondateur&&<span style={{marginLeft:6,fontSize:9,fontWeight:800,color:"#b45309",background:"#fef3c7",padding:"1px 6px",borderRadius:20,verticalAlign:"middle"}}>{t("us_fondateur")}</span>}</div><div style={{fontSize:10.5,color:"var(--me-text-3)",marginTop:2,lineHeight:1.35}}>{accessOf(u).map(n=>t("nav_"+n.id)).join(" · ")}</div></div></div></TD>
             <TD mono>{u.identifiant}</TD>
             <TD><Badge role={u.role}/></TD>
-            <TD>{currentUser.role==="Administrateur"&&((u.fondateur&&u.id!==currentUser.id)?<span style={{fontSize:11,fontWeight:700,color:"#94a3b8",display:"inline-flex",alignItems:"center",gap:5}}>🔒 {t("us_fondateur")}</span>:<div style={{display:"flex",gap:6}}>
-              <button onClick={()=>{setForm({nom:u.nom,prenom:u.prenom||"",genre:u.genre||"",identifiant:u.identifiant,password:"",role:u.role,matieres_autorisees:Array.isArray(u.matieres_autorisees)?u.matieres_autorisees:[],classes_autorisees:Array.isArray(u.classes_autorisees)?u.classes_autorisees:[],pages_autorisees:(Array.isArray(u.pages_autorisees)&&u.pages_autorisees.length)?u.pages_autorisees:roleBase(u.role)});setModal(u.id);}} style={{background:"#f1f5f9",color:"#475569",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
+            <TD>{currentUser.role==="Administrateur"&&((u.fondateur&&u.id!==currentUser.id)?<span style={{fontSize:11,fontWeight:700,color:"var(--me-text-3)",display:"inline-flex",alignItems:"center",gap:5}}>🔒 {t("us_fondateur")}</span>:<div style={{display:"flex",gap:6}}>
+              <button onClick={()=>{setForm({nom:u.nom,prenom:u.prenom||"",genre:u.genre||"",identifiant:u.identifiant,password:"",role:u.role,matieres_autorisees:Array.isArray(u.matieres_autorisees)?u.matieres_autorisees:[],classes_autorisees:Array.isArray(u.classes_autorisees)?u.classes_autorisees:[],pages_autorisees:(Array.isArray(u.pages_autorisees)&&u.pages_autorisees.length)?u.pages_autorisees:roleBase(u.role)});setModal(u.id);}} style={{background:"#f1f5f9",color:"var(--me-text-2)",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
               {u.id!==currentUser.id&&!u.fondateur&&<button onClick={()=>ops.deleteUser(u.id)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_supprimer")}</button>}
             </div>)}</TD>
           </TR>
@@ -3424,27 +3424,27 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
               <button key={n.id} type="button" onClick={()=>togglePage(n.id)} style={{padding:"6px 12px",borderRadius:20,border:on?"2px solid #1a56db":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",color:on?"#1a56db":"#64748b",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{on?"✓ ":""}{n.icon} {t("nav_"+n.id)}</button>
             );})}
           </div>
-          <div style={{fontSize:11,color:"#94a3b8",marginTop:6}}>{t("us_pages_note")}</div>
+          <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:6}}>{t("us_pages_note")}</div>
         </Lbl>}
         {form.role==="Professeur"&&<Lbl t={t("us_matieres")}>
-          {data.matieres.length===0?<div style={{fontSize:12,color:"#94a3b8"}}>{t("us_aucune_mat")}</div>:(
+          {data.matieres.length===0?<div style={{fontSize:12,color:"var(--me-text-3)"}}>{t("us_aucune_mat")}</div>:(
             <div style={{display:"flex",flexWrap:"wrap",gap:7,maxHeight:160,overflowY:"auto",padding:"2px"}}>
               {data.matieres.map(m=>{const on=(form.matieres_autorisees||[]).includes(m.id);return(
                 <button key={m.id} type="button" onClick={()=>toggleMat(m.id)} style={{padding:"6px 12px",borderRadius:20,border:on?"2px solid #1a56db":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",color:on?"#1a56db":"#64748b",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{on?"✓ ":""}{txt(m.nom,m.nom_ar)}</button>
               );})}
             </div>
           )}
-          <div style={{fontSize:11,color:"#94a3b8",marginTop:6}}>{t("us_note_prof")}</div>
+          <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:6}}>{t("us_note_prof")}</div>
         </Lbl>}
         {form.role==="Professeur"&&<Lbl t={t("us_classes")}>
-          {data.classes.length===0?<div style={{fontSize:12,color:"#94a3b8"}}>{t("cl_empty")}</div>:(
+          {data.classes.length===0?<div style={{fontSize:12,color:"var(--me-text-3)"}}>{t("cl_empty")}</div>:(
             <div style={{display:"flex",flexWrap:"wrap",gap:7,maxHeight:160,overflowY:"auto",padding:"2px"}}>
               {data.classes.map(c=>{const on=(form.classes_autorisees||[]).includes(c.id);return(
                 <button key={c.id} type="button" onClick={()=>toggleClasse(c.id)} style={{padding:"6px 12px",borderRadius:20,border:on?"2px solid #1a56db":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",color:on?"#1a56db":"#64748b",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{on?"✓ ":""}{txt(c.nom,c.nom_ar)}</button>
               );})}
             </div>
           )}
-          <div style={{fontSize:11,color:"#94a3b8",marginTop:6}}>{t("us_classes_note")}</div>
+          <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:6}}>{t("us_classes_note")}</div>
         </Lbl>}
         <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}><Btn ch={t("btn_annuler")} v="ghost" onClick={()=>setModal(null)}/><Btn ch={loading?"...":t("btn_save")} v="success" onClick={save} disabled={loading}/></div>
       </Modal>}
@@ -3498,13 +3498,13 @@ function Depenses({data,ops,etab}) {
           <Slt label={t("dp_categorie")} value={cat} onChange={e=>setCat(e.target.value)} opts={[{v:"",l:t("dp_toutes_cats")},...CATS.map(c=>({v:c,l:catLabel(c)}))]}/>
         </div>
         {parCat.length>0&&<div style={{marginTop:14}}>
-          <div style={{fontSize:12,fontWeight:700,color:"#475569",marginBottom:8}}>{t("dp_repartition")}</div>
+          <div style={{fontSize:12,fontWeight:700,color:"var(--me-text-2)",marginBottom:8}}>{t("dp_repartition")}</div>
           <div style={{display:"flex",flexDirection:"column",gap:6}}>
             {parCat.map(x=>{const pct=total?Math.round(x.montant/total*100):0;return(
               <div key={x.c} style={{display:"flex",alignItems:"center",gap:9}}>
-                <div style={{width:120,fontSize:12,color:"#334155",fontWeight:600}}>{catLabel(x.c)}</div>
+                <div style={{width:120,fontSize:12,color:"var(--me-text)",fontWeight:600}}>{catLabel(x.c)}</div>
                 <div style={{flex:1,height:8,background:"#f1f5f9",borderRadius:5,overflow:"hidden"}}><div style={{width:`${pct}%`,height:"100%",background:"#1a56db"}}/></div>
-                <div style={{width:130,textAlign:"right",fontSize:12,fontWeight:700,color:"#0f172a"}}>{fmtMoney(x.montant,devise)}</div>
+                <div style={{width:130,textAlign:"right",fontSize:12,fontWeight:700,color:"var(--me-text)"}}>{fmtMoney(x.montant,devise)}</div>
               </div>
             );})}
           </div>
@@ -3514,16 +3514,16 @@ function Depenses({data,ops,etab}) {
         <Card s={{padding:0,overflow:"hidden"}}>
           <div style={{overflowX:"auto"}}>
             <table style={{width:"100%",borderCollapse:"collapse",minWidth:640}}>
-              <thead><tr style={{background:"#f8fafc"}}>{[t("dp_date"),t("dp_categorie"),t("dp_libelle"),t("dp_fournisseur"),t("dp_montant"),""].map((h,hi)=><th key={hi} style={{padding:"10px 13px",textAlign:hi===4?"right":"left",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
+              <thead><tr style={{background:"#f8fafc"}}>{[t("dp_date"),t("dp_categorie"),t("dp_libelle"),t("dp_fournisseur"),t("dp_montant"),""].map((h,hi)=><th key={hi} style={{padding:"10px 13px",textAlign:hi===4?"right":"left",fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
               <tbody>{filtered.map((d,i)=>(
                 <tr key={d.id} style={{borderTop:i>0?"1px solid #f8fafc":"none"}}>
-                  <td style={{padding:"10px 13px",fontSize:12,color:"#64748b",whiteSpace:"nowrap"}}>{d.date}</td>
+                  <td style={{padding:"10px 13px",fontSize:12,color:"var(--me-text-2)",whiteSpace:"nowrap"}}>{d.date}</td>
                   <td style={{padding:"10px 13px"}}><span style={{background:"#eff6ff",color:"#1a56db",borderRadius:6,padding:"2px 9px",fontSize:11,fontWeight:700}}>{catLabel(d.categorie)}</span></td>
-                  <td style={{padding:"10px 13px",fontSize:13,fontWeight:600,color:"#0f172a"}}>{d.libelle}{d.note?<div style={{fontSize:11,color:"#94a3b8",fontWeight:400}}>{d.note}</div>:null}</td>
-                  <td style={{padding:"10px 13px",fontSize:12,color:"#64748b"}}>{d.fournisseur||"—"}</td>
+                  <td style={{padding:"10px 13px",fontSize:13,fontWeight:600,color:"var(--me-text)"}}>{d.libelle}{d.note?<div style={{fontSize:11,color:"var(--me-text-3)",fontWeight:400}}>{d.note}</div>:null}</td>
+                  <td style={{padding:"10px 13px",fontSize:12,color:"var(--me-text-2)"}}>{d.fournisseur||"—"}</td>
                   <td style={{padding:"10px 13px",fontSize:13,fontWeight:800,color:"#dc2626",textAlign:"right",whiteSpace:"nowrap"}}>{fmtMoney(d.montant,devise)}</td>
                   <td style={{padding:"10px 13px",textAlign:"right",whiteSpace:"nowrap"}}><div style={{display:"inline-flex",gap:6}}>
-                    <button onClick={()=>openEdit(d)} style={{background:"#f1f5f9",color:"#475569",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
+                    <button onClick={()=>openEdit(d)} style={{background:"#f1f5f9",color:"var(--me-text-2)",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
                     <button onClick={()=>ops.deleteDepense(d.id)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_supprimer")}</button>
                   </div></td>
                 </tr>
@@ -3552,7 +3552,7 @@ function Depenses({data,ops,etab}) {
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
 // ── PARAMÈTRES ÉTABLISSEMENT ──────────────────────────────────────────────────
-function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
+function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,onLogout}) {
   const [form,setForm]=useState({
     nom:etab.nom||"",nom_ar:etab.nom_ar||"",devise_txt:etab.devise_txt||"",annee:etab.annee||"",devise:etab.devise||"GNF",
     systeme:etab.systeme||"trimestre",periodes:Array.isArray(etab.periodes)?etab.periodes:null,adresse:etab.adresse||"",telephone:etab.telephone||"",email:etab.email||"",
@@ -3612,12 +3612,12 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
   const splitDv=t=>(t||"").split(/\s*[·\-–—|/]\s*/).map(s=>s.trim()).filter(Boolean);
   const devisePreview=()=>{
     const dm=form.devise_mots||{}, nat=form.devise_nationale||"";
-    const sep=<span style={{color:"#94a3b8",fontWeight:400,fontStyle:"normal"}}> · </span>;
-    const vide=<span style={{color:"#94a3b8",fontWeight:400,fontStyle:"normal"}}>Renseignez la devise nationale ci-dessus.</span>;
+    const sep=<span style={{color:"var(--me-text-3)",fontWeight:400,fontStyle:"normal"}}> · </span>;
+    const vide=<span style={{color:"var(--me-text-3)",fontWeight:400,fontStyle:"normal"}}>Renseignez la devise nationale ci-dessus.</span>;
     if(dvMode==="drapeau"){const mots=splitDv(nat);return mots.length?mots.map((w,i,a)=><span key={i}><span style={{color:FLAG_GN[i%3]}}>{w}</span>{i<a.length-1?sep:null}</span>):vide;}
     if(dvMode==="uni"){return nat?<span style={{color:dm.couleur||form.theme_couleur||"#1a56db"}}>{nat}</span>:vide;}
-    if(dvMode==="manuel"){const ws=[["m1","c1"],["m2","c2"],["m3","c3"]].filter(p=>dm[p[0]]);return ws.length?ws.map((p,i,a)=><span key={p[0]}><span style={{color:dm[p[1]]||"#334155"}}>{dm[p[0]]}</span>{i<a.length-1?sep:null}</span>):<span style={{color:"#94a3b8",fontWeight:400,fontStyle:"normal"}}>Saisissez les mots ci-dessous.</span>;}
-    return <span style={{color:"#64748b"}}>{nat||"—"}</span>;
+    if(dvMode==="manuel"){const ws=[["m1","c1"],["m2","c2"],["m3","c3"]].filter(p=>dm[p[0]]);return ws.length?ws.map((p,i,a)=><span key={p[0]}><span style={{color:dm[p[1]]||"#334155"}}>{dm[p[0]]}</span>{i<a.length-1?sep:null}</span>):<span style={{color:"var(--me-text-3)",fontWeight:400,fontStyle:"normal"}}>Saisissez les mots ci-dessous.</span>;}
+    return <span style={{color:"var(--me-text-2)"}}>{nat||"—"}</span>;
   };
   // ── Périodes / compositions personnalisables ──
   const effPeriodes = periodeItems({periodes:form.periodes, systeme:form.systeme}); // [{n, ar}]
@@ -3643,10 +3643,10 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
         );})}
       </div>
       {section==="apparence"&&<Card s={{marginBottom:14}}>
-        <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:12}}>{t("st_logos")}</div>
+        <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:12}}>{t("st_logos")}</div>
         <div style={{background:"#eff6ff",border:"1px solid #dbeafe",borderRadius:11,padding:13,marginBottom:16}}>
           <div style={{fontSize:12,fontWeight:700,color:"#1a56db",marginBottom:3}}>{t("st_logo_app")}</div>
-          <div style={{fontSize:10.5,color:"#64748b",marginBottom:10}}>{t("st_logo_app_d")}</div>
+          <div style={{fontSize:10.5,color:"var(--me-text-2)",marginBottom:10}}>{t("st_logo_app_d")}</div>
           <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
             <div style={{width:64,height:64,borderRadius:14,border:"2px dashed #93c5fd",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
               {(form.logo_app||form.logo)?<img src={form.logo_app||form.logo} alt="logo app" style={{width:"100%",height:"100%",objectFit:"contain"}}/>:<span style={{fontSize:24}}>🎓</span>}
@@ -3660,12 +3660,12 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
             </div>
           </div>
         </div>
-        <div style={{fontWeight:700,fontSize:12,color:"#334155",marginBottom:6}}>{t("st_logos_doc")}</div>
-        <div style={{fontSize:11,color:"#64748b",marginBottom:14}}>{t("st_logos_doc_d1")}<b>{t("st_logos_doc_b")}</b>{t("st_logos_doc_d2")}</div>
+        <div style={{fontWeight:700,fontSize:12,color:"var(--me-text)",marginBottom:6}}>{t("st_logos_doc")}</div>
+        <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:14}}>{t("st_logos_doc_d1")}<b>{t("st_logos_doc_b")}</b>{t("st_logos_doc_d2")}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
           {/* Logo 1 : école */}
           <div>
-            <div style={{fontSize:12,fontWeight:700,color:"#334155",marginBottom:8}}>{t("st_logo_ecole")}</div>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--me-text)",marginBottom:8}}>{t("st_logo_ecole")}</div>
             <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
               <div style={{width:80,height:80,borderRadius:12,border:"2px dashed #cbd5e1",background:"#f8fafc",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
                 {form.logo?<img src={form.logo} alt="logo" style={{width:"100%",height:"100%",objectFit:"contain"}}/>:<span style={{fontSize:26}}>🎓</span>}
@@ -3681,7 +3681,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
           </div>
           {/* Logo 2 : armoiries */}
           <div>
-            <div style={{fontSize:12,fontWeight:700,color:"#334155",marginBottom:8}}>{t("st_armoiries")}</div>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--me-text)",marginBottom:8}}>{t("st_armoiries")}</div>
             <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
               <div style={{width:80,height:80,borderRadius:12,border:"2px dashed #cbd5e1",background:"#f8fafc",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
                 {form.logo2?<img src={form.logo2} alt="armoiries" style={{width:"100%",height:"100%",objectFit:"contain"}}/>:<span style={{fontSize:26}}>🛡️</span>}
@@ -3697,7 +3697,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
           </div>
         </div>
         {/* Dispositions préconçues */}
-        <div style={{fontSize:12,fontWeight:700,color:"#334155",margin:"16px 0 9px"}}>{t("st_dispo")}</div>
+        <div style={{fontSize:12,fontWeight:700,color:"var(--me-text)",margin:"16px 0 9px"}}>{t("st_dispo")}</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:10}}>
           {[
             {v:"centre",t:t("st_dispo_centre"),mini:<div style={{display:"flex",justifyContent:"center",gap:3}}><Sq/><Sq/></div>},
@@ -3711,8 +3711,8 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
             </button>
           );})}
         </div>
-        <div style={{fontSize:10,color:"#94a3b8",marginTop:8}}>{t("st_dispo_note")}</div>
-        <div style={{fontSize:12,fontWeight:700,color:"#334155",margin:"16px 0 9px"}}>{t("st_pos_v")}</div>
+        <div style={{fontSize:10,color:"var(--me-text-3)",marginTop:8}}>{t("st_dispo_note")}</div>
+        <div style={{fontSize:12,fontWeight:700,color:"var(--me-text)",margin:"16px 0 9px"}}>{t("st_pos_v")}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
           {[
             {v:"milieu",t:t("st_pos_milieu"),sub:t("st_pos_milieu_s")},
@@ -3721,7 +3721,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
           ].map(o=>{const on=(form.logo_position||"milieu")===o.v;return(
             <button key={o.v} onClick={()=>setForm(f=>({...f,logo_position:o.v}))} style={{padding:"11px 13px",borderRadius:11,border:on?"2px solid #1a56db":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",cursor:"pointer",textAlign:"left",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
               <div style={{fontSize:12,fontWeight:700,color:on?"#1a56db":"#334155"}}>{on?"✓ ":""}{o.t}</div>
-              <div style={{fontSize:10.5,color:"#94a3b8",marginTop:2}}>{o.sub}</div>
+              <div style={{fontSize:10.5,color:"var(--me-text-3)",marginTop:2}}>{o.sub}</div>
             </button>
           );})}
         </div>
@@ -3731,11 +3731,11 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
         </div>
       </Card>}
       {section==="documents"&&<Card s={{marginBottom:14}}>
-        <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:6}}>{t("st_langue_doc")}</div>
-        <div style={{fontSize:11,color:"#64748b",marginBottom:14}}>{t("st_langue_doc_d")}</div>
+        <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:6}}>{t("st_langue_doc")}</div>
+        <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:14}}>{t("st_langue_doc_d")}</div>
         <Slt label={t("st_langue")} value={form.langue} onChange={set("langue")} opts={[{v:"fr",l:t("st_langue_fr")},{v:"fr_ar",l:t("st_langue_frar")},{v:"ar",l:t("st_langue_ar")}]}/>
         {(form.langue==="fr_ar"||form.langue==="ar")&&<div style={{marginTop:14,background:"#f8fafc",borderRadius:11,padding:14}}>
-          <div style={{fontSize:12,fontWeight:700,color:"#334155",marginBottom:10}}>الترجمة العربية · Traductions arabes (modifiables)</div>
+          <div style={{fontSize:12,fontWeight:700,color:"var(--me-text)",marginBottom:10}}>الترجمة العربية · Traductions arabes (modifiables)</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:11}}>
             {[["pays",t("st_ar_pays")],["devise",t("st_ar_devise")],["ministere",t("st_ar_ministere")],["ecole",t("st_ar_ecole")],["ire",t("st_ar_ire")],["dpe",t("st_ar_dpe")],["dsee",t("st_ar_dsee")],["bulletin",t("st_ar_bulletin")]].map(([k,lbl])=>(
               <div key={k}><Lbl t={lbl}><input dir="rtl" value={form.ar?.[k]||""} onChange={e=>setForm(f=>({...f,ar:{...f.ar,[k]:e.target.value}}))} style={{...iSt(),fontFamily:"'Traditional Arabic',serif",fontSize:15}}/></Lbl></div>
@@ -3744,8 +3744,8 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
         </div>}
       </Card>}
       {section==="apparence"&&<Card s={{marginBottom:14}}>
-        <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:6}}>{t("st_theme")}</div>
-        <div style={{fontSize:11,color:"#64748b",marginBottom:14}}>{t("st_theme_d")}</div>
+        <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:6}}>{t("st_theme")}</div>
+        <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:14}}>{t("st_theme_d")}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
           <div>
             <Lbl t={t("st_couleur_p")}>
@@ -3768,7 +3768,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
               {v:"'Courier New',monospace",l:t("st_police_machine")},
               {v:"Arial,Helvetica,sans-serif",l:t("st_police_arial")}
             ]}/>
-            <label style={{display:"flex",alignItems:"center",gap:9,marginTop:12,cursor:"pointer",fontSize:13,color:"#334155",fontWeight:600}}>
+            <label style={{display:"flex",alignItems:"center",gap:9,marginTop:12,cursor:"pointer",fontSize:13,color:"var(--me-text)",fontWeight:600}}>
               <input type="checkbox" checked={form.theme_titre_centre} onChange={e=>setForm(f=>({...f,theme_titre_centre:e.target.checked}))} style={{width:17,height:17}}/>
               {t("st_centrer_titre")}
             </label>
@@ -3776,7 +3776,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
         </div>
         <div style={{marginTop:14,padding:14,borderRadius:11,border:`2px solid ${form.theme_couleur}`,background:form.theme_couleur+"10",fontFamily:form.theme_police}}>
           <div style={{textAlign:"center",fontWeight:800,fontSize:13,color:form.theme_couleur,textTransform:"uppercase"}}>{t("st_apercu_theme")}</div>
-          <div style={{textAlign:form.theme_titre_centre?"center":"left",marginTop:8}}><span style={{display:"inline-block",border:`2px solid ${form.theme_couleur}`,borderRadius:8,padding:"5px 14px",fontWeight:800,fontSize:12,color:"#0f172a",background:"#fff"}}>BULLETIN DE NOTES</span></div>
+          <div style={{textAlign:form.theme_titre_centre?"center":"left",marginTop:8}}><span style={{display:"inline-block",border:`2px solid ${form.theme_couleur}`,borderRadius:8,padding:"5px 14px",fontWeight:800,fontSize:12,color:"var(--me-text)",background:"#fff"}}>BULLETIN DE NOTES</span></div>
         </div>
         <div style={{display:"flex",gap:10,justifyContent:"flex-end",marginTop:16,alignItems:"center"}}>
           {saved&&<span style={{color:"#059669",fontSize:12,fontWeight:700}}>{t("st_enregistre")}</span>}
@@ -3784,21 +3784,21 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
         </div>
       </Card>}
       {section==="documents"&&<Card s={{marginBottom:14}}>
-        <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:12}}>{t("st_entete")}</div>
-        <div style={{fontSize:11,color:"#64748b",marginBottom:14}}>{t("st_entete_d")}</div>
+        <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:12}}>{t("st_entete")}</div>
+        <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:14}}>{t("st_entete_d")}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:13}}>
           <Inp label={t("st_pays")} value={form.pays} onChange={set("pays")} placeholder="République de Guinée"/>
           <Inp label={t("st_devise_nat")} value={form.devise_nationale} onChange={set("devise_nationale")} placeholder="Travail · Justice · Solidarité"/>
           <div style={{gridColumn:"1/-1",background:"#f8fafc",borderRadius:11,padding:13}}>
-            <div style={{fontSize:12,fontWeight:700,color:"#334155",marginBottom:9}}>{t("st_couleur_devise")}</div>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--me-text)",marginBottom:9}}>{t("st_couleur_devise")}</div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:11}}>
               {[{v:"drapeau",l:t("st_dv_drapeau")},{v:"uni",l:t("st_dv_uni")},{v:"manuel",l:t("st_dv_manuel")},{v:"",l:t("st_dv_sans")}].map(o=>{const on=dvMode===o.v;return(
                 <button key={o.v||"none"} onClick={()=>setDv("mode",o.v)} style={{padding:"7px 12px",borderRadius:9,border:on?"2px solid #1a56db":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",color:on?"#1a56db":"#64748b",fontSize:11.5,fontWeight:700,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{on?"✓ ":""}{o.l}</button>
               );})}
             </div>
-            {dvMode==="drapeau"&&<div style={{fontSize:11,color:"#64748b"}}>{t("st_dv_note_a")}<b style={{color:"#ce1126"}}>{t("st_rouge")}</b> · <b style={{color:"#caa000"}}>{t("st_jaune")}</b> · <b style={{color:"#009460"}}>{t("st_vert")}</b>{t("st_dv_note_b")}</div>}
+            {dvMode==="drapeau"&&<div style={{fontSize:11,color:"var(--me-text-2)"}}>{t("st_dv_note_a")}<b style={{color:"#ce1126"}}>{t("st_rouge")}</b> · <b style={{color:"#caa000"}}>{t("st_jaune")}</b> · <b style={{color:"#009460"}}>{t("st_vert")}</b>{t("st_dv_note_b")}</div>}
             {dvMode==="uni"&&<div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{fontSize:12,color:"#334155",fontWeight:600}}>{t("st_couleur_lbl")}</span>
+              <span style={{fontSize:12,color:"var(--me-text)",fontWeight:600}}>{t("st_couleur_lbl")}</span>
               <input type="color" value={form.devise_mots?.couleur||form.theme_couleur||"#1a56db"} onChange={e=>setDv("couleur",e.target.value)} style={{width:34,height:30,border:"none",borderRadius:7,cursor:"pointer",background:"none",padding:0}}/>
               <input value={form.devise_mots?.couleur||""} onChange={e=>setDv("couleur",e.target.value)} placeholder={form.theme_couleur||"#1a56db"} style={{...iSt(),width:120,fontFamily:"monospace"}}/>
             </div>}
@@ -3811,7 +3811,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
               ))}
             </div>}
             <div style={{marginTop:12,paddingTop:10,borderTop:"1px solid #eef2f7",textAlign:"center"}}>
-              <div style={{fontSize:9.5,color:"#94a3b8",textTransform:"uppercase",fontWeight:700,letterSpacing:.4,marginBottom:4}}>{t("st_apercu_doc")}</div>
+              <div style={{fontSize:9.5,color:"var(--me-text-3)",textTransform:"uppercase",fontWeight:700,letterSpacing:.4,marginBottom:4}}>{t("st_apercu_doc")}</div>
               <div style={{fontSize:14,fontWeight:700,fontStyle:"italic"}}>{devisePreview()}</div>
             </div>
           </div>
@@ -3824,10 +3824,10 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
         </div>
         <div style={{marginTop:16,paddingTop:14,borderTop:"1px solid #f1f5f9"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-            <div style={{fontWeight:700,fontSize:12,color:"#334155"}}>{t("st_lignes")}</div>
+            <div style={{fontWeight:700,fontSize:12,color:"var(--me-text)"}}>{t("st_lignes")}</div>
             <Btn ch={t("st_add_ligne")} v="ghost" s={{padding:"6px 12px",fontSize:11}} onClick={addLigne}/>
           </div>
-          {(form.entete_lignes||[]).length===0?<div style={{fontSize:11,color:"#94a3b8"}}>{t("st_aucune_ligne")}</div>:(
+          {(form.entete_lignes||[]).length===0?<div style={{fontSize:11,color:"var(--me-text-3)"}}>{t("st_aucune_ligne")}</div>:(
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {(form.entete_lignes||[]).map((lg,i)=>(
                 <div key={i} style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -3848,7 +3848,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
         </div>
       </Card>}
       {section==="ecole"&&<Card s={{marginBottom:14}}>
-        <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:12}}>{t("st_identite")}</div>
+        <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:12}}>{t("st_identite")}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:13}}>
           <Inp label={t("st_nom_etab")} value={form.nom} onChange={set("nom")}/>
           <Lbl t="اسم المؤسسة بالعربية · Nom (arabe, facultatif)"><input dir="rtl" value={form.nom_ar||""} onChange={set("nom_ar")} style={{...iSt(),fontFamily:"'Traditional Arabic','Amiri',serif",fontSize:15}} placeholder="اسم المدرسة"/></Lbl>
@@ -3870,8 +3870,8 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
           <div style={{fontSize:12.5,color:"#1e40af",fontWeight:600}}>{t("st_formule")} : <b>{FORMULES[etab.formule]?.l||t("st_formule_nd")}</b>{FORMULES[etab.formule]?` — ${FORMULES[etab.formule].admins===Infinity?t("st_admins_illimite"):FORMULES[etab.formule].admins+" "+t("st_admins_mot")}`:""}</div>
         </div>
         <div style={{marginTop:16,background:"#f8fafc",border:"1px solid #eef2f7",borderRadius:11,padding:14}}>
-          <div style={{fontSize:13,fontWeight:800,color:"#0f172a",marginBottom:3}}>{t("st_periodes")}</div>
-          <div style={{fontSize:11,color:"#64748b",marginBottom:11}}>{t("st_periodes_d")}</div>
+          <div style={{fontSize:13,fontWeight:800,color:"var(--me-text)",marginBottom:3}}>{t("st_periodes")}</div>
+          <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:11}}>{t("st_periodes_d")}</div>
           <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:12}}>
             {PRESETS_PERIODES.map(p=>{const on=periodesCustom&&effPeriodes.map(x=>x.n).join("|")===p.a.map(x=>x.n).join("|");return(
               <button key={p.l} onClick={()=>setPeriodes(p.a)} style={{padding:"6px 11px",borderRadius:8,border:on?"2px solid #1a56db":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",color:on?"#1a56db":"#64748b",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{on?"✓ ":""}{p.l}</button>
@@ -3889,7 +3889,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
             ))}
           </div>
           {effPeriodes.length<10&&<button onClick={addPeriode} style={{marginTop:9,background:"#eff6ff",color:"#1a56db",border:"1.5px dashed #93c5fd",borderRadius:8,padding:"7px 12px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("st_add_periode")}</button>}
-          <div style={{fontSize:10,color:"#94a3b8",marginTop:9}}>{t("st_periode_note")}</div>
+          <div style={{fontSize:10,color:"var(--me-text-3)",marginTop:9}}>{t("st_periode_note")}</div>
         </div>
         <div style={{display:"flex",gap:10,justifyContent:"flex-end",marginTop:16,alignItems:"center"}}>
           {saved&&<span style={{color:"#059669",fontSize:12,fontWeight:700}}>{t("st_enregistre")}</span>}
@@ -3897,8 +3897,8 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
         </div>
       </Card>}
       {section==="paiement"&&<Card s={{marginBottom:14}}>
-        <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:12}}>{t("st_mode_paie")}</div>
-        <div style={{fontSize:11,color:"#64748b",marginBottom:14}}>{t("st_mode_paie_d")}</div>
+        <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:12}}>{t("st_mode_paie")}</div>
+        <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:14}}>{t("st_mode_paie_d")}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:13}}>
           <Slt label={t("st_mode")} value={form.mode_paiement} onChange={set("mode_paiement")} opts={[{v:"mensualite",l:t("st_par_mois")},{v:"tranche",l:t("st_par_tranches")}]}/>
           {form.mode_paiement==="tranche"
@@ -3907,38 +3907,38 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
         </div>
         <div style={{marginTop:16,paddingTop:14,borderTop:"1px solid #f1f5f9"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-            <div style={{fontWeight:700,fontSize:12,color:"#334155"}}>{t("st_moyens")}</div>
+            <div style={{fontWeight:700,fontSize:12,color:"var(--me-text)"}}>{t("st_moyens")}</div>
             <Btn ch={t("st_ajouter")} v="ghost" s={{padding:"6px 12px",fontSize:11}} onClick={addMoyen}/>
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
             {(form.moyens_paiement||[]).map((m,i)=>(
               <div key={i} style={{display:"flex",alignItems:"center",gap:6,background:"#f8fafc",border:"1.5px solid #e2e8f0",borderRadius:9,padding:"5px 6px 5px 11px"}}>
-                <input value={m} onChange={e=>setMoyen(i,e.target.value)} style={{border:"none",background:"transparent",fontSize:12,fontWeight:600,color:"#334155",outline:"none",width:Math.max(70,(m.length||6)*8),fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
+                <input value={m} onChange={e=>setMoyen(i,e.target.value)} style={{border:"none",background:"transparent",fontSize:12,fontWeight:600,color:"var(--me-text)",outline:"none",width:Math.max(70,(m.length||6)*8),fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
                 <button onClick={()=>delMoyen(i)} style={{background:"#fef2f2",color:"#dc2626",border:"none",borderRadius:6,padding:"3px 7px",cursor:"pointer",fontSize:11}}>✕</button>
               </div>
             ))}
-            {(form.moyens_paiement||[]).length===0&&<span style={{fontSize:11,color:"#94a3b8"}}>{t("st_aucun_moyen")}</span>}
+            {(form.moyens_paiement||[]).length===0&&<span style={{fontSize:11,color:"var(--me-text-3)"}}>{t("st_aucun_moyen")}</span>}
           </div>
         </div>
-        <div style={{fontSize:11,color:"#94a3b8",marginTop:10}}>{t("st_moyens_note")}</div>
+        <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:10}}>{t("st_moyens_note")}</div>
         <div style={{display:"flex",gap:10,justifyContent:"flex-end",marginTop:16,alignItems:"center"}}>
           {saved&&<span style={{color:"#059669",fontSize:12,fontWeight:700}}>{t("st_enregistre")}</span>}
           <Btn ch={loading?t("st_enregistrement"):t("no_save")} v="success" onClick={save} disabled={loading}/>
         </div>
       </Card>}
       {section==="paiement"&&<Card s={{marginBottom:14}}>
-        <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:6}}>{t("st_frais_classe")}</div>
-        <div style={{fontSize:11,color:"#64748b",marginBottom:14}}>{t("st_frais_classe_d")}</div>
-        {(data?.classes||[]).length===0?<div style={{fontSize:12,color:"#94a3b8"}}>{t("st_creez_classes")}</div>:(
+        <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:6}}>{t("st_frais_classe")}</div>
+        <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:14}}>{t("st_frais_classe_d")}</div>
+        {(data?.classes||[]).length===0?<div style={{fontSize:12,color:"var(--me-text-3)"}}>{t("st_creez_classes")}</div>:(
           <div style={{overflowX:"auto"}}>
             <table style={{width:"100%",borderCollapse:"collapse",minWidth:520}}>
-              <thead><tr style={{background:"#f8fafc"}}>{[t("st_th_classe"),`${t("st_th_mensuel")} (${form.devise})`,`${t("st_th_annuel")} (${form.devise})`,`${t("st_th_insc")} (${form.devise})`].map((h,hi)=><th key={hi} style={{padding:"8px 10px",textAlign:"left",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
+              <thead><tr style={{background:"#f8fafc"}}>{[t("st_th_classe"),`${t("st_th_mensuel")} (${form.devise})`,`${t("st_th_annuel")} (${form.devise})`,`${t("st_th_insc")} (${form.devise})`].map((h,hi)=><th key={hi} style={{padding:"8px 10px",textAlign:"left",fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
               <tbody>{CYCLES.map(cyc=>{const cls=(data.classes||[]).filter(c=>(c.niveau||"Primaire")===cyc);if(cls.length===0)return null;return(
                 <React.Fragment key={cyc}>
-                  <tr><td colSpan={4} style={{padding:"8px 10px",background:"#f1f5f9",fontSize:11,fontWeight:800,color:"#475569"}}>{cyc==="Maternelle"?"🟨":cyc==="Primaire"?"🟦":cyc==="Collège"?"🟪":"🟩"} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}</td></tr>
+                  <tr><td colSpan={4} style={{padding:"8px 10px",background:"#f1f5f9",fontSize:11,fontWeight:800,color:"var(--me-text-2)"}}>{cyc==="Maternelle"?"🟨":cyc==="Primaire"?"🟦":cyc==="Collège"?"🟪":"🟩"} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}</td></tr>
                   {cls.map(c=>{const f=fraisClasses[c.id]||{};return(
                     <tr key={c.id} style={{borderTop:"1px solid #f8fafc"}}>
-                      <td style={{padding:"7px 10px",fontWeight:700,fontSize:12,color:"#0f172a"}}>{txt(c.nom,c.nom_ar)}</td>
+                      <td style={{padding:"7px 10px",fontWeight:700,fontSize:12,color:"var(--me-text)"}}>{txt(c.nom,c.nom_ar)}</td>
                       <td style={{padding:"5px 10px"}}><input type="number" value={f.mensuel} onChange={e=>setFrais(c.id,"mensuel",e.target.value)} placeholder="—" style={{width:110,padding:"7px 9px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/></td>
                       <td style={{padding:"5px 10px"}}><input type="number" value={f.annuel} onChange={e=>setFrais(c.id,"annuel",e.target.value)} placeholder="—" style={{width:110,padding:"7px 9px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/></td>
                       <td style={{padding:"5px 10px"}}><input type="number" value={f.insc} onChange={e=>setFrais(c.id,"insc",e.target.value)} placeholder="—" style={{width:110,padding:"7px 9px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/></td>
@@ -3954,6 +3954,20 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser}) {
           <Btn ch={savingFrais?t("st_enregistrement"):t("st_save_frais")} v="success" onClick={saveFrais} disabled={savingFrais}/>
         </div>}
       </Card>}
+      <Card s={{marginTop:18}}>
+        <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)",marginBottom:4,fontFamily:"'Sora',sans-serif"}}>🎨 {t("ui_apparence")}</div>
+        <div style={{fontSize:12.5,color:"var(--me-text-2)",marginBottom:14}}>{t("st_theme_aide")}</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
+          {Object.entries(THEMES).map(([id,th])=>(
+            <button key={id} onClick={()=>setTheme(id)} style={{display:"flex",alignItems:"center",gap:9,padding:"10px 14px",borderRadius:12,cursor:"pointer",border:theme===id?"2px solid #1a56db":"1.5px solid var(--me-border-2)",background:theme===id?"rgba(26,86,219,0.07)":"var(--me-surface)",color:"var(--me-text)",fontSize:13,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+              <span style={{width:22,height:22,borderRadius:7,background:th.v.bg,flexShrink:0,border:"1px solid var(--me-border-2)",boxShadow:"inset 0 0 0 3px "+th.v.surface}}/>{th.l}{theme===id&&<span style={{color:"#1a56db",fontSize:14}}>✓</span>}
+            </button>
+          ))}
+        </div>
+      </Card>
+      <div style={{marginTop:18,display:"flex",justifyContent:"flex-end"}}>
+        <Btn ch={"🚪 "+t("logout")} v="danger" onClick={onLogout}/>
+      </div>
     </div>
   );
 }
@@ -4020,13 +4034,13 @@ function MasterGate({onOk}) {
       <div style={{background:"#fff",borderRadius:22,padding:38,width:400,maxWidth:"100%",boxShadow:"0 32px 80px rgba(0,0,0,0.3)"}}>
         <div style={{textAlign:"center",marginBottom:22}}>
           <div style={{width:56,height:56,borderRadius:15,background:"#fef2f2",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,margin:"0 auto 12px"}}>🔐</div>
-          <h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"#0f172a"}}>Espace éditeur</h2>
-          <p style={{margin:0,color:"#94a3b8",fontSize:12}}>Création d'une nouvelle école — accès réservé</p>
+          <h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"var(--me-text)"}}>Espace éditeur</h2>
+          <p style={{margin:0,color:"var(--me-text-3)",fontSize:12}}>Création d'une nouvelle école — accès réservé</p>
         </div>
         <Lbl t="Mot de passe maître"><input type="password" value={pw} onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()} style={iSt()} placeholder="••••••••"/></Lbl>
         {err&&<div style={{background:"#fef2f2",borderRadius:9,padding:"9px 13px",color:"#dc2626",fontSize:12,marginBottom:12}}>{err}</div>}
         <Btn ch={busy?"Vérification…":"Accéder →"} v="primary" onClick={go} disabled={!pw||busy} full/>
-        <div style={{textAlign:"center",marginTop:14}}><a href="#" onClick={e=>{e.preventDefault();try{location.hash="";}catch(_){};location.reload();}} style={{color:"#94a3b8",fontSize:11,textDecoration:"none"}}>← Retour à la connexion</a></div>
+        <div style={{textAlign:"center",marginTop:14}}><a href="#" onClick={e=>{e.preventDefault();try{location.hash="";}catch(_){};location.reload();}} style={{color:"var(--me-text-3)",fontSize:11,textDecoration:"none"}}>← Retour à la connexion</a></div>
       </div>
     </div>
   );
@@ -4059,13 +4073,13 @@ function EditorHub({onCreate,masterPw}) {
       <div style={{background:"#fff",borderRadius:22,padding:34,width:480,maxWidth:"100%",boxShadow:"0 32px 80px rgba(0,0,0,0.3)",maxHeight:"92vh",overflow:"auto"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{width:54,height:54,borderRadius:15,background:"#eff6ff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,margin:"0 auto 12px"}}>🛠️</div>
-          <h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"#0f172a"}}>Espace éditeur</h2>
-          <p style={{margin:0,color:"#94a3b8",fontSize:12}}>Configurer une base et créer une nouvelle école</p>
+          <h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"var(--me-text)"}}>Espace éditeur</h2>
+          <p style={{margin:0,color:"var(--me-text-3)",fontSize:12}}>Configurer une base et créer une nouvelle école</p>
         </div>
 
         <div style={{background:"#f8fafc",borderRadius:13,padding:16,marginBottom:16}}>
-          <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:4}}>1️⃣ Base de données de l'école</div>
-          <div style={{fontSize:11,color:"#64748b",marginBottom:12,lineHeight:1.5}}>Collez l'<b>URL</b> et la <b>clé anon</b> du projet Supabase de cette école. {SB_CONFIG.custom?<span style={{color:"#059669",fontWeight:700}}>✓ Base personnalisée active.</span>:<span style={{color:"#c2410c",fontWeight:700}}>Base de démonstration active.</span>}</div>
+          <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:4}}>1️⃣ Base de données de l'école</div>
+          <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:12,lineHeight:1.5}}>Collez l'<b>URL</b> et la <b>clé anon</b> du projet Supabase de cette école. {SB_CONFIG.custom?<span style={{color:"#059669",fontWeight:700}}>✓ Base personnalisée active.</span>:<span style={{color:"#c2410c",fontWeight:700}}>Base de démonstration active.</span>}</div>
           <Inp label="URL du projet Supabase" value={cfgUrl} onChange={e=>setCfgUrl(e.target.value)} placeholder="https://xxxx.supabase.co"/>
           <Lbl t="Clé anon (public)"><textarea value={cfgKey} onChange={e=>setCfgKey(e.target.value)} style={{...iSt(),minHeight:54,resize:"vertical",fontFamily:"monospace",fontSize:10}} placeholder="eyJhbGc..."/></Lbl>
           <div style={{display:"flex",gap:8}}>
@@ -4075,14 +4089,14 @@ function EditorHub({onCreate,masterPw}) {
         </div>
 
         <div style={{background:"#f8fafc",borderRadius:13,padding:16,marginBottom:14}}>
-          <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:4}}>2️⃣ Créer l'école</div>
-          <div style={{fontSize:11,color:"#64748b",marginBottom:12,lineHeight:1.5}}>Une fois la bonne base active ci-dessus, créez l'établissement et son compte administrateur.</div>
+          <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:4}}>2️⃣ Créer l'école</div>
+          <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:12,lineHeight:1.5}}>Une fois la bonne base active ci-dessus, créez l'établissement et son compte administrateur.</div>
           <Btn ch="Créer une nouvelle école →" v="primary" onClick={onCreate} full/>
         </div>
 
         <div style={{background:"#f8fafc",borderRadius:13,padding:16,marginBottom:14}}>
-          <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:4}}>3️⃣ Générer un code d'activation</div>
-          <div style={{fontSize:11,color:"#64748b",marginBottom:12,lineHeight:1.5}}>Choisissez la formule, générez un code, puis transmettez-le à l'école. Un code = une école.</div>
+          <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:4}}>3️⃣ Générer un code d'activation</div>
+          <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:12,lineHeight:1.5}}>Choisissez la formule, générez un code, puis transmettez-le à l'école. Un code = une école.</div>
           <div style={{display:"flex",gap:8,alignItems:"flex-end",flexWrap:"wrap"}}>
             <div style={{flex:1,minWidth:170}}><Slt label="Formule" value={genFormule} onChange={e=>setGenFormule(e.target.value)} opts={[{v:"basique",l:"Basique — 1 administrateur"},{v:"standard",l:"Standard — 3 administrateurs"},{v:"premium",l:"Premium — illimité"}]}/></div>
             <Btn ch={genLoading?"Génération…":"Générer un code"} v="success" onClick={genererCode} disabled={genLoading}/>
@@ -4093,11 +4107,11 @@ function EditorHub({onCreate,masterPw}) {
             <Btn ch={copied===lastCode?"✓ Copié":"Copier"} v="ghost" onClick={()=>copier(lastCode)}/>
           </div>}
           {codes.length>0&&<div style={{marginTop:14}}>
-            <div style={{fontSize:11,fontWeight:700,color:"#64748b",marginBottom:6}}>Codes existants ({codes.length})</div>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--me-text-2)",marginBottom:6}}>Codes existants ({codes.length})</div>
             <div style={{maxHeight:170,overflowY:"auto",border:"1px solid #eef2f7",borderRadius:9}}>
               {codes.map(c=>(<div key={c.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,padding:"8px 11px",borderBottom:"1px solid #f1f5f9",fontSize:12}}>
-                <span style={{fontWeight:800,color:"#0f172a",letterSpacing:1}}>{c.code}</span>
-                <span style={{fontSize:10,fontWeight:700,color:"#475569",textTransform:"capitalize"}}>{FORMULES[c.formule]?.l||c.formule}</span>
+                <span style={{fontWeight:800,color:"var(--me-text)",letterSpacing:1}}>{c.code}</span>
+                <span style={{fontSize:10,fontWeight:700,color:"var(--me-text-2)",textTransform:"capitalize"}}>{FORMULES[c.formule]?.l||c.formule}</span>
                 <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:20,background:c.statut==="libre"?"#dcfce7":"#fee2e2",color:c.statut==="libre"?"#166534":"#991b1b"}}>{c.statut==="libre"?"Libre":"Utilisé"}</span>
                 <a href="#" onClick={e=>{e.preventDefault();copier(c.code);}} style={{fontSize:11,color:"#1a56db",textDecoration:"none",fontWeight:700}}>{copied===c.code?"✓":"Copier"}</a>
               </div>))}
@@ -4105,7 +4119,7 @@ function EditorHub({onCreate,masterPw}) {
           </div>}
         </div>
 
-        <div style={{textAlign:"center"}}><a href="#" onClick={e=>{e.preventDefault();try{location.hash="";}catch(_){};location.reload();}} style={{color:"#94a3b8",fontSize:11,textDecoration:"none"}}>← Retour à la connexion</a></div>
+        <div style={{textAlign:"center"}}><a href="#" onClick={e=>{e.preventDefault();try{location.hash="";}catch(_){};location.reload();}} style={{color:"var(--me-text-3)",fontSize:11,textDecoration:"none"}}>← Retour à la connexion</a></div>
       </div>
     </div>
   );
@@ -4282,7 +4296,7 @@ function App() {
     presences:<Presences data={scopedData} ops={ops} etab={etab||{}}/>,
     messagerie:<Messagerie data={data} ops={ops} currentUser={currentUser}/>,
     utilisateurs:<Utilisateurs data={data} ops={ops} currentUser={currentUser} etab={etab||{}}/>,
-    parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser}/>,
+    parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser} theme={theme} setTheme={setTheme} onLogout={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>,
   };
 
   return(
@@ -4326,16 +4340,7 @@ function App() {
             <button onClick={()=>setUiZoom(z=>Math.min(1.5,Math.round((z+0.05)*100)/100))} title="A+" style={{background:"rgba(255,255,255,0.1)",color:"#fff",border:"none",borderRadius:8,width:30,height:30,cursor:"pointer",fontSize:15,fontWeight:800,lineHeight:1}}>A+</button>
           </div>
           <div style={{display:"flex",justifyContent:"center",marginBottom:9}}><LangToggle lang={lang} setLang={setLang} dark/></div>
-          <div style={{fontSize:9,color:"rgba(255,255,255,0.37)",textAlign:"center",marginBottom:5,textTransform:"uppercase",letterSpacing:.5}}>{t("ui_apparence")}</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:9}}>
-            {Object.entries(THEMES).map(([id,th])=>(
-              <button key={id} onClick={()=>setTheme(id)} title={th.l} style={{flex:"1 1 30%",minWidth:0,display:"flex",alignItems:"center",gap:5,padding:"6px 7px",borderRadius:8,cursor:"pointer",border:theme===id?"2px solid #fff":"1.5px solid rgba(255,255,255,0.14)",background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.85)",fontSize:9.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-                <span style={{width:12,height:12,borderRadius:4,background:th.sw,flexShrink:0,border:"1px solid rgba(0,0,0,0.2)"}}/>{th.l}
-              </button>
-            ))}
-          </div>
           <button className="me-btn" onClick={async()=>{if(notifEnabled){try{localStorage.setItem("monecole_notifs","0");}catch(_){}setNotifEnabled(false);}else{const ok=await askNotif();setNotifEnabled(ok);if(ok)notify(t("notif_actif_titre"),t("notif_actif_corps"),"monecole-test");else alert(t("notif_refus"));}}} style={{width:"100%",background:notifEnabled?"rgba(16,185,129,0.16)":"rgba(255,255,255,0.08)",color:notifEnabled?"#6ee7b7":"rgba(255,255,255,0.72)",border:notifEnabled?"1px solid rgba(16,185,129,0.25)":"1px solid rgba(255,255,255,0.12)",borderRadius:9,padding:"8px",cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",marginBottom:8}}>{notifEnabled?"🔔 "+t("notif_on"):"🔕 "+t("notif_off")}</button>
-          <button className="me-btn" onClick={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}} style={{width:"100%",background:"rgba(239,68,68,0.13)",color:"#fca5a5",border:"1px solid rgba(239,68,68,0.17)",borderRadius:9,padding:"8px",cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>🚪 {t("logout")}</button>
         </div>
       </div>
       <div className="me-main" style={{flex:1,overflowY:"auto",zoom:uiZoom,padding:isMobile?"58px 13px 18px":"24px 26px"}}><div key={safePage} className="me-page">{pages[safePage]}</div></div>
