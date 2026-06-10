@@ -215,7 +215,7 @@ const I18N = {
   fr:{
     login_sub:"Connectez-vous pour continuer", login_id:"Identifiant", login_pw:"Mot de passe",
     login_btn:"Se connecter →", login_btn_loading:"Connexion...", login_err:"Identifiant ou mot de passe incorrect.",
-    logout:"Déconnexion", reconnect:"Reconnexion…", ui_taille:"Taille du texte", ui_langue:"Langue", ui_apparence:"Affichage", ui_clair:"Clair", ui_sombre:"Sombre", st_theme_aide:"Choisissez l'apparence de l'application. Les thèmes clairs gardent un texte foncé bien lisible.",
+    logout:"Déconnexion", reconnect:"Reconnexion…", ui_taille:"Taille du texte", ui_langue:"Langue", ui_apparence:"Affichage", ui_clair:"Clair", ui_sombre:"Sombre", st_theme_aide:"Choisissez l'apparence de l'application. Les thèmes clairs gardent un texte foncé bien lisible.", st_prefs:"Préférences", st_compte:"Compte", st_notif_titre:"Notifications", pref_petit:"Petit", pref_grand:"Grand",
     notif_on:"Notifications activées", notif_off:"Activer les notifications", notif_refus:"Les notifications ont été refusées. Autorisez-les dans les réglages du navigateur pour ce site.",
     notif_actif_titre:"MonEcole", notif_actif_corps:"Notifications activées ✓", notif_msg_titre:"Nouveau message", notif_msg_plus:"nouveaux messages",
     notif_jour_titre:"Vos cours aujourd'hui", notif_jour_cours:"cours prévu", notif_jour_cours_p:"cours prévus", notif_cours_titre:"Cours dans 15 min",
@@ -398,7 +398,7 @@ const I18N = {
   ar:{
     login_sub:"سجّل الدخول للمتابعة", login_id:"اسم المستخدم", login_pw:"كلمة المرور",
     login_btn:"تسجيل الدخول ←", login_btn_loading:"جارٍ الدخول...", login_err:"اسم المستخدم أو كلمة المرور غير صحيحة.",
-    logout:"تسجيل الخروج", reconnect:"إعادة الاتصال…", ui_taille:"حجم النص", ui_langue:"اللغة", ui_apparence:"العرض", ui_clair:"فاتح", ui_sombre:"داكن", st_theme_aide:"اختر مظهر التطبيق. السمات الفاتحة تحافظ على نص داكن واضح القراءة.",
+    logout:"تسجيل الخروج", reconnect:"إعادة الاتصال…", ui_taille:"حجم النص", ui_langue:"اللغة", ui_apparence:"العرض", ui_clair:"فاتح", ui_sombre:"داكن", st_theme_aide:"اختر مظهر التطبيق. السمات الفاتحة تحافظ على نص داكن واضح القراءة.", st_prefs:"التفضيلات", st_compte:"الحساب", st_notif_titre:"الإشعارات", pref_petit:"صغير", pref_grand:"كبير",
     notif_on:"الإشعارات مفعّلة", notif_off:"تفعيل الإشعارات", notif_refus:"تم رفض الإشعارات. فعّلها من إعدادات المتصفح لهذا الموقع.",
     notif_actif_titre:"مدرستي", notif_actif_corps:"تم تفعيل الإشعارات ✓", notif_msg_titre:"رسالة جديدة", notif_msg_plus:"رسائل جديدة",
     notif_jour_titre:"حصصك اليوم", notif_jour_cours:"حصة", notif_jour_cours_p:"حصص", notif_cours_titre:"حصة بعد 15 دقيقة",
@@ -3554,7 +3554,8 @@ function Depenses({data,ops,etab}) {
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
 // ── PARAMÈTRES ÉTABLISSEMENT ──────────────────────────────────────────────────
-function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,onLogout}) {
+function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,uiZoom,setUiZoom,lang,setLang,notifEnabled,setNotifEnabled,onLogout}) {
+  const toggleNotif=async()=>{if(notifEnabled){try{localStorage.setItem("monecole_notifs","0");}catch(_){}setNotifEnabled(false);}else{const ok=await askNotif();setNotifEnabled(ok);if(ok)notify(t("notif_actif_titre"),t("notif_actif_corps"),"monecole-test");else alert(t("notif_refus"));}};
   const [form,setForm]=useState({
     nom:etab.nom||"",nom_ar:etab.nom_ar||"",devise_txt:etab.devise_txt||"",annee:etab.annee||"",devise:etab.devise||"GNF",
     systeme:etab.systeme||"trimestre",periodes:Array.isArray(etab.periodes)?etab.periodes:null,adresse:etab.adresse||"",telephone:etab.telephone||"",email:etab.email||"",
@@ -3957,19 +3958,52 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,onLog
         </div>}
       </Card>}
       <Card s={{marginTop:18}}>
-        <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)",marginBottom:4,fontFamily:"'Sora',sans-serif"}}>🎨 {t("ui_apparence")}</div>
-        <div style={{fontSize:12.5,color:"var(--me-text-2)",marginBottom:14}}>{t("st_theme_aide")}</div>
-        <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
-          {Object.entries(THEMES).map(([id,th])=>(
-            <button key={id} onClick={()=>setTheme(id)} style={{display:"flex",alignItems:"center",gap:9,padding:"10px 14px",borderRadius:12,cursor:"pointer",border:theme===id?"2px solid #1a56db":"1.5px solid var(--me-border-2)",background:theme===id?"rgba(26,86,219,0.07)":"var(--me-surface)",color:"var(--me-text)",fontSize:13,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-              <span style={{width:22,height:22,borderRadius:7,background:th.v.bg,flexShrink:0,border:"1px solid var(--me-border-2)",boxShadow:"inset 0 0 0 3px "+th.v.surface}}/>{th.l}{theme===id&&<span style={{color:"#1a56db",fontSize:14}}>✓</span>}
-            </button>
-          ))}
+        <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)",marginBottom:16,fontFamily:"'Sora',sans-serif"}}>⚙️ {t("st_prefs")}</div>
+
+        <Lbl t={t("ui_taille")}>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <span style={{fontSize:12,color:"var(--me-text-2)",fontWeight:700}}>{t("pref_petit")}</span>
+            <input type="range" min={85} max={150} step={5} value={Math.round(uiZoom*100)} onChange={e=>setUiZoom(parseInt(e.target.value)/100)} style={{flex:1,accentColor:"#1a56db",height:6}}/>
+            <span style={{fontSize:15,color:"var(--me-text-2)",fontWeight:700}}>{t("pref_grand")}</span>
+            <span style={{minWidth:44,textAlign:"right",fontSize:13,fontWeight:800,color:"var(--me-text)"}}>{Math.round(uiZoom*100)}%</span>
+          </div>
+        </Lbl>
+
+        <Lbl t={t("ui_langue")}>
+          <div style={{display:"flex",gap:10}}>
+            {[{v:"fr",f:"🇫🇷",l:"Français"},{v:"ar",f:"🇸🇦",l:"العربية"}].map(o=>(
+              <button key={o.v} onClick={()=>setLang(o.v)} style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"10px",borderRadius:11,cursor:"pointer",border:lang===o.v?"2px solid #1a56db":"1.5px solid var(--me-border-2)",background:lang===o.v?"rgba(26,86,219,0.07)":"var(--me-surface)",color:"var(--me-text)",fontSize:14,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+                <span style={{fontSize:20}}>{o.f}</span>{o.l}
+              </button>
+            ))}
+          </div>
+        </Lbl>
+
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,padding:"6px 0 14px"}}>
+          <div><div style={{fontSize:13,fontWeight:700,color:"var(--me-text)"}}>🔔 {t("st_notif_titre")}</div><div style={{fontSize:11.5,color:"var(--me-text-2)",marginTop:2}}>{notifEnabled?t("notif_on"):t("notif_off")}</div></div>
+          <button onClick={toggleNotif} role="switch" aria-checked={notifEnabled} style={{width:52,height:30,borderRadius:15,border:"none",cursor:"pointer",background:notifEnabled?"#34c759":"#cbd5e1",position:"relative",transition:"background .2s",flexShrink:0,padding:0}}>
+            <span style={{position:"absolute",top:3,left:notifEnabled?25:3,width:24,height:24,borderRadius:"50%",background:"#fff",boxShadow:"0 1px 3px rgba(0,0,0,.3)",transition:"left .2s"}}/>
+          </button>
+        </div>
+
+        <Lbl t={t("ui_apparence")} mb={0}>
+          <div style={{fontSize:12,color:"var(--me-text-2)",marginBottom:11}}>{t("st_theme_aide")}</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
+            {Object.entries(THEMES).map(([id,th])=>(
+              <button key={id} onClick={()=>setTheme(id)} style={{display:"flex",alignItems:"center",gap:9,padding:"10px 14px",borderRadius:12,cursor:"pointer",border:theme===id?"2px solid #1a56db":"1.5px solid var(--me-border-2)",background:theme===id?"rgba(26,86,219,0.07)":"var(--me-surface)",color:"var(--me-text)",fontSize:13,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+                <span style={{width:22,height:22,borderRadius:7,background:th.v.bg,flexShrink:0,border:"1px solid var(--me-border-2)",boxShadow:"inset 0 0 0 3px "+th.v.surface}}/>{th.l}{theme===id&&<span style={{color:"#1a56db",fontSize:14}}>✓</span>}
+              </button>
+            ))}
+          </div>
+        </Lbl>
+      </Card>
+
+      <Card s={{marginTop:18}}>
+        <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)",marginBottom:14,fontFamily:"'Sora',sans-serif"}}>👤 {t("st_compte")}</div>
+        <div style={{display:"flex",justifyContent:"flex-end"}}>
+          <Btn ch={"🚪 "+t("logout")} v="danger" onClick={onLogout}/>
         </div>
       </Card>
-      <div style={{marginTop:18,display:"flex",justifyContent:"flex-end"}}>
-        <Btn ch={"🚪 "+t("logout")} v="danger" onClick={onLogout}/>
-      </div>
     </div>
   );
 }
@@ -4299,7 +4333,7 @@ function App() {
     presences:<Presences data={scopedData} ops={ops} etab={etab||{}}/>,
     messagerie:<Messagerie data={data} ops={ops} currentUser={currentUser}/>,
     utilisateurs:<Utilisateurs data={data} ops={ops} currentUser={currentUser} etab={etab||{}}/>,
-    parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser} theme={theme} setTheme={setTheme} onLogout={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>,
+    parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser} theme={theme} setTheme={setTheme} uiZoom={uiZoom} setUiZoom={setUiZoom} lang={lang} setLang={setLang} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} onLogout={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>,
   };
 
   return(
@@ -4348,16 +4382,6 @@ function App() {
             </>;
           })()}
         </nav>
-        <div style={{padding:"10px 6px",borderTop:"1px solid rgba(255,255,255,0.07)",flexShrink:0}}>
-          <div style={{fontSize:9,color:"rgba(255,255,255,0.37)",textAlign:"center",marginBottom:5,textTransform:"uppercase",letterSpacing:.5}}>{t("ui_taille")}</div>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,marginBottom:9}}>
-            <button onClick={()=>setUiZoom(z=>Math.max(0.85,Math.round((z-0.05)*100)/100))} title="A-" style={{background:"rgba(255,255,255,0.1)",color:"#fff",border:"none",borderRadius:8,width:30,height:30,cursor:"pointer",fontSize:12,fontWeight:800,lineHeight:1}}>A−</button>
-            <span style={{fontSize:11,color:"rgba(255,255,255,0.7)",minWidth:42,textAlign:"center",fontWeight:700}}>{Math.round(uiZoom*100)}%</span>
-            <button onClick={()=>setUiZoom(z=>Math.min(1.5,Math.round((z+0.05)*100)/100))} title="A+" style={{background:"rgba(255,255,255,0.1)",color:"#fff",border:"none",borderRadius:8,width:30,height:30,cursor:"pointer",fontSize:15,fontWeight:800,lineHeight:1}}>A+</button>
-          </div>
-          <div style={{display:"flex",justifyContent:"center",marginBottom:9}}><LangToggle lang={lang} setLang={setLang} dark/></div>
-          <button className="me-btn" onClick={async()=>{if(notifEnabled){try{localStorage.setItem("monecole_notifs","0");}catch(_){}setNotifEnabled(false);}else{const ok=await askNotif();setNotifEnabled(ok);if(ok)notify(t("notif_actif_titre"),t("notif_actif_corps"),"monecole-test");else alert(t("notif_refus"));}}} style={{width:"100%",background:notifEnabled?"rgba(16,185,129,0.16)":"rgba(255,255,255,0.08)",color:notifEnabled?"#6ee7b7":"rgba(255,255,255,0.72)",border:notifEnabled?"1px solid rgba(16,185,129,0.25)":"1px solid rgba(255,255,255,0.12)",borderRadius:9,padding:"8px",cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",marginBottom:8}}>{notifEnabled?"🔔 "+t("notif_on"):"🔕 "+t("notif_off")}</button>
-        </div>
       </div>
       <div className="me-main" style={{flex:1,overflowY:"auto",zoom:uiZoom,padding:isMobile?"58px 13px 18px":"24px 26px"}}><div key={safePage} className="me-page">{pages[safePage]}</div></div>
       {allowed.includes("messagerie")&&safePage!=="messagerie"&&(()=>{
