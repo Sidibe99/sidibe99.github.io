@@ -220,6 +220,7 @@ const I18N = {
     notif_actif_titre:"MonEcole", notif_actif_corps:"Notifications activées ✓", notif_msg_titre:"Nouveau message", notif_msg_plus:"nouveaux messages",
     notif_jour_titre:"Vos cours aujourd'hui", notif_jour_cours:"cours prévu", notif_jour_cours_p:"cours prévus", notif_cours_titre:"Cours dans 15 min",
     nav_dashboard:"Tableau de bord", nav_classes:"Classes", nav_matieres:"Matières", nav_eleves:"Élèves",
+    calc_titre:"Calculatrice",
     nav_professeurs:"Professeurs", nav_emploi:"Emploi du temps", nav_notes:"Saisie des notes", nav_bulletins:"Bulletins",
     nav_fiche_notes:"Fiche vierge", nav_paiements:"Paiements", nav_presences:"Présences", nav_messagerie:"Messagerie",
     nav_depenses:"Dépenses",
@@ -401,6 +402,7 @@ const I18N = {
     notif_actif_titre:"مدرستي", notif_actif_corps:"تم تفعيل الإشعارات ✓", notif_msg_titre:"رسالة جديدة", notif_msg_plus:"رسائل جديدة",
     notif_jour_titre:"حصصك اليوم", notif_jour_cours:"حصة", notif_jour_cours_p:"حصص", notif_cours_titre:"حصة بعد 15 دقيقة",
     nav_dashboard:"لوحة التحكم", nav_classes:"الفصول", nav_matieres:"المواد", nav_eleves:"التلاميذ",
+    calc_titre:"آلة حاسبة",
     nav_professeurs:"المعلمون", nav_emploi:"الجدول الزمني", nav_notes:"إدخال الدرجات", nav_bulletins:"كشوف الدرجات",
     nav_fiche_notes:"ورقة فارغة", nav_paiements:"المدفوعات", nav_presences:"الحضور", nav_messagerie:"الرسائل",
     nav_depenses:"المصاريف",
@@ -1262,8 +1264,44 @@ function useSupabaseData(etablissementId) {
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function Calculatrice({onClose}){
+  const [expr,setExpr]=useState("");
+  const compute=(s)=>{
+    const t2=s.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-");
+    const tokens=t2.match(/(\d+\.?\d*)|[+\-*/]/g);
+    if(!tokens)return "";
+    let nums=[parseFloat(tokens[0])];let opsArr=[];
+    for(let i=1;i<tokens.length;i+=2){if(tokens[i+1]==null)break;opsArr.push(tokens[i]);nums.push(parseFloat(tokens[i+1]));}
+    if(nums.some(n=>isNaN(n)))return "";
+    for(let i=0;i<opsArr.length;){if(opsArr[i]==="*"||opsArr[i]==="/"){const r=opsArr[i]==="*"?nums[i]*nums[i+1]:(nums[i+1]===0?NaN:nums[i]/nums[i+1]);nums.splice(i,2,r);opsArr.splice(i,1);}else i++;}
+    let res=nums[0];
+    for(let i=0;i<opsArr.length;i++){res=opsArr[i]==="+"?res+nums[i+1]:res-nums[i+1];}
+    if(isNaN(res)||!isFinite(res))return "Err";
+    return String(Math.round(res*1e8)/1e8);
+  };
+  const press=(k)=>{
+    if(k==="C"){setExpr("");return;}
+    if(k==="⌫"){setExpr(e=>e.slice(0,-1));return;}
+    if(k==="="){setExpr(e=>{const r=compute(e);return r===""?e:r;});return;}
+    setExpr(e=>e+k);
+  };
+  const keys=["C","⌫","÷","×","7","8","9","−","4","5","6","+","1","2","3","=","0","."];
+  const isOp=k=>["÷","×","−","+"].includes(k);
+  const btnStyle=k=>({padding:"14px 0",borderRadius:11,border:"none",cursor:"pointer",fontSize:18,fontWeight:800,fontFamily:"'Sora',sans-serif",background:k==="="?"#1a56db":k==="C"?"#fee2e2":k==="⌫"?"#fef3c7":isOp(k)?"#e0e7ff":"#f1f5f9",color:k==="="?"#fff":k==="C"?"#dc2626":isOp(k)?"#1a56db":"#0f172a"});
+  return(
+    <Modal title={t("calc_titre")+" 🧮"} onClose={onClose} w={320}>
+      <div style={{background:"#0f172a",borderRadius:13,padding:"16px 18px",marginBottom:14,minHeight:54,textAlign:"right",overflowWrap:"anywhere"}}>
+        <div style={{color:"#fff",fontSize:26,fontWeight:800,fontFamily:"'Sora',sans-serif",lineHeight:1.2,minHeight:31}}>{expr||"0"}</div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+        {keys.map((k,i)=><button key={i} onClick={()=>press(k)} style={{...btnStyle(k),gridColumn:(k==="0"||k===".")?"span 2":"auto"}}>{k}</button>)}
+      </div>
+    </Modal>
+  );
+}
 function Dashboard({data,etab,setPage,currentUser}) {
   const [now,setNow]=useState(new Date());
+  const [showCalc,setShowCalc]=useState(false);
   useEffect(()=>{const t=setInterval(()=>setNow(new Date()),1000);return ()=>clearInterval(t);},[]);
   const JOURS_FR=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
   const MOIS_FR=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
@@ -1288,9 +1326,12 @@ function Dashboard({data,etab,setPage,currentUser}) {
   const dashHeader=(
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:18,flexWrap:"wrap",gap:12}}>
       <div><h2 style={{margin:0,fontSize:22,fontWeight:800,color:"#0f172a",fontFamily:"'Sora',sans-serif",letterSpacing:-0.5}}>{t("nav_dashboard")} 📊</h2><p style={{margin:"5px 0 0",color:"#64748b",fontSize:13}}>{etab.annee||""} · {etab.systeme==="semestre"?t("sys_sem"):t("sys_trim")} · {t("db_realtime")}</p></div>
-      <div style={{background:"linear-gradient(135deg,#0f172a,#1a56db)",borderRadius:15,padding:"12px 20px",color:"#fff",textAlign:"right",boxShadow:"0 8px 22px -8px rgba(26,86,219,.6)"}}>
-        <div style={{fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.75)",textTransform:"capitalize"}}>{dateStr}</div>
-        <div style={{fontSize:26,fontWeight:900,fontFamily:"'Sora',sans-serif",letterSpacing:1,lineHeight:1.1}}>{heureStr}</div>
+      <div style={{display:"flex",alignItems:"center",gap:10}}>
+        <button onClick={()=>setShowCalc(true)} title={t("calc_titre")} style={{background:"#fff",border:"1.5px solid #e2e8f0",borderRadius:13,width:46,height:46,fontSize:21,cursor:"pointer",boxShadow:"0 4px 12px -7px rgba(0,0,0,.25)",lineHeight:1}}>🧮</button>
+        <div style={{background:"linear-gradient(135deg,#0f172a,#1a56db)",borderRadius:15,padding:"12px 20px",color:"#fff",textAlign:"right",boxShadow:"0 8px 22px -8px rgba(26,86,219,.6)"}}>
+          <div style={{fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.75)",textTransform:"capitalize"}}>{dateStr}</div>
+          <div style={{fontSize:26,fontWeight:900,fontFamily:"'Sora',sans-serif",letterSpacing:1,lineHeight:1.1}}>{heureStr}</div>
+        </div>
       </div>
     </div>
   );
@@ -1327,6 +1368,7 @@ function Dashboard({data,etab,setPage,currentUser}) {
   );
   if(data.eleves.length===0) return(
     <div>
+      {showCalc&&<Calculatrice onClose={()=>setShowCalc(false)}/>}
       {dashHeader}
       {scheduleCard}
       {tuilesAcces}
@@ -1348,6 +1390,7 @@ function Dashboard({data,etab,setPage,currentUser}) {
   const cycleInfo=cycleInfoAll.filter(ci=>cyclesPresents.has(ci.cyc));
   return(
     <div>
+      {showCalc&&<Calculatrice onClose={()=>setShowCalc(false)}/>}
       {dashHeader}
       {scheduleCard}
       {/* Répartition garçons / filles */}
@@ -2107,12 +2150,6 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
           <Card>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:11}}>
               <div style={{fontWeight:700,fontSize:13,color:"#0f172a"}}>{t("stat_tableau")} — {txt(classe.nom,classe.nom_ar)}</div>
-              <div style={{display:"flex",gap:7,flexWrap:"wrap",alignItems:"center"}}>
-                <select value={fnPeriode} onChange={e=>setFnPeriode(e.target.value)} style={{padding:"6px 10px",borderRadius:8,border:"1.5px solid #e2e8f0",fontSize:12,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-                  {fnPeriodes.map(p=><option key={p} value={p}>{periodeLabel(etab,p)}</option>)}
-                </select>
-                <Btn ch={t("fn_stat_recalc")} v="ghost" s={{padding:"6px 11px",fontSize:11.5}} onClick={()=>setStatRows(computeStatRows(classeId,fnPeriode))}/>
-              </div>
             </div>
             <div style={{display:"flex",alignItems:"center",gap:14,flexWrap:"wrap",marginBottom:11}}>
               <label style={{display:"flex",alignItems:"center",gap:8,fontSize:12,fontWeight:600,color:"#334155",cursor:"pointer"}}>
@@ -2322,6 +2359,8 @@ function Notes({data,ops,etab,currentUser}) {
   const [dirty,setDirty]=useState(false);
   const [search,setSearch]=useState("");
   const [statBase,setStatBase]=useState("matiere");
+  const [statPos,setStatPos]=useState("left");
+  const [statTaille,setStatTaille]=useState("m");
   const inputsRef=useRef([]);
   const [impNotesOpen,setImpNotesOpen]=useState(false);const [impNotesData,setImpNotesData]=useState(null);const [impNotesLoading,setImpNotesLoading]=useState(false);const [impNotesErr,setImpNotesErr]=useState("");const impNotesRef=useRef(null);
 
@@ -2338,6 +2377,25 @@ function Notes({data,ops,etab,currentUser}) {
 
   const matiere=data.matieres.find(m=>m.id===parseInt(matiereId));
   const classeElevesAll=data.eleves.filter(e=>e.classe_id===parseInt(classeId));
+  const computeNoteStat=(base)=>{
+    const isF=e=>(e.genre||"").toLowerCase().startsWith("f");
+    const seuil=bareme/2;
+    const valOf = base==="generale"
+      ? (e=>{const m=parseFloat(calcMoy(e.notes||{},data.matieres,periode));return isNaN(m)?null:m;})
+      : (e=>{const v=localNotes[e.id];return (v===""||v==null||isNaN(parseFloat(v)))?null:parseFloat(v);});
+    const insc=classeElevesAll, inscF=insc.filter(isF);
+    const comp=insc.filter(e=>valOf(e)!=null), compF=comp.filter(isF);
+    const moy=comp.filter(e=>valOf(e)>=seuil), moyF=moy.filter(isF);
+    const pct=(a,b)=>b?Math.round(a/b*100)+"%":"0%";
+    return [
+      {label:t("stat_inscrit"),total:String(insc.length),filles:String(inscF.length)},
+      {label:t("stat_ont_compose"),total:String(comp.length),filles:String(compF.length)},
+      {label:t("stat_pas_compose"),total:String(insc.length-comp.length),filles:String(inscF.length-compF.length)},
+      {label:t("stat_ont_moyenne"),total:String(moy.length),filles:String(moyF.length)},
+      {label:t("stat_pas_moyenne"),total:String(comp.length-moy.length),filles:String(compF.length-moyF.length)},
+      {label:t("stat_pourcentage"),total:pct(moy.length,comp.length),filles:pct(moyF.length,compF.length)},
+    ];
+  };
   const classeEleves=classeElevesAll.filter(e=>`${e.prenom} ${e.nom} ${e.matricule}`.toLowerCase().includes(search.toLowerCase()));
 
   useEffect(()=>{const n={};classeElevesAll.forEach(e=>{n[e.id]=e.notes?.[periode]?.[matiereId]??""});setLocalNotes(n);setDirty(false);},[periode,classeId,matiereId,data.eleves]);
@@ -2386,9 +2444,21 @@ function Notes({data,ops,etab,currentUser}) {
   const printFiche=()=>{
     const cl=classeSel;
     const rows=classeElevesAll.map((e,i)=>{const note=localNotes[e.id];const app=note!==""&&note!=null?MENTION(note,bareme):{t:"Non noté",c:"#94a3b8",bg:"#f8fafc"};return`<tr><td>${i+1}</td><td><b>${e.prenom} ${e.nom}</b></td><td>${e.matricule}</td><td style="text-align:center;font-weight:900;font-size:16px;color:${app.c}">${note!==""&&note!=null?note:"—"}</td><td>${app.t}</td></tr>`;}).join("");
+    const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    const SZ={p:{fs:9.5,pad:"3px 9px"},m:{fs:11,pad:"5px 12px"},g:{fs:13,pad:"8px 16px"}}[statTaille]||{fs:11,pad:"5px 12px"};
+    const sr=computeNoteStat(statBase);
+    const statHTML=(sr&&sr.length)?`<div style="text-align:${statPos}"><table style="border-collapse:collapse;margin-top:22px;display:inline-block;text-align:left">
+      <thead><tr>
+        <th style="border:1px solid #94a3b8;padding:${SZ.pad};background:#1a56db;color:#fff;font-size:${SZ.fs}px;text-align:left">${t("stat_tableau").replace("📊 ","")}</th>
+        <th style="border:1px solid #94a3b8;padding:${SZ.pad};background:#1a56db;color:#fff;font-size:${SZ.fs}px;text-align:center">${t("stat_total")}</th>
+        <th style="border:1px solid #94a3b8;padding:${SZ.pad};background:#1a56db;color:#fff;font-size:${SZ.fs}px;text-align:center">${t("stat_filles")}</th>
+      </tr></thead>
+      <tbody>${sr.map(r=>`<tr><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;font-weight:600">${esc(r.label)}</td><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;text-align:center">${esc(r.total)}</td><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;text-align:center">${esc(r.filles)}</td></tr>`).join("")}</tbody>
+    </table></div>`:"";
     printHTML(`${officialHeader(etab,{classe:cl?.nom,docTitle:`Fiche de notes — ${matiere?.nom}`})}
     <p style="font-size:12px;color:#475569">Période : <b>${periode}</b> · Coefficient : <b>${matiere?.coefficient}</b> · Enseignant : <b>${matiere?.enseignant||"—"}</b></p>
     <table><tr><th>N°</th><th>Élève</th><th>Matricule</th><th>Note /${bareme}</th><th>Appréciation</th></tr>${rows}</table>
+    ${statHTML}
     <div class="sign"><span>Le/La titulaire : ____________________</span><span>Date : ____________</span></div>`,`Fiche Notes - ${matiere?.nom}`,{etab});
   };
 
@@ -2446,26 +2516,11 @@ function Notes({data,ops,etab,currentUser}) {
             </table>
             {classeEleves.length===0&&<div style={{padding:18,textAlign:"center",color:"#94a3b8",fontSize:12}}>{t("no_no_result")}</div>}
           </Card>
-          {/* Tableau statistique (matière ou moyenne générale, en direct) */}
+          {/* Tableau statistique (mise à jour automatique) · imprimé au bas de la fiche */}
           {(()=>{
-            const isF=e=>(e.genre||"").toLowerCase().startsWith("f");
-            const seuil=bareme/2;
-            const valOf = statBase==="generale"
-              ? (e=>{const m=parseFloat(calcMoy(e.notes||{},data.matieres,periode));return isNaN(m)?null:m;})
-              : (e=>{const v=localNotes[e.id];return (v===""||v==null||isNaN(parseFloat(v)))?null:parseFloat(v);});
-            const insc=classeElevesAll, inscF=insc.filter(isF);
-            const comp=insc.filter(e=>valOf(e)!=null), compF=comp.filter(isF);
-            const moy=comp.filter(e=>valOf(e)>=seuil), moyF=moy.filter(isF);
-            const pct=(a,b)=>b?Math.round(a/b*100):0;
-            const rows=[
-              [t("stat_inscrit"), insc.length, inscF.length],
-              [t("stat_ont_compose"), comp.length, compF.length],
-              [t("stat_pas_compose"), insc.length-comp.length, inscF.length-compF.length],
-              [t("stat_ont_moyenne"), moy.length, moyF.length],
-              [t("stat_pas_moyenne"), comp.length-moy.length, compF.length-moyF.length],
-              [t("stat_pourcentage"), pct(moy.length,comp.length)+"%", pct(moyF.length,compF.length)+"%"],
-            ];
             const Seg=({v,lbl})=><button onClick={()=>setStatBase(v)} style={{padding:"5px 11px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",background:statBase===v?"#1a56db":"#f1f5f9",color:statBase===v?"#fff":"#64748b"}}>{lbl}</button>;
+            const selSt={padding:"5px 9px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"};
+            const sr=computeNoteStat(statBase);
             return(
               <Card s={{marginTop:14}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:3}}>
@@ -2473,8 +2528,18 @@ function Notes({data,ops,etab,currentUser}) {
                   <div style={{display:"flex",gap:5}}><Seg v="matiere" lbl={t("stat_mode_matiere")}/><Seg v="generale" lbl={t("stat_mode_generale")}/></div>
                 </div>
                 <div style={{fontSize:11,color:"#94a3b8",marginBottom:11}}>{statBase==="generale"?periodeLabel(etab,periode):`${txt(matiere?.nom,matiere?.nom_ar)} — ${periodeLabel(etab,periode)}`}</div>
-                <Tbl cols={[t("stat_tableau"),t("stat_total"),t("stat_filles")]} empty={null} rows={rows.map((r,i)=>(
-                  <TR key={i}><TD bold>{r[0]}</TD><TD>{r[1]}</TD><TD>{r[2]}</TD></TR>
+                <div style={{display:"flex",gap:7,flexWrap:"wrap",alignItems:"center",marginBottom:11}}>
+                  <span style={{fontSize:11,fontWeight:700,color:"#94a3b8"}}>{t("fn_stat_pos")}</span>
+                  <select value={statPos} onChange={e=>setStatPos(e.target.value)} style={selSt}>
+                    <option value="left">{t("fn_align_g")}</option><option value="center">{t("fn_align_c")}</option><option value="right">{t("fn_align_d")}</option>
+                  </select>
+                  <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",marginLeft:4}}>{t("fn_stat_taille")}</span>
+                  <select value={statTaille} onChange={e=>setStatTaille(e.target.value)} style={selSt}>
+                    <option value="p">{t("fn_taille_p")}</option><option value="m">{t("fn_taille_m")}</option><option value="g">{t("fn_taille_g")}</option>
+                  </select>
+                </div>
+                <Tbl cols={[t("stat_tableau"),t("stat_total"),t("stat_filles")]} empty={null} rows={sr.map((r,i)=>(
+                  <TR key={i}><TD bold>{r.label}</TD><TD>{r.total}</TD><TD>{r.filles}</TD></TR>
                 ))}/>
               </Card>
             );
