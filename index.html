@@ -220,6 +220,7 @@ const I18N = {
     notif_actif_titre:"MonEcole", notif_actif_corps:"Notifications activées ✓", notif_msg_titre:"Nouveau message", notif_msg_plus:"nouveaux messages",
     notif_jour_titre:"Vos cours aujourd'hui", notif_jour_cours:"cours prévu", notif_jour_cours_p:"cours prévus", notif_cours_titre:"Cours dans 15 min",
     nav_dashboard:"Tableau de bord", nav_classes:"Classes", nav_matieres:"Matières", nav_eleves:"Élèves",
+    grp_scolarite:"Scolarité", grp_finances:"Finances", grp_admin:"Administration",
     calc_titre:"Calculatrice",
     nav_professeurs:"Professeurs", nav_emploi:"Emploi du temps", nav_notes:"Saisie des notes", nav_bulletins:"Bulletins",
     nav_fiche_notes:"Fiche vierge", nav_paiements:"Paiements", nav_presences:"Présences", nav_messagerie:"Messagerie",
@@ -402,6 +403,7 @@ const I18N = {
     notif_actif_titre:"مدرستي", notif_actif_corps:"تم تفعيل الإشعارات ✓", notif_msg_titre:"رسالة جديدة", notif_msg_plus:"رسائل جديدة",
     notif_jour_titre:"حصصك اليوم", notif_jour_cours:"حصة", notif_jour_cours_p:"حصص", notif_cours_titre:"حصة بعد 15 دقيقة",
     nav_dashboard:"لوحة التحكم", nav_classes:"الفصول", nav_matieres:"المواد", nav_eleves:"التلاميذ",
+    grp_scolarite:"الدراسة", grp_finances:"المالية", grp_admin:"الإدارة",
     calc_titre:"آلة حاسبة",
     nav_professeurs:"المعلمون", nav_emploi:"الجدول الزمني", nav_notes:"إدخال الدرجات", nav_bulletins:"كشوف الدرجات",
     nav_fiche_notes:"ورقة فارغة", nav_paiements:"المدفوعات", nav_presences:"الحضور", nav_messagerie:"الرسائل",
@@ -3974,21 +3976,22 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,onLog
 
 const NAV=[
   {id:"dashboard",l:"Tableau de bord",icon:"📊"},
-  {id:"classes",l:"Classes",icon:"🏫"},
-  {id:"matieres",l:"Matières",icon:"📖"},
-  {id:"eleves",l:"Élèves",icon:"👨‍🎓",prof:true},
-  {id:"professeurs",l:"Professeurs",icon:"👨‍🏫"},
-  {id:"emploi",l:"Emploi du temps",icon:"🗓️",prof:true},
-  {id:"notes",l:"Saisie des notes",icon:"📝",prof:true},
-  {id:"bulletins",l:"Bulletins",icon:"📄"},
-  {id:"fiche_notes",l:"Fiche de notes",icon:"🖨️"},
-  {id:"paiements",l:"Paiements",icon:"💰"},
-  {id:"depenses",l:"Dépenses",icon:"💸"},
-  {id:"presences",l:"Présences",icon:"📅",prof:true},
-  {id:"messagerie",l:"Messagerie",icon:"💬",prof:true},
-  {id:"utilisateurs",l:"Utilisateurs",icon:"👤"},
-  {id:"parametres",l:"Établissement",icon:"⚙️"},
+  {id:"classes",l:"Classes",icon:"🏫",grp:"scolarite"},
+  {id:"matieres",l:"Matières",icon:"📖",grp:"scolarite"},
+  {id:"eleves",l:"Élèves",icon:"👨‍🎓",prof:true,grp:"scolarite"},
+  {id:"professeurs",l:"Professeurs",icon:"👨‍🏫",grp:"scolarite"},
+  {id:"emploi",l:"Emploi du temps",icon:"🗓️",prof:true,grp:"scolarite"},
+  {id:"notes",l:"Saisie des notes",icon:"📝",prof:true,grp:"scolarite"},
+  {id:"bulletins",l:"Bulletins",icon:"📄",grp:"scolarite"},
+  {id:"fiche_notes",l:"Fiche de notes",icon:"🖨️",grp:"scolarite"},
+  {id:"presences",l:"Présences",icon:"📅",prof:true,grp:"scolarite"},
+  {id:"paiements",l:"Paiements",icon:"💰",grp:"finances"},
+  {id:"depenses",l:"Dépenses",icon:"💸",grp:"finances"},
+  {id:"messagerie",l:"Messagerie",icon:"💬",prof:true,grp:"admin"},
+  {id:"utilisateurs",l:"Utilisateurs",icon:"👤",grp:"admin"},
+  {id:"parametres",l:"Établissement",icon:"⚙️",grp:"admin"},
 ];
+const NAV_GROUPS=[{id:"scolarite",icon:"📚"},{id:"finances",icon:"💰"},{id:"admin",icon:"⚙️"}];
 // Le rôle Professeur a un menu limité (entrées avec prof:true) + Tableau de bord
 const navForRole=(role)=> role==="Professeur" ? NAV.filter(n=>n.prof||n.id==="dashboard") : NAV;
 // Pages réellement accessibles : Admin = tout ; sinon permissions personnalisées si définies, sinon défaut du rôle
@@ -4324,13 +4327,26 @@ function App() {
           <div style={{display:"flex",justifyContent:"center"}}><SyncBadge status={syncStatus}/></div>
         </div>
         <nav style={{flex:1,minHeight:0,padding:"8px 6px",overflowY:"auto"}}>
-          {NAV.filter(n=>allowed.includes(n.id)).map(n=>(
-            <button key={n.id} className="me-nav" onClick={()=>{setPage(n.id);if(isMobile)setNavOpen(false);}} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",marginBottom:3,background:page===n.id?"linear-gradient(135deg,#1a56db,#1e40af)":"transparent",color:page===n.id?"#fff":"rgba(255,255,255,0.82)",fontWeight:page===n.id?700:600,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif",boxShadow:page===n.id?"0 4px 12px -4px rgba(26,86,219,.6)":"none"}}
-              onMouseOver={e=>{if(page!==n.id){e.currentTarget.style.background="rgba(255,255,255,0.1)";e.currentTarget.style.color="#fff";}}}
-              onMouseOut={e=>{if(page!==n.id){e.currentTarget.style.background="transparent";e.currentTarget.style.color="rgba(255,255,255,0.82)";}}}>
-              <span style={{fontSize:17}}>{n.icon}</span>{t("nav_"+n.id)}
-            </button>
-          ))}
+          {(()=>{
+            const navBtn=(n)=>(
+              <button key={n.id} className="me-nav" onClick={()=>{setPage(n.id);if(isMobile)setNavOpen(false);}} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",marginBottom:3,background:page===n.id?"linear-gradient(135deg,#1a56db,#1e40af)":"transparent",color:page===n.id?"#fff":"rgba(255,255,255,0.82)",fontWeight:page===n.id?700:600,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif",boxShadow:page===n.id?"0 4px 12px -4px rgba(26,86,219,.6)":"none"}}
+                onMouseOver={e=>{if(page!==n.id){e.currentTarget.style.background="rgba(255,255,255,0.1)";e.currentTarget.style.color="#fff";}}}
+                onMouseOut={e=>{if(page!==n.id){e.currentTarget.style.background="transparent";e.currentTarget.style.color="rgba(255,255,255,0.82)";}}}>
+                <span style={{fontSize:17}}>{n.icon}</span>{t("nav_"+n.id)}
+              </button>
+            );
+            return <>
+              {allowed.includes("dashboard")&&navBtn(NAV.find(n=>n.id==="dashboard"))}
+              {NAV_GROUPS.map(g=>{
+                const items=NAV.filter(n=>n.grp===g.id&&allowed.includes(n.id));
+                if(!items.length)return null;
+                return <div key={g.id}>
+                  <div style={{fontSize:9.5,fontWeight:800,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.8,padding:"15px 12px 6px"}}>{g.icon} {t("grp_"+g.id)}</div>
+                  {items.map(navBtn)}
+                </div>;
+              })}
+            </>;
+          })()}
         </nav>
         <div style={{padding:"10px 6px",borderTop:"1px solid rgba(255,255,255,0.07)",flexShrink:0}}>
           <div style={{fontSize:9,color:"rgba(255,255,255,0.37)",textAlign:"center",marginBottom:5,textTransform:"uppercase",letterSpacing:.5}}>{t("ui_taille")}</div>
