@@ -1354,16 +1354,16 @@ function Calculatrice({onClose}){
   return(
     <>
       <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:900}}/>
-      <div style={{position:"fixed",top:74,right:16,zIndex:901,width:316,maxWidth:"94vw",background:"var(--me-surface,#fff)",borderRadius:18,boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",border:"1px solid var(--me-border-2)",padding:16}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-          <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>{t("calc_titre")}</div>
-          <button onClick={onClose} style={{background:"var(--me-surface-2,#f1f5f9)",border:"none",borderRadius:8,width:28,height:28,cursor:"pointer",fontSize:14,color:"var(--me-text-2)"}}>✕</button>
+      <div style={{position:"fixed",top:70,right:14,zIndex:901,width:262,maxWidth:"90vw",background:"var(--me-surface,#fff)",borderRadius:16,boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",border:"1px solid var(--me-border-2)",padding:13}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:9}}>
+          <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>{t("calc_titre")}</div>
+          <button onClick={onClose} style={{background:"var(--me-surface-2,#f1f5f9)",border:"none",borderRadius:8,width:25,height:25,cursor:"pointer",fontSize:13,color:"var(--me-text-2)"}}>✕</button>
         </div>
-        <div style={{background:"#0f172a",borderRadius:13,padding:"12px 14px",marginBottom:12,minHeight:46,textAlign:"right",overflowWrap:"anywhere"}}>
-          <div style={{color:"#fff",fontSize:22,fontWeight:800,fontFamily:"'Sora',sans-serif",lineHeight:1.25,minHeight:28}}>{expr||"0"}</div>
+        <div style={{background:"#0f172a",borderRadius:11,padding:"9px 12px",marginBottom:9,minHeight:38,textAlign:"right",overflowWrap:"anywhere"}}>
+          <div style={{color:"#fff",fontSize:19,fontWeight:800,fontFamily:"'Sora',sans-serif",lineHeight:1.25,minHeight:23}}>{expr||"0"}</div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:6}}>
-          {keys.map((b,i)=><button key={i} onClick={()=>press(b.k)} style={{padding:"11px 0",borderRadius:10,border:"none",cursor:"pointer",fontSize:15,fontWeight:800,fontFamily:"'Sora',sans-serif",gridColumn:b.span?`span ${b.span}`:"auto",...styleFor(b.t)}}>{b.l}</button>)}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:5}}>
+          {keys.map((b,i)=><button key={i} onClick={()=>press(b.k)} style={{padding:"9px 0",borderRadius:9,border:"none",cursor:"pointer",fontSize:13.5,fontWeight:800,fontFamily:"'Sora',sans-serif",gridColumn:b.span?`span ${b.span}`:"auto",...styleFor(b.t)}}>{b.l}</button>)}
         </div>
       </div>
     </>
@@ -4164,10 +4164,10 @@ function EditorHub({onCreate,masterPw}) {
 
 const THEMES={
   clair:{l:"Clair",sw:"#eef2f7",dark:false,v:{bg:"linear-gradient(135deg,#eef2f7,#e8eef6)",surface:"#ffffff",s2:"#f8fafc",border:"#eef2f7",border2:"#e2e8f0",text:"#0f172a",text2:"#64748b",text3:"#94a3b8"}},
-  creme:{l:"Crème",sw:"#f3ead8",dark:false,v:{bg:"linear-gradient(135deg,#f7f1e6,#f3ead8)",surface:"#fffdf8",s2:"#f6efe2",border:"#ece2cf",border2:"#e2d6bf",text:"#1f2937",text2:"#6b6356",text3:"#9c9384"}},
-  ocean:{l:"Océan",sw:"#dceafa",dark:false,v:{bg:"linear-gradient(135deg,#eaf2fb,#dceafa)",surface:"#ffffff",s2:"#eef5fd",border:"#d7e6f8",border2:"#c8dcf2",text:"#0f2540",text2:"#5a6b80",text3:"#8aa0b8"}},
-  menthe:{l:"Menthe",sw:"#ddf1e6",dark:false,v:{bg:"linear-gradient(135deg,#e9f6ee,#ddf1e6)",surface:"#ffffff",s2:"#ecf7f0",border:"#d5ecdd",border2:"#c4e3cf",text:"#0f2a1e",text2:"#5b6f64",text3:"#8aa396"}},
-  ardoise:{l:"Ardoise",sw:"#dde1e8",dark:false,v:{bg:"linear-gradient(135deg,#e6e9ee,#dde1e8)",surface:"#ffffff",s2:"#eef1f5",border:"#dde2ea",border2:"#cfd6e0",text:"#1e293b",text2:"#5b6675",text3:"#8b95a5"}},
+  sable:{l:"Sable",sw:"#f1e7d4",dark:false,v:{bg:"linear-gradient(135deg,#f8f1e3,#f1e7d4)",surface:"#fffdf8",s2:"#f5eddd",border:"#ece0c9",border2:"#ddccac",text:"#3f3527",text2:"#7a6b53",text3:"#a9997e"}},
+  corail:{l:"Corail",sw:"#fbe1d9",dark:false,v:{bg:"linear-gradient(135deg,#fdeee9,#fbe1d9)",surface:"#fffaf8",s2:"#fbeee8",border:"#f6ddd2",border2:"#f0c8b8",text:"#3d241c",text2:"#8a5f52",text3:"#c0998a"}},
+  ciel:{l:"Ciel",sw:"#d8ecf8",dark:false,v:{bg:"linear-gradient(135deg,#e8f4fb,#d8ecf8)",surface:"#ffffff",s2:"#eef6fc",border:"#d9eaf6",border2:"#c2dcef",text:"#10293b",text2:"#4f6b80",text3:"#8aa3b5"}},
+  foret:{l:"Forêt",sw:"#d8ebe0",dark:false,v:{bg:"linear-gradient(135deg,#e7f2ec,#d8ebe0)",surface:"#ffffff",s2:"#eef6f1",border:"#d8ebe0",border2:"#bfddcb",text:"#14302a",text2:"#4a6b5e",text3:"#88a89a"}},
   lavande:{l:"Lavande",sw:"#e7e3f7",dark:false,v:{bg:"linear-gradient(135deg,#efecfa,#e7e3f7)",surface:"#ffffff",s2:"#f3f1fb",border:"#e6e1f4",border2:"#d6cfeb",text:"#241f3a",text2:"#655d80",text3:"#9389b0"}},
   sombre:{l:"Sombre",sw:"#1a2336",dark:true,v:{bg:"linear-gradient(135deg,#0b1220,#0e1626)",surface:"#1a2336",s2:"#141d2e",border:"#2a3650",border2:"#33415f",text:"#ffffff",text2:"#c7d2e0",text3:"#9aa7ba"}},
 };
