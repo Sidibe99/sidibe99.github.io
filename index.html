@@ -4275,15 +4275,15 @@ function App() {
   };
 
   return(
-    <div style={{display:"flex",height:"100vh",fontFamily:"'Plus Jakarta Sans',sans-serif",background:"linear-gradient(135deg,#eef2f7 0%,#e8eef6 100%)"}}>
+    <div style={{display:"flex",height:"100dvh",overflow:"hidden",fontFamily:"'Plus Jakarta Sans',sans-serif",background:"linear-gradient(135deg,#eef2f7 0%,#e8eef6 100%)"}}>
       {toast&&<Toast msg={toast.msg} type={toast.type}/>}
       {isMobile&&<div style={{position:"fixed",top:0,left:0,right:0,height:50,background:"linear-gradient(180deg,#0f172a,#13203a)",zIndex:50,display:"flex",alignItems:"center",gap:11,padding:"0 12px",boxShadow:"0 2px 12px rgba(0,0,0,.3)"}}>
         <button onClick={()=>setNavOpen(true)} aria-label="Menu" style={{background:"rgba(255,255,255,0.12)",border:"none",color:"#fff",borderRadius:9,width:38,height:38,fontSize:19,cursor:"pointer",lineHeight:1}}>☰</button>
         <div style={{fontWeight:800,fontSize:15,color:"#fff",fontFamily:"'Sora',sans-serif"}}>MonEcole</div>
       </div>}
       {isMobile&&navOpen&&<div onClick={()=>setNavOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.45)",zIndex:55}}/>}
-      <div style={isMobile?{position:"fixed",top:0,left:0,height:"100vh",width:240,maxWidth:"84vw",background:"linear-gradient(180deg,#0f172a 0%,#13203a 100%)",display:"flex",flexDirection:"column",zIndex:60,transform:navOpen?"translateX(0)":"translateX(-100%)",transition:"transform .25s ease",boxShadow:navOpen?"6px 0 34px rgba(0,0,0,.45)":"none"}:{width:214,background:"linear-gradient(180deg,#0f172a 0%,#13203a 100%)",display:"flex",flexDirection:"column",flexShrink:0,boxShadow:"2px 0 18px rgba(15,23,42,.18)"}}>
-        <div style={{padding:"18px 13px",borderBottom:"1px solid rgba(255,255,255,0.07)"}}>
+      <div style={isMobile?{position:"fixed",top:0,left:0,height:"100dvh",width:240,maxWidth:"84vw",background:"linear-gradient(180deg,#0f172a 0%,#13203a 100%)",display:"flex",flexDirection:"column",zIndex:60,transform:navOpen?"translateX(0)":"translateX(-100%)",transition:"transform .25s ease",boxShadow:navOpen?"6px 0 34px rgba(0,0,0,.45)":"none"}:{width:214,height:"100dvh",background:"linear-gradient(180deg,#0f172a 0%,#13203a 100%)",display:"flex",flexDirection:"column",flexShrink:0,boxShadow:"2px 0 18px rgba(15,23,42,.18)"}}>
+        <div style={{padding:"18px 13px",borderBottom:"1px solid rgba(255,255,255,0.07)",flexShrink:0}}>
           <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:11}}>
             <div style={{width:38,height:38,borderRadius:11,background:(etab?.logo_app||etab?.logo)?"#fff":"linear-gradient(135deg,#1a56db,#1e40af)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,overflow:"hidden",border:(etab?.logo_app||etab?.logo)?"1px solid rgba(255,255,255,0.15)":"none",boxShadow:"0 4px 12px -4px rgba(26,86,219,.6)"}}>{(etab?.logo_app||etab?.logo)?<img src={etab.logo_app||etab.logo} alt="logo" style={{width:"100%",height:"100%",objectFit:"contain"}}/>:"🎓"}</div>
             <div><div style={{fontWeight:800,fontSize:16,color:"#fff",letterSpacing:-0.5,fontFamily:"'Sora',sans-serif"}}>MonEcole</div>{etab?.nom&&<div style={{fontSize:10,color:"rgba(255,255,255,0.55)",fontWeight:600,marginTop:1,lineHeight:1.2,maxWidth:135,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{txt(etab.nom,etab.nom_ar)}</div>}</div>
@@ -4295,16 +4295,16 @@ function App() {
           </div>
           <div style={{display:"flex",justifyContent:"center"}}><SyncBadge status={syncStatus}/></div>
         </div>
-        <nav style={{flex:1,padding:"8px 6px",overflowY:"auto"}}>
+        <nav style={{flex:1,minHeight:0,padding:"8px 6px",overflowY:"auto"}}>
           {NAV.filter(n=>allowed.includes(n.id)).map(n=>(
-            <button key={n.id} className="me-nav" onClick={()=>{setPage(n.id);if(isMobile)setNavOpen(false);}} style={{width:"100%",display:"flex",alignItems:"center",gap:9,padding:"9px 11px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",marginBottom:2,background:page===n.id?"linear-gradient(135deg,#1a56db,#1e40af)":"transparent",color:page===n.id?"#fff":"rgba(255,255,255,0.5)",fontWeight:page===n.id?700:500,fontSize:12.5,fontFamily:"'Plus Jakarta Sans',sans-serif",boxShadow:page===n.id?"0 4px 12px -4px rgba(26,86,219,.6)":"none"}}
-              onMouseOver={e=>{if(page!==n.id){e.currentTarget.style.background="rgba(255,255,255,0.06)";e.currentTarget.style.color="rgba(255,255,255,0.8)";}}}
-              onMouseOut={e=>{if(page!==n.id){e.currentTarget.style.background="transparent";e.currentTarget.style.color="rgba(255,255,255,0.5)";}}}>
-              <span style={{fontSize:16}}>{n.icon}</span>{t("nav_"+n.id)}
+            <button key={n.id} className="me-nav" onClick={()=>{setPage(n.id);if(isMobile)setNavOpen(false);}} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",marginBottom:3,background:page===n.id?"linear-gradient(135deg,#1a56db,#1e40af)":"transparent",color:page===n.id?"#fff":"rgba(255,255,255,0.82)",fontWeight:page===n.id?700:600,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif",boxShadow:page===n.id?"0 4px 12px -4px rgba(26,86,219,.6)":"none"}}
+              onMouseOver={e=>{if(page!==n.id){e.currentTarget.style.background="rgba(255,255,255,0.1)";e.currentTarget.style.color="#fff";}}}
+              onMouseOut={e=>{if(page!==n.id){e.currentTarget.style.background="transparent";e.currentTarget.style.color="rgba(255,255,255,0.82)";}}}>
+              <span style={{fontSize:17}}>{n.icon}</span>{t("nav_"+n.id)}
             </button>
           ))}
         </nav>
-        <div style={{padding:"10px 6px",borderTop:"1px solid rgba(255,255,255,0.07)"}}>
+        <div style={{padding:"10px 6px",borderTop:"1px solid rgba(255,255,255,0.07)",flexShrink:0}}>
           <div style={{fontSize:9,color:"rgba(255,255,255,0.37)",textAlign:"center",marginBottom:5,textTransform:"uppercase",letterSpacing:.5}}>{t("ui_taille")}</div>
           <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,marginBottom:9}}>
             <button onClick={()=>setUiZoom(z=>Math.max(0.85,Math.round((z-0.05)*100)/100))} title="A-" style={{background:"rgba(255,255,255,0.1)",color:"#fff",border:"none",borderRadius:8,width:30,height:30,cursor:"pointer",fontSize:12,fontWeight:800,lineHeight:1}}>A−</button>
