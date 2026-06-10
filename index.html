@@ -1266,41 +1266,100 @@ function useSupabaseData(etablissementId) {
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
 function Calculatrice({onClose}){
   const [expr,setExpr]=useState("");
-  const compute=(s)=>{
-    const t2=s.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-");
-    const tokens=t2.match(/(\d+\.?\d*)|[+\-*/]/g);
-    if(!tokens)return "";
-    let nums=[parseFloat(tokens[0])];let opsArr=[];
-    for(let i=1;i<tokens.length;i+=2){if(tokens[i+1]==null)break;opsArr.push(tokens[i]);nums.push(parseFloat(tokens[i+1]));}
-    if(nums.some(n=>isNaN(n)))return "";
-    for(let i=0;i<opsArr.length;){if(opsArr[i]==="*"||opsArr[i]==="/"){const r=opsArr[i]==="*"?nums[i]*nums[i+1]:(nums[i+1]===0?NaN:nums[i]/nums[i+1]);nums.splice(i,2,r);opsArr.splice(i,1);}else i++;}
-    let res=nums[0];
-    for(let i=0;i<opsArr.length;i++){res=opsArr[i]==="+"?res+nums[i+1]:res-nums[i+1];}
-    if(isNaN(res)||!isFinite(res))return "Err";
-    return String(Math.round(res*1e8)/1e8);
+  const [angle,setAngle]=useState("deg");
+  const evalExpr=(input,ang)=>{
+    const s=input.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-");
+    const tokens=[];let i=0;const dig=c=>(c>="0"&&c<="9")||c===".";
+    const FUNCS=["sin","cos","tan","asin","acos","atan","log","ln","sqrt"];
+    while(i<s.length){
+      const c=s[i];
+      if(c===" "){i++;continue;}
+      if(dig(c)){let n="";while(i<s.length&&dig(s[i]))n+=s[i++];tokens.push({type:"num",val:parseFloat(n)});continue;}
+      if(c==="π"){tokens.push({type:"num",val:Math.PI});i++;continue;}
+      if(c==="√"){tokens.push({type:"func",val:"sqrt"});i++;continue;}
+      if(/[a-z]/i.test(c)){let name="";while(i<s.length&&/[a-z]/i.test(s[i]))name+=s[i++];
+        if(name==="e")tokens.push({type:"num",val:Math.E});
+        else if(FUNCS.includes(name))tokens.push({type:"func",val:name});
+        else throw 0; continue;}
+      if("+-*/^".includes(c)){
+        const prev=tokens[tokens.length-1];
+        if((c==="-"||c==="+")&&(!prev||prev.type==="op"||prev.type==="lp"))tokens.push({type:"num",val:0});
+        tokens.push({type:"op",val:c});i++;continue;}
+      if(c==="("){tokens.push({type:"lp"});i++;continue;}
+      if(c===")"){tokens.push({type:"rp"});i++;continue;}
+      throw 0;
+    }
+    const out=[],ops=[];const prec={"+":1,"-":1,"*":2,"/":2,"^":3};const right={"^":true};
+    for(const tk of tokens){
+      if(tk.type==="num")out.push(tk);
+      else if(tk.type==="func")ops.push(tk);
+      else if(tk.type==="op"){
+        while(ops.length){const top=ops[ops.length-1];
+          if(top.type==="op"&&(right[tk.val]?prec[tk.val]<prec[top.val]:prec[tk.val]<=prec[top.val]))out.push(ops.pop());
+          else if(top.type==="func")out.push(ops.pop());
+          else break;}
+        ops.push(tk);}
+      else if(tk.type==="lp")ops.push(tk);
+      else if(tk.type==="rp"){
+        while(ops.length&&ops[ops.length-1].type!=="lp")out.push(ops.pop());
+        if(!ops.length)throw 0;ops.pop();
+        if(ops.length&&ops[ops.length-1].type==="func")out.push(ops.pop());}
+    }
+    while(ops.length){const top=ops.pop();if(top.type==="lp")throw 0;out.push(top);}
+    const st=[];const toR=x=>ang==="deg"?x*Math.PI/180:x;const fromR=x=>ang==="deg"?x*180/Math.PI:x;
+    for(const tk of out){
+      if(tk.type==="num")st.push(tk.val);
+      else if(tk.type==="op"){const b=st.pop(),a=st.pop();if(a===undefined||b===undefined)throw 0;
+        st.push(tk.val==="+"?a+b:tk.val==="-"?a-b:tk.val==="*"?a*b:tk.val==="/"?a/b:Math.pow(a,b));}
+      else if(tk.type==="func"){const a=st.pop();if(a===undefined)throw 0;let r;
+        switch(tk.val){case"sin":r=Math.sin(toR(a));break;case"cos":r=Math.cos(toR(a));break;case"tan":r=Math.tan(toR(a));break;
+          case"asin":r=fromR(Math.asin(a));break;case"acos":r=fromR(Math.acos(a));break;case"atan":r=fromR(Math.atan(a));break;
+          case"log":r=Math.log(a)/Math.LN10;break;case"ln":r=Math.log(a);break;case"sqrt":r=Math.sqrt(a);break;default:throw 0;}
+        st.push(r);}
+    }
+    if(st.length!==1||isNaN(st[0])||!isFinite(st[0]))throw 0;
+    return st[0];
   };
+  const compute=(s)=>{if(!s.trim())return "";try{const v=evalExpr(s,angle);return String(Math.round(v*1e10)/1e10);}catch(_){return "Err";}};
+  const APP={"÷":"÷","×":"×","−":"−","+":"+","^":"^","x²":"^2","√":"√(","sin":"sin(","cos":"cos(","tan":"tan(","ln":"ln(","log":"log(","π":"π","e":"e","(":"(",")":")",".":"."};
   const press=(k)=>{
     if(k==="C"){setExpr("");return;}
     if(k==="⌫"){setExpr(e=>e.slice(0,-1));return;}
     if(k==="="){setExpr(e=>{const r=compute(e);return r===""?e:r;});return;}
-    setExpr(e=>e+k);
+    if(k==="mode"){setAngle(a=>a==="deg"?"rad":"deg");return;}
+    setExpr(e=>e+(APP[k]!==undefined?APP[k]:k));
   };
-  const keys=["C","⌫","÷","×","7","8","9","−","4","5","6","+","1","2","3","=","0","."];
-  const isOp=k=>["÷","×","−","+"].includes(k);
-  const btnStyle=k=>({padding:"14px 0",borderRadius:11,border:"none",cursor:"pointer",fontSize:18,fontWeight:800,fontFamily:"'Sora',sans-serif",background:k==="="?"#1a56db":k==="C"?"#fee2e2":k==="⌫"?"#fef3c7":isOp(k)?"#e0e7ff":"#f1f5f9",color:k==="="?"#fff":k==="C"?"#dc2626":isOp(k)?"#1a56db":"#0f172a"});
+  const keys=[
+    {l:angle==="deg"?"DEG":"RAD",k:"mode",t:"mode"},{l:"C",k:"C",t:"clear"},{l:"⌫",k:"⌫",t:"back"},{l:"(",k:"(",t:"fn"},{l:")",k:")",t:"fn"},
+    {l:"sin",k:"sin",t:"fn"},{l:"cos",k:"cos",t:"fn"},{l:"tan",k:"tan",t:"fn"},{l:"ln",k:"ln",t:"fn"},{l:"log",k:"log",t:"fn"},
+    {l:"√",k:"√",t:"fn"},{l:"x²",k:"x²",t:"fn"},{l:"^",k:"^",t:"op"},{l:"π",k:"π",t:"fn"},{l:"e",k:"e",t:"fn"},
+    {l:"7",k:"7"},{l:"8",k:"8"},{l:"9",k:"9"},{l:"÷",k:"÷",t:"op"},{l:"×",k:"×",t:"op"},
+    {l:"4",k:"4"},{l:"5",k:"5"},{l:"6",k:"6"},{l:"−",k:"−",t:"op"},{l:"+",k:"+",t:"op"},
+    {l:"1",k:"1"},{l:"2",k:"2"},{l:"3",k:"3"},{l:".",k:"."},{l:"=",k:"=",t:"eq"},
+    {l:"0",k:"0",span:5},
+  ];
+  const styleFor=t2=>{
+    if(t2==="eq")return{background:"#1a56db",color:"#fff"};
+    if(t2==="clear")return{background:"#fee2e2",color:"#dc2626"};
+    if(t2==="back")return{background:"#fef3c7",color:"#b45309"};
+    if(t2==="mode")return{background:"#dcfce7",color:"#15803d"};
+    if(t2==="op")return{background:"#e0e7ff",color:"#1a56db"};
+    if(t2==="fn")return{background:"#f1f5f9",color:"#475569",fontSize:13};
+    return{background:"#f8fafc",color:"#0f172a"};
+  };
   return(
     <>
       <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:900}}/>
-      <div style={{position:"fixed",top:74,right:16,zIndex:901,width:288,maxWidth:"92vw",background:"#fff",borderRadius:18,boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",border:"1px solid #e2e8f0",padding:16}}>
+      <div style={{position:"fixed",top:74,right:16,zIndex:901,width:316,maxWidth:"94vw",background:"#fff",borderRadius:18,boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",border:"1px solid #e2e8f0",padding:16}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
           <div style={{fontWeight:800,fontSize:14,color:"#0f172a",fontFamily:"'Sora',sans-serif"}}>{t("calc_titre")}</div>
           <button onClick={onClose} style={{background:"#f1f5f9",border:"none",borderRadius:8,width:28,height:28,cursor:"pointer",fontSize:14,color:"#64748b"}}>✕</button>
         </div>
-        <div style={{background:"#0f172a",borderRadius:13,padding:"14px 16px",marginBottom:12,minHeight:48,textAlign:"right",overflowWrap:"anywhere"}}>
-          <div style={{color:"#fff",fontSize:24,fontWeight:800,fontFamily:"'Sora',sans-serif",lineHeight:1.2,minHeight:29}}>{expr||"0"}</div>
+        <div style={{background:"#0f172a",borderRadius:13,padding:"12px 14px",marginBottom:12,minHeight:46,textAlign:"right",overflowWrap:"anywhere"}}>
+          <div style={{color:"#fff",fontSize:22,fontWeight:800,fontFamily:"'Sora',sans-serif",lineHeight:1.25,minHeight:28}}>{expr||"0"}</div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:7}}>
-          {keys.map((k,i)=><button key={i} onClick={()=>press(k)} style={{...btnStyle(k),gridColumn:(k==="0"||k===".")?"span 2":"auto"}}>{k}</button>)}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:6}}>
+          {keys.map((b,i)=><button key={i} onClick={()=>press(b.k)} style={{padding:"11px 0",borderRadius:10,border:"none",cursor:"pointer",fontSize:15,fontWeight:800,fontFamily:"'Sora',sans-serif",gridColumn:b.span?`span ${b.span}`:"auto",...styleFor(b.t)}}>{b.l}</button>)}
         </div>
       </div>
     </>
@@ -2062,11 +2121,13 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
     const N=Math.max(1,parseInt(nbPages)||1);
     let body="";
     for(let p=0;p<N;p++){
+      const first=p===0;
       const last=p===N-1;
+      const head=first?officialHeader(etab,{classe:classe.nom,docTitle:titre}):"";
       if(last&&statHTML&&statVPos==="bas"){
-        body+=`<div style="min-height:96vh;display:flex;flex-direction:column">${officialHeader(etab,{classe:classe.nom,docTitle:titre})}${grid}<div style="margin-top:auto">${statHTML}</div></div>`;
+        body+=`<div style="min-height:96vh;display:flex;flex-direction:column">${head}${grid}<div style="margin-top:auto">${statHTML}</div></div>`;
       } else {
-        body+=`<div style="${last?"":"page-break-after:always"}">${officialHeader(etab,{classe:classe.nom,docTitle:titre})}${grid}${last?statHTML:""}</div>`;
+        body+=`<div style="${last?"":"page-break-after:always"}">${head}${grid}${last?statHTML:""}</div>`;
       }
     }
     printHTML(body,`${titre} ${classe.nom}`,{etab});
