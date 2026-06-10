@@ -2383,8 +2383,8 @@ function Eleves({data,ops,etab}) {
       <div style={{display:"flex",gap:8,marginBottom:18}}>
         {CYCLES.map(cyc=>{const actif=cycle===cyc;const n=countCycle(cyc);return(
           <button key={cyc} onClick={()=>setCycle(cyc)} style={{flex:1,padding:"13px 16px",borderRadius:13,border:actif?"2px solid #1a56db":"1.5px solid #e2e8f0",background:actif?"#eff6ff":"#fff",cursor:"pointer",textAlign:"left",transition:"all .15s",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-            <div style={{fontSize:13,fontWeight:800,color:actif?"#1a56db":"#0f172a"}}>{cyc==="Primaire"?"🟦":cyc==="Collège"?"🟪":"🟩"} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}</div>
-            <div style={{fontSize:22,fontWeight:900,color:actif?"#1a56db":"#334155",marginTop:2}}>{n}<span style={{fontSize:11,color:"var(--me-text-3)",fontWeight:600}}> {t("db_eleves")}</span></div>
+            <div style={{fontSize:13,fontWeight:800,color:actif?"#1a56db":"var(--me-text)"}}>{cyc==="Primaire"?"🟦":cyc==="Collège"?"🟪":"🟩"} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[cyc]||cyc)}</div>
+            <div style={{fontSize:22,fontWeight:900,color:actif?"#1a56db":"var(--me-text)",marginTop:2}}>{n}<span style={{fontSize:11,color:"var(--me-text-3)",fontWeight:600}}> {t("db_eleves")}</span></div>
           </button>
         );})}
       </div>
@@ -2626,7 +2626,7 @@ function Notes({data,ops,etab,currentUser}) {
                 return(<tr key={e.id} className="me-row" style={{borderTop:"1px solid #f4f7fb"}}>
                   <td style={{padding:"9px 13px",fontSize:12,color:"var(--me-text-3)"}}>{i+1}</td>
                   <td style={{padding:"9px 13px"}}><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{e.prenom} {e.nom}</div><div style={{fontSize:11,color:"var(--me-text-3)"}}>{e.matricule}</div></td>
-                  <td style={{padding:"7px 13px"}}><input ref={el=>inputsRef.current[i]=el} onKeyDown={ev=>onKey(ev,i)} type="number" min="0" max={bareme} step="0.25" value={note} onChange={ev=>setNote(e.id,ev.target.value)} style={{width:80,padding:"8px 10px",borderRadius:9,border:`2px solid ${note!==""&&parseFloat(note)<bareme/2?"#fca5a5":"#e2e8f0"}`,fontSize:14,fontWeight:700,textAlign:"center",outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",color:m?.c||"#0f172a"}}/></td>
+                  <td style={{padding:"7px 13px"}}><input ref={el=>inputsRef.current[i]=el} onKeyDown={ev=>onKey(ev,i)} type="number" min="0" max={bareme} step="0.25" value={note} onChange={ev=>setNote(e.id,ev.target.value)} style={{width:80,padding:"8px 10px",borderRadius:9,border:`2px solid ${note!==""&&parseFloat(note)<bareme/2?"#fca5a5":"#e2e8f0"}`,fontSize:14,fontWeight:700,textAlign:"center",outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",color:m?.c||"var(--me-text)"}}/></td>
                   <td style={{padding:"9px 13px"}}>{m&&<span style={{background:m.bg,color:m.c,borderRadius:7,padding:"3px 9px",fontSize:11,fontWeight:700}}>{m.t}</span>}</td>
                 </tr>);
               })}</tbody>
@@ -3274,7 +3274,7 @@ function Messagerie({data,ops,currentUser}) {
 
   const ConvBtn=({id,label,sub,active:act,onClick})=>(
     <button onClick={onClick} className="me-nav" style={{width:"100%",textAlign:"left",padding:"10px 12px",borderRadius:10,border:"none",cursor:"pointer",background:act?"#eff6ff":"transparent",marginBottom:3,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-      <div style={{fontWeight:700,fontSize:12.5,color:act?"#1a56db":"#0f172a"}}>{label}</div>
+      <div style={{fontWeight:700,fontSize:12.5,color:act?"#1a56db":"var(--me-text)"}}>{label}</div>
       {sub&&<div style={{fontSize:10.5,color:"var(--me-text-3)",marginTop:1}}>{sub}</div>}
     </button>
   );
@@ -3619,7 +3619,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,uiZoo
     const vide=<span style={{color:"var(--me-text-3)",fontWeight:400,fontStyle:"normal"}}>Renseignez la devise nationale ci-dessus.</span>;
     if(dvMode==="drapeau"){const mots=splitDv(nat);return mots.length?mots.map((w,i,a)=><span key={i}><span style={{color:FLAG_GN[i%3]}}>{w}</span>{i<a.length-1?sep:null}</span>):vide;}
     if(dvMode==="uni"){return nat?<span style={{color:dm.couleur||form.theme_couleur||"#1a56db"}}>{nat}</span>:vide;}
-    if(dvMode==="manuel"){const ws=[["m1","c1"],["m2","c2"],["m3","c3"]].filter(p=>dm[p[0]]);return ws.length?ws.map((p,i,a)=><span key={p[0]}><span style={{color:dm[p[1]]||"#334155"}}>{dm[p[0]]}</span>{i<a.length-1?sep:null}</span>):<span style={{color:"var(--me-text-3)",fontWeight:400,fontStyle:"normal"}}>Saisissez les mots ci-dessous.</span>;}
+    if(dvMode==="manuel"){const ws=[["m1","c1"],["m2","c2"],["m3","c3"]].filter(p=>dm[p[0]]);return ws.length?ws.map((p,i,a)=><span key={p[0]}><span style={{color:dm[p[1]]||"var(--me-text)"}}>{dm[p[0]]}</span>{i<a.length-1?sep:null}</span>):<span style={{color:"var(--me-text-3)",fontWeight:400,fontStyle:"normal"}}>Saisissez les mots ci-dessous.</span>;}
     return <span style={{color:"var(--me-text-2)"}}>{nat||"—"}</span>;
   };
   // ── Périodes / compositions personnalisables ──
@@ -3710,7 +3710,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,uiZoo
           ].map(d=>{const on=(form.logo_disposition||"centre")===d.v;return(
             <button key={d.v} onClick={()=>setForm(f=>({...f,logo_disposition:d.v}))} style={{padding:"11px 9px",borderRadius:11,border:on?"2px solid #1a56db":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",cursor:"pointer",textAlign:"center",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
               <div style={{height:34,display:"flex",flexDirection:"column",justifyContent:"center",marginBottom:6}}>{d.mini}</div>
-              <div style={{fontSize:10.5,fontWeight:700,color:on?"#1a56db":"#64748b",lineHeight:1.2}}>{on?"✓ ":""}{d.t}</div>
+              <div style={{fontSize:10.5,fontWeight:700,color:on?"#1a56db":"var(--me-text-2)",lineHeight:1.2}}>{on?"✓ ":""}{d.t}</div>
             </button>
           );})}
         </div>
@@ -3723,7 +3723,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,uiZoo
             {v:"haut",t:t("st_pos_haut"),sub:t("st_pos_haut_s")}
           ].map(o=>{const on=(form.logo_position||"milieu")===o.v;return(
             <button key={o.v} onClick={()=>setForm(f=>({...f,logo_position:o.v}))} style={{padding:"11px 13px",borderRadius:11,border:on?"2px solid #1a56db":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",cursor:"pointer",textAlign:"left",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-              <div style={{fontSize:12,fontWeight:700,color:on?"#1a56db":"#334155"}}>{on?"✓ ":""}{o.t}</div>
+              <div style={{fontSize:12,fontWeight:700,color:on?"#1a56db":"var(--me-text)"}}>{on?"✓ ":""}{o.t}</div>
               <div style={{fontSize:10.5,color:"var(--me-text-3)",marginTop:2}}>{o.sub}</div>
             </button>
           );})}
@@ -3808,7 +3808,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,uiZoo
             {dvMode==="manuel"&&<div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
               {[["m1","c1",t("st_mot")+" 1"],["m2","c2",t("st_mot")+" 2"],["m3","c3",t("st_mot")+" 3"]].map(([mk,ck,lbl])=>(
                 <div key={mk} style={{display:"flex",alignItems:"center",gap:6,background:"#fff",border:"1.5px solid #e2e8f0",borderRadius:9,padding:"5px 8px"}}>
-                  <input value={form.devise_mots?.[mk]||""} onChange={e=>setDv(mk,e.target.value)} placeholder={lbl} style={{border:"none",outline:"none",fontSize:13,fontWeight:700,width:95,fontFamily:"'Plus Jakarta Sans',sans-serif",color:form.devise_mots?.[ck]||"#334155"}}/>
+                  <input value={form.devise_mots?.[mk]||""} onChange={e=>setDv(mk,e.target.value)} placeholder={lbl} style={{border:"none",outline:"none",fontSize:13,fontWeight:700,width:95,fontFamily:"'Plus Jakarta Sans',sans-serif",color:form.devise_mots?.[ck]||"var(--me-text)"}}/>
                   <input type="color" value={form.devise_mots?.[ck]||"#334155"} onChange={e=>setDv(ck,e.target.value)} style={{width:28,height:28,border:"none",borderRadius:6,cursor:"pointer",background:"none",padding:0}}/>
                 </div>
               ))}
