@@ -934,7 +934,18 @@ const SyncBadge = ({status}) => {
 // ── ACTIVATION ────────────────────────────────────────────────────────────────
 function ActivationScreen({onDone}) {
   const [code,setCode]=useState("");const [err,setErr]=useState("");const [loading,setLoading]=useState(false);
-  const go=()=>{setLoading(true);setErr("");setTimeout(()=>{CODES.includes(code.trim().toUpperCase())?onDone(code.trim().toUpperCase()):setErr("Code invalide. Contactez MonEcole.");setLoading(false);},900);};
+  const go=async()=>{
+    if(!code||loading)return;
+    setLoading(true);setErr("");
+    const c=code.trim().toUpperCase();
+    try{
+      if(CODES.includes(c)){onDone(c);return;} // rétrocompatibilité anciens codes
+      const{data}=await sb.from("codes_activation").select("code").eq("code",c).maybeSingle();
+      if(data&&data.code){onDone(c);}
+      else setErr("Code invalide. Contactez MonEcole.");
+    }catch(_){setErr("Vérification impossible. Réessayez.");}
+    setLoading(false);
+  };
   return(
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1a56db 100%)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
       <div style={{width:420,maxWidth:"100%"}}>
@@ -964,6 +975,10 @@ function Onboarding({codeActivation,onDone}) {
   const [ecole,setEcole]=useState({nom:"",devise:"GNF",annee:"",adresse:"",telephone:"",email:"",codeMEN:"",prefixe:"",systeme:"trimestre",devise_txt:"",fraisInscription:"",mensualite:"",formule:"basique"});
   const [admin,setAdmin]=useState({nom:"",prenom:"",identifiant:"",password:"",confirm:""});
   const [err,setErr]=useState("");const [loading,setLoading]=useState(false);
+  // Récupère la formule portée par le code d'activation (sinon 'basique' pour anciens codes)
+  useEffect(()=>{let actif=true;sb.from("codes_activation").select("formule").eq("code",codeActivation).maybeSingle()
+    .then(({data})=>{if(actif&&data&&data.formule)setEcole(f=>({...f,formule:data.formule}));}).catch(()=>{});
+    return ()=>{actif=false;};},[]);
 
   const finish=async()=>{
     if(!admin.nom||!admin.identifiant||!admin.password)return setErr("Tous les champs sont requis.");
@@ -977,6 +992,8 @@ function Onboarding({codeActivation,onDone}) {
       const adminPayload=await withHashedPw({nom:admin.nom,prenom:admin.prenom,identifiant:admin.identifiant,password:admin.password,role:"Administrateur",etablissement_id:etabData.id});
       const {data:userData,error:userErr}=await sb.from("utilisateurs").insert(adminPayload).select().single();
       if(userErr)throw userErr;
+      // Marquer le code d'activation comme utilisé (libre -> utilisé)
+      try{await sb.from("codes_activation").update({statut:"utilise",etablissement_id:etabData.id,used_at:new Date().toISOString()}).eq("code",codeActivation).eq("statut","libre");}catch(_){}
       onDone(etabData,userData||{...admin,role:"Administrateur",etablissement_id:etabData.id});
     } catch(e){setErr("Erreur de connexion : "+e.message);}
     setLoading(false);
@@ -1011,8 +1028,10 @@ function Onboarding({codeActivation,onDone}) {
               <Inp label="Frais inscription (défaut)" type="number" value={ecole.fraisInscription} onChange={e=>setEcole(f=>({...f,fraisInscription:e.target.value}))} placeholder="500000"/>
               <Inp label="Mensualité (défaut)" type="number" value={ecole.mensualite} onChange={e=>setEcole(f=>({...f,mensualite:e.target.value}))} placeholder="150000"/>
               <div style={{gridColumn:"1/-1",marginTop:4}}>
-                <Slt label="Formule d'abonnement *" value={ecole.formule} onChange={e=>setEcole(f=>({...f,formule:e.target.value}))} opts={[{v:"basique",l:"Basique — 1 administrateur"},{v:"standard",l:"Standard — 3 administrateurs"},{v:"premium",l:"Premium — administrateurs illimités"}]}/>
-                <div style={{fontSize:11,color:"#64748b",marginTop:4}}>Détermine le nombre d'administrateurs autorisés. L'école ne pourra pas changer sa formule elle-même.</div>
+                <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:10,padding:"11px 14px",display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:17}}>🎟️</span>
+                  <div style={{fontSize:12.5,color:"#1e40af",fontWeight:600}}>Formule (définie par le code) : <b>{FORMULES[ecole.formule]?.l||"Basique"}</b>{FORMULES[ecole.formule]?` — ${FORMULES[ecole.formule].admins===Infinity?"administrateurs illimités":FORMULES[ecole.formule].admins+" administrateur(s)"}`:""}</div>
+                </div>
               </div>
             </div>
           </>
@@ -3785,7 +3804,7 @@ function MasterGate({onOk}) {
     setBusy(true); setErr("");
     try{
       const h=await hashPw(pw,MASTER_PASSWORD_SALT);
-      if(h && h===MASTER_PASSWORD_HASH){ onOk(); }
+      if(h && h===MASTER_PASSWORD_HASH){ onOk(pw); }
       else setErr("Mot de passe maître incorrect.");
     }catch(_){ setErr("Vérification impossible (HTTPS requis)."); }
     setBusy(false);
@@ -3808,8 +3827,27 @@ function MasterGate({onOk}) {
 }
 
 // Espace éditeur : configuration de la base + création d'école
-function EditorHub({onCreate}) {
+function EditorHub({onCreate,masterPw}) {
   const [cfgUrl,setCfgUrl]=useState("");const [cfgKey,setCfgKey]=useState("");
+  const [genFormule,setGenFormule]=useState("standard");
+  const [genLoading,setGenLoading]=useState(false);
+  const [genErr,setGenErr]=useState("");
+  const [codes,setCodes]=useState([]);
+  const [lastCode,setLastCode]=useState("");
+  const [copied,setCopied]=useState("");
+  const loadCodes=async()=>{try{const{data}=await sb.from("codes_activation").select("*").order("created_at",{ascending:false}).limit(50);setCodes(data||[]);}catch(_){}}
+  useEffect(()=>{loadCodes();},[]);
+  const genererCode=async()=>{
+    if(genLoading)return;setGenLoading(true);setGenErr("");setLastCode("");
+    try{
+      const{data,error}=await sb.functions.invoke("generer-code",{body:{motDePasse:masterPw||"",formule:genFormule}});
+      if(error){let m="Génération impossible.";try{const j=await error.context.json();if(j&&j.error)m=j.error;}catch(_){}setGenErr(m);}
+      else if(data&&data.code){setLastCode(data.code);loadCodes();}
+      else setGenErr("Réponse inattendue du serveur.");
+    }catch(e){setGenErr("Erreur : "+(e.message||e));}
+    setGenLoading(false);
+  };
+  const copier=(c)=>{try{navigator.clipboard.writeText(c);setCopied(c);setTimeout(()=>setCopied(""),1500);}catch(_){}}
   return(
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
       <div style={{background:"#fff",borderRadius:22,padding:34,width:480,maxWidth:"100%",boxShadow:"0 32px 80px rgba(0,0,0,0.3)",maxHeight:"92vh",overflow:"auto"}}>
@@ -3836,6 +3874,31 @@ function EditorHub({onCreate}) {
           <Btn ch="Créer une nouvelle école →" v="primary" onClick={onCreate} full/>
         </div>
 
+        <div style={{background:"#f8fafc",borderRadius:13,padding:16,marginBottom:14}}>
+          <div style={{fontWeight:800,fontSize:13,color:"#0f172a",marginBottom:4}}>3️⃣ Générer un code d'activation</div>
+          <div style={{fontSize:11,color:"#64748b",marginBottom:12,lineHeight:1.5}}>Choisissez la formule, générez un code, puis transmettez-le à l'école. Un code = une école.</div>
+          <div style={{display:"flex",gap:8,alignItems:"flex-end",flexWrap:"wrap"}}>
+            <div style={{flex:1,minWidth:170}}><Slt label="Formule" value={genFormule} onChange={e=>setGenFormule(e.target.value)} opts={[{v:"basique",l:"Basique — 1 administrateur"},{v:"standard",l:"Standard — 3 administrateurs"},{v:"premium",l:"Premium — illimité"}]}/></div>
+            <Btn ch={genLoading?"Génération…":"Générer un code"} v="success" onClick={genererCode} disabled={genLoading}/>
+          </div>
+          {genErr&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:9,padding:"9px 13px",color:"#dc2626",fontSize:12,marginTop:10}}>{genErr}</div>}
+          {lastCode&&<div style={{background:"#ecfdf5",border:"1px solid #a7f3d0",borderRadius:10,padding:"12px 14px",marginTop:10,display:"flex",alignItems:"center",justifyContent:"space-between",gap:10}}>
+            <div><div style={{fontSize:10,color:"#059669",fontWeight:700,letterSpacing:1}}>NOUVEAU CODE</div><div style={{fontSize:20,fontWeight:900,color:"#065f46",letterSpacing:2}}>{lastCode}</div></div>
+            <Btn ch={copied===lastCode?"✓ Copié":"Copier"} v="ghost" onClick={()=>copier(lastCode)}/>
+          </div>}
+          {codes.length>0&&<div style={{marginTop:14}}>
+            <div style={{fontSize:11,fontWeight:700,color:"#64748b",marginBottom:6}}>Codes existants ({codes.length})</div>
+            <div style={{maxHeight:170,overflowY:"auto",border:"1px solid #eef2f7",borderRadius:9}}>
+              {codes.map(c=>(<div key={c.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,padding:"8px 11px",borderBottom:"1px solid #f1f5f9",fontSize:12}}>
+                <span style={{fontWeight:800,color:"#0f172a",letterSpacing:1}}>{c.code}</span>
+                <span style={{fontSize:10,fontWeight:700,color:"#475569",textTransform:"capitalize"}}>{FORMULES[c.formule]?.l||c.formule}</span>
+                <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:20,background:c.statut==="libre"?"#dcfce7":"#fee2e2",color:c.statut==="libre"?"#166534":"#991b1b"}}>{c.statut==="libre"?"Libre":"Utilisé"}</span>
+                <a href="#" onClick={e=>{e.preventDefault();copier(c.code);}} style={{fontSize:11,color:"#1a56db",textDecoration:"none",fontWeight:700}}>{copied===c.code?"✓":"Copier"}</a>
+              </div>))}
+            </div>
+          </div>}
+        </div>
+
         <div style={{textAlign:"center"}}><a href="#" onClick={e=>{e.preventDefault();try{location.hash="";}catch(_){};location.reload();}} style={{color:"#94a3b8",fontSize:11,textDecoration:"none"}}>← Retour à la connexion</a></div>
       </div>
     </div>
@@ -3849,6 +3912,7 @@ function App() {
   const [screen,setScreen]=useState(adminMode?"master":"login");
   const [booting,setBooting]=useState(hasSession); // restauration de session en cours
   const [codeActivation,setCodeActivation]=useState("");
+  const [masterPw,setMasterPw]=useState("");
   const [currentUser,setCurrentUser]=useState(null);
   const [etab,setEtab]=useState(null);
   const [page,setPage]=useState(()=>{try{return localStorage.getItem("monecole_page")||"dashboard";}catch(_){return "dashboard";}});
@@ -3963,8 +4027,8 @@ function App() {
   );
 
   // Espace éditeur (création d'école) — protégé par mot de passe maître
-  if(screen==="master") return <MasterGate onOk={()=>setScreen("editor")}/>;
-  if(screen==="editor") return <EditorHub onCreate={()=>setScreen("activation")}/>;
+  if(screen==="master") return <MasterGate onOk={(pw)=>{setMasterPw(pw||"");setScreen("editor");}}/>;
+  if(screen==="editor") return <EditorHub onCreate={()=>setScreen("activation")} masterPw={masterPw}/>;
   if(screen==="activation") return <ActivationScreen onDone={c=>{setCodeActivation(c);setScreen("check");}}/>;
   if(screen==="check") return <CheckScreen codeActivation={codeActivation} onResult={(e)=>{if(e){setEtab(e);setScreen("login");}else setScreen("onboarding");}}/>;
   if(screen==="onboarding") return <Onboarding codeActivation={codeActivation} onDone={(e,a)=>{try{if(a&&a.id!=null)localStorage.setItem("monecole_uid",String(a.id));}catch(_){}setEtab(e);setCurrentUser(a);setScreen("app");}}/>;
