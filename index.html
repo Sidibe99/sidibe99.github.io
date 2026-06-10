@@ -1335,7 +1335,7 @@ function Dashboard({data,etab,setPage,currentUser}) {
       <div><h2 style={{margin:0,fontSize:22,fontWeight:800,color:"#0f172a",fontFamily:"'Sora',sans-serif",letterSpacing:-0.5}}>{t("nav_dashboard")} 📊</h2><p style={{margin:"5px 0 0",color:"#64748b",fontSize:13}}>{etab.annee||""} · {etab.systeme==="semestre"?t("sys_sem"):t("sys_trim")} · {t("db_realtime")}</p></div>
       <div style={{display:"flex",alignItems:"center",gap:10}}>
         <button onClick={()=>setShowCalc(true)} title={t("calc_titre")} style={{background:"#fff",border:"1.5px solid #e2e8f0",borderRadius:13,width:46,height:46,cursor:"pointer",boxShadow:"0 4px 12px -7px rgba(0,0,0,.25)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a56db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><line x1="8.5" y1="6.5" x2="15.5" y2="6.5"/><line x1="8.5" y1="11" x2="8.5" y2="11"/><line x1="12" y1="11" x2="12" y2="11"/><line x1="15.5" y1="11" x2="15.5" y2="11"/><line x1="8.5" y1="14.5" x2="8.5" y2="14.5"/><line x1="12" y1="14.5" x2="12" y2="14.5"/><line x1="15.5" y1="14.5" x2="15.5" y2="14.5"/><line x1="8.5" y1="18" x2="8.5" y2="18"/><line x1="12" y1="18" x2="12" y2="18"/><line x1="15.5" y1="18" x2="15.5" y2="18"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="3" fill="#1a56db"/><rect x="6.5" y="4.2" width="11" height="4.3" rx="1.4" fill="#bfdbfe"/><circle cx="8" cy="12" r="1.15" fill="#fff"/><circle cx="12" cy="12" r="1.15" fill="#fff"/><circle cx="16" cy="12" r="1.15" fill="#fff"/><circle cx="8" cy="15.6" r="1.15" fill="#fff"/><circle cx="12" cy="15.6" r="1.15" fill="#fff"/><circle cx="16" cy="15.6" r="1.15" fill="#fff"/><circle cx="8" cy="19.2" r="1.15" fill="#fff"/><circle cx="12" cy="19.2" r="1.15" fill="#fff"/><circle cx="16" cy="19.2" r="1.15" fill="#fde047"/></svg>
         </button>
         <div style={{background:"linear-gradient(135deg,#0f172a,#1a56db)",borderRadius:15,padding:"12px 20px",color:"#fff",textAlign:"right",boxShadow:"0 8px 22px -8px rgba(26,86,219,.6)"}}>
           <div style={{fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.75)",textTransform:"capitalize"}}>{dateStr}</div>
@@ -2051,7 +2051,7 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
     const grid=`<table style="width:100%;border-collapse:collapse;margin-top:8px"><thead><tr>${th}</tr></thead><tbody>${corps}</tbody></table>`;
     const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     const SZ={p:{fs:9.5,pad:"3px 9px"},m:{fs:11,pad:"5px 12px"},g:{fs:13,pad:"8px 16px"}}[statTaille]||{fs:11,pad:"5px 12px"};
-    const statHTML=(statActif&&statRows.length)?`<div style="text-align:${statPos}"><table style="border-collapse:collapse;margin-top:22px;display:inline-block;text-align:left">
+    const statHTML=(statActif&&statRows.length)?`<div style="text-align:${statPos}"><table style="border-collapse:collapse;margin-top:22px;display:inline-block;width:auto;text-align:left">
       <thead><tr>
         <th style="border:1px solid #94a3b8;padding:${SZ.pad};background:#1a56db;color:#fff;font-size:${SZ.fs}px;text-align:left">${t("stat_tableau").replace("📊 ","")}</th>
         <th style="border:1px solid #94a3b8;padding:${SZ.pad};background:#1a56db;color:#fff;font-size:${SZ.fs}px;text-align:center">${t("stat_total")}</th>
@@ -2180,7 +2180,7 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
                 </select>
               </div>}
             </div>
-            <div style={{overflowX:"auto"}}>
+            <div style={{overflowX:"auto",display:"flex",justifyContent:statPos==="center"?"center":statPos==="right"?"flex-end":"flex-start"}}>
               <table style={{borderCollapse:"collapse",width:"auto"}}>
                 <thead><tr>{[t("fn_stat_libelle"),t("stat_total"),t("stat_filles"),""].map((h,i)=><th key={i} style={{padding:"6px 9px",fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",textAlign:"left"}}>{h}</th>)}</tr></thead>
                 <tbody>{statRows.map((r,i)=>(
@@ -2457,7 +2457,7 @@ function Notes({data,ops,etab,currentUser}) {
     const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     const SZ={p:{fs:9.5,pad:"3px 9px"},m:{fs:11,pad:"5px 12px"},g:{fs:13,pad:"8px 16px"}}[statTaille]||{fs:11,pad:"5px 12px"};
     const sr=computeNoteStat(statBase);
-    const statHTML=(sr&&sr.length)?`<div style="text-align:${statPos}"><table style="border-collapse:collapse;margin-top:22px;display:inline-block;text-align:left">
+    const statHTML=(sr&&sr.length)?`<div style="text-align:${statPos}"><table style="border-collapse:collapse;margin-top:22px;display:inline-block;width:auto;text-align:left">
       <thead><tr>
         <th style="border:1px solid #94a3b8;padding:${SZ.pad};background:#1a56db;color:#fff;font-size:${SZ.fs}px;text-align:left">${t("stat_tableau").replace("📊 ","")}</th>
         <th style="border:1px solid #94a3b8;padding:${SZ.pad};background:#1a56db;color:#fff;font-size:${SZ.fs}px;text-align:center">${t("stat_total")}</th>
