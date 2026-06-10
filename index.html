@@ -319,7 +319,7 @@ const I18N = {
     bu_toutes_classes:"Toutes classes", bu_tout_imprimer:"🖨️ Tout imprimer", bu_aucun_eleve:"Aucun élève.",
     fn_align_g:"Gauche", fn_align_c:"Centre", fn_align_d:"Droite",
     fn_sub:"Composez et imprimez une fiche à remplir à la main", fn_creez:"Créez d'abord des classes.",
-    fn_titre:"Titre du document", fn_lignes:"Lignes vides en bas", fn_nb_pages:"Nombre de pages", fn_matiere_ph:"Ex: Mathématiques (optionnel)", fn_mode_impr:"Impression", fn_mode_noms:"Avec les noms des élèves", fn_mode_vierge:"Fiche vierge (sans noms)", fn_stat_inclure:"Inclure le tableau statistique (dernière page)", fn_stat_recalc:"🔄 Recalculer", fn_stat_ligne:"+ Ligne", fn_stat_libelle:"Libellé", fn_stat_pos:"Position", fn_stat_taille:"Taille", fn_taille_p:"Petite", fn_taille_m:"Moyenne", fn_taille_g:"Grande", fn_stat_vpos:"Vertical", fn_vpos_apres:"Après la grille", fn_vpos_bas:"Bas de page",
+    fn_titre:"Titre du document", fn_lignes:"Lignes vides en bas", fn_nb_pages:"Nombre de pages", fn_rotation:"Rotation du titre de la colonne", fn_groupe_ph:"Groupe (optionnel)", fn_groupe_aide:"💡 Donnez le même nom de groupe à des colonnes voisines pour les regrouper sous un titre commun à l'impression (ex : « Notes » au-dessus de Devoir 1, Devoir 2, Composition).", fn_matiere_ph:"Ex: Mathématiques (optionnel)", fn_mode_impr:"Impression", fn_mode_noms:"Avec les noms des élèves", fn_mode_vierge:"Fiche vierge (sans noms)", fn_stat_inclure:"Inclure le tableau statistique (dernière page)", fn_stat_recalc:"🔄 Recalculer", fn_stat_ligne:"+ Ligne", fn_stat_libelle:"Libellé", fn_stat_pos:"Position", fn_stat_taille:"Taille", fn_taille_p:"Petite", fn_taille_m:"Moyenne", fn_taille_g:"Grande", fn_stat_vpos:"Vertical", fn_vpos_apres:"Après la grille", fn_vpos_bas:"Bas de page",
     fn_prefill_a:"seront pré-remplis, plus", fn_prefill_b:"ligne(s) vide(s).",
     fn_colonnes:"📐 Colonnes de la fiche", fn_add_col:"+ Ajouter une colonne", fn_col_nom_ph:"Nom colonne", fn_largeur:"Largeur",
     fn_apercu:"👁️ Aperçu", fn_autres_b:"autre(s) élève(s)",
@@ -501,7 +501,7 @@ const I18N = {
     bu_toutes_classes:"كل الأقسام", bu_tout_imprimer:"🖨️ طباعة الكل", bu_aucun_eleve:"لا تلاميذ.",
     fn_align_g:"يسار", fn_align_c:"وسط", fn_align_d:"يمين",
     fn_sub:"صمّم واطبع ورقة لملئها يدويًا", fn_creez:"أنشئ أقسامًا أولًا.",
-    fn_titre:"عنوان الوثيقة", fn_lignes:"أسطر فارغة في الأسفل", fn_nb_pages:"عدد الصفحات", fn_matiere_ph:"مثال: الرياضيات (اختياري)", fn_mode_impr:"الطباعة", fn_mode_noms:"بأسماء التلاميذ", fn_mode_vierge:"بطاقة فارغة (دون أسماء)", fn_stat_inclure:"إدراج الجدول الإحصائي (الصفحة الأخيرة)", fn_stat_recalc:"🔄 إعادة الحساب", fn_stat_ligne:"+ سطر", fn_stat_libelle:"التسمية", fn_stat_pos:"الموضع", fn_stat_taille:"الحجم", fn_taille_p:"صغير", fn_taille_m:"متوسط", fn_taille_g:"كبير", fn_stat_vpos:"عمودي", fn_vpos_apres:"بعد الجدول", fn_vpos_bas:"أسفل الصفحة",
+    fn_titre:"عنوان الوثيقة", fn_lignes:"أسطر فارغة في الأسفل", fn_nb_pages:"عدد الصفحات", fn_rotation:"تدوير عنوان العمود", fn_groupe_ph:"مجموعة (اختياري)", fn_groupe_aide:"💡 أعطِ نفس اسم المجموعة لأعمدة متجاورة لتجميعها تحت عنوان مشترك عند الطباعة (مثال: «النقاط» فوق فرض 1، فرض 2، الامتحان).", fn_matiere_ph:"مثال: الرياضيات (اختياري)", fn_mode_impr:"الطباعة", fn_mode_noms:"بأسماء التلاميذ", fn_mode_vierge:"بطاقة فارغة (دون أسماء)", fn_stat_inclure:"إدراج الجدول الإحصائي (الصفحة الأخيرة)", fn_stat_recalc:"🔄 إعادة الحساب", fn_stat_ligne:"+ سطر", fn_stat_libelle:"التسمية", fn_stat_pos:"الموضع", fn_stat_taille:"الحجم", fn_taille_p:"صغير", fn_taille_m:"متوسط", fn_taille_g:"كبير", fn_stat_vpos:"عمودي", fn_vpos_apres:"بعد الجدول", fn_vpos_bas:"أسفل الصفحة",
     fn_prefill_a:"سيُملأون مسبقًا، بالإضافة إلى", fn_prefill_b:"سطر فارغ.",
     fn_colonnes:"📐 أعمدة الورقة", fn_add_col:"+ إضافة عمود", fn_col_nom_ph:"اسم العمود", fn_largeur:"العرض",
     fn_apercu:"👁️ معاينة", fn_autres_b:"تلميذ آخر",
@@ -2105,7 +2105,23 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
     if(!classe)return;
     const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     const colgroup=`<colgroup>${cols.map(c=>`<col style="width:${c.largeur}px">`).join("")}</colgroup>`;
-    const headRow=`<tr>${cols.map(c=>`<th style="border:1px solid #94a3b8;padding:6px 8px;background:${c.couleur};color:#fff;font-size:11px;text-align:${c.align}">${esc(c.nom)}</th>`).join("")}</tr>`;
+    const thCell=(c,rs)=>{
+      const rot=parseInt(c.rot)||0;
+      let inner=esc(c.nom),extra="";
+      if(rot===90||rot===270){inner=`<span style="display:inline-block;writing-mode:vertical-rl;${rot===90?"transform:rotate(180deg);":""}white-space:nowrap">${esc(c.nom)}</span>`;extra="height:96px;vertical-align:middle;";}
+      else if(rot===180){inner=`<span style="display:inline-block;transform:rotate(180deg)">${esc(c.nom)}</span>`;}
+      return `<th ${rs?'rowspan="2"':""} style="border:1px solid #94a3b8;padding:6px 8px;background:${c.couleur};color:#fff;font-size:11px;text-align:${c.align};${extra}">${inner}</th>`;
+    };
+    const runs=[];cols.forEach(c=>{const g=(c.groupe||"").trim();const last=runs[runs.length-1];if(g&&last&&last.groupe===g)last.items.push(c);else runs.push({groupe:g,items:[c]});});
+    const hasGroups=runs.some(r=>r.groupe!=="");
+    let theadHTML;
+    if(!hasGroups){
+      theadHTML=`<thead><tr>${cols.map(c=>thCell(c,false)).join("")}</tr></thead>`;
+    } else {
+      const top=runs.map(r=>r.groupe!==""?`<th colspan="${r.items.length}" style="border:1px solid #94a3b8;padding:6px 8px;background:#1e3a8a;color:#fff;font-size:11px;text-align:center">${esc(r.groupe)}</th>`:thCell(r.items[0],true)).join("");
+      const bottom=runs.map(r=>r.groupe!==""?r.items.map(c=>thCell(c,false)).join(""):"").join("");
+      theadHTML=`<thead><tr>${top}</tr><tr>${bottom}</tr></thead>`;
+    }
     const rowHTML=(k)=>`<tr>${cols.map(c=>{
       const kind=colKind(c);
       let val="";
@@ -2137,7 +2153,7 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
       const first=p===0,last=p===N-1;
       let rows="";for(let r=0;r<counts[p];r++){rows+=rowHTML(k);k++;}
       const head=first?officialHeader(etab,{classe:classe.nom,docTitle:titre,matiere:matiereFiche}):"";
-      const thead=first?`<thead>${headRow}</thead>`:"";
+      const thead=first?theadHTML:"";
       const table=`<table style="width:100%;border-collapse:collapse;table-layout:fixed;margin-top:8px">${colgroup}${thead}<tbody>${rows}</tbody></table>`;
       if(last&&statHTML&&statVPos==="bas"){
         body+=`<div style="min-height:96vh;display:flex;flex-direction:column">${head}${table}<div style="margin-top:auto">${statHTML}</div></div>`;
@@ -2181,6 +2197,7 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
             <div style={{fontWeight:800,fontSize:14,color:"#0f172a"}}>{t("fn_colonnes")}</div>
             <Btn ch={t("fn_add_col")} v="ghost" s={{padding:"6px 12px",fontSize:12}} onClick={addCol}/>
           </div>
+          <div style={{fontSize:11,color:"#94a3b8",marginBottom:11,marginTop:-4}}>{t("fn_groupe_aide")}</div>
           <div style={{display:"flex",flexDirection:"column",gap:9}}>
             {cols.map((c,i)=>(
               <div key={i} style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",background:"#f8fafc",borderRadius:10,padding:"8px 10px"}}>
@@ -2189,9 +2206,11 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
                   <button onClick={()=>moveCol(i,1)} style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:5,cursor:"pointer",fontSize:9,lineHeight:1,padding:"1px 5px"}}>▼</button>
                 </div>
                 <input value={c.nom} onChange={e=>setCol(i,"nom",e.target.value)} placeholder={t("fn_col_nom_ph")} style={{flex:1,minWidth:120,padding:"7px 10px",borderRadius:8,border:"1.5px solid #e2e8f0",fontSize:12,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
+                <input value={c.groupe||""} onChange={e=>setCol(i,"groupe",e.target.value)} placeholder={t("fn_groupe_ph")} title={t("fn_groupe_ph")} style={{width:110,padding:"7px 10px",borderRadius:8,border:"1.5px dashed #cbd5e1",fontSize:12,fontWeight:600,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
                 {(()=>{const kind=colKind(c);return kind?<span style={{fontSize:10,background:"#dbeafe",color:"#1a56db",borderRadius:6,padding:"2px 7px",fontWeight:700}}>auto : {kind}</span>:null;})()}
                 <label style={{fontSize:10,color:"#94a3b8",display:"flex",alignItems:"center",gap:4}}>{t("fn_largeur")}<input type="number" value={c.largeur} onChange={e=>setCol(i,"largeur",parseInt(e.target.value)||60)} style={{width:54,padding:"6px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none"}}/></label>
                 <select value={c.align} onChange={e=>setCol(i,"align",e.target.value)} style={{padding:"6px 8px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:11,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{ALIGNS.map(a=><option key={a.v} value={a.v}>{a.l}</option>)}</select>
+                <select title={t("fn_rotation")} value={c.rot||0} onChange={e=>setCol(i,"rot",parseInt(e.target.value)||0)} style={{padding:"6px 8px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:11,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}><option value={0}>⟳ 0°</option><option value={90}>⟳ 90°</option><option value={180}>⟳ 180°</option><option value={270}>⟳ 270°</option></select>
                 <div style={{display:"flex",gap:3}}>{COULEURS.map(col=>(
                   <button key={col} onClick={()=>setCol(i,"couleur",col)} style={{width:20,height:20,borderRadius:5,background:col,border:c.couleur===col?"2px solid #0f172a":"2px solid transparent",cursor:"pointer"}}/>
                 ))}</div>
@@ -2206,7 +2225,14 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
           <div style={{fontWeight:800,fontSize:14,color:"#0f172a",marginBottom:12}}>{t("fn_apercu")}</div>
           <div style={{overflowX:"auto"}}>
             <table style={{borderCollapse:"collapse",width:"100%"}}>
-              <thead><tr>{cols.map((c,i)=><th key={i} style={{border:"1px solid #94a3b8",padding:"6px 8px",background:c.couleur,color:"#fff",fontSize:11,textAlign:c.align,minWidth:c.largeur}}>{c.nom}</th>)}</tr></thead>
+              <thead>{(()=>{
+                const thFor=(c,ri,rowSpan)=>{const rot=parseInt(c.rot)||0;const vs=(rot===90||rot===270)?{writingMode:"vertical-rl",transform:rot===90?"rotate(180deg)":"none"}:rot===180?{transform:"rotate(180deg)"}:{};return <th key={ri} rowSpan={rowSpan} style={{border:"1px solid #94a3b8",padding:"6px 8px",background:c.couleur,color:"#fff",fontSize:11,textAlign:c.align,minWidth:c.largeur,height:(rot===90||rot===270)?90:"auto"}}><span style={{display:"inline-block",whiteSpace:"nowrap",...vs}}>{c.nom}</span></th>;};
+                const runs=[];cols.forEach(c=>{const g=(c.groupe||"").trim();const last=runs[runs.length-1];if(g&&last&&last.groupe===g)last.items.push(c);else runs.push({groupe:g,items:[c]});});
+                const hasGroups=runs.some(r=>r.groupe!=="");
+                if(!hasGroups)return <tr>{cols.map((c,i)=>thFor(c,i,1))}</tr>;
+                let bi=0;
+                return <><tr>{runs.map((r,ri)=>r.groupe!==""?<th key={"g"+ri} colSpan={r.items.length} style={{border:"1px solid #94a3b8",padding:"6px 8px",background:"#1e3a8a",color:"#fff",fontSize:11,textAlign:"center"}}>{r.groupe}</th>:thFor(r.items[0],"t"+ri,2))}</tr><tr>{runs.flatMap((r)=>r.groupe!==""?r.items.map(c=>thFor(c,"b"+(bi++),1)):[])}</tr></>;
+              })()}</thead>
               <tbody>
                 {eleves.slice(0,3).map((e,i)=><tr key={e.id}>{cols.map((c,j)=>{const kind=colKind(c);let v="";if(kind==="num")v=i+1;else if(modeImpr==="noms"){if(kind==="nom")v=`${e.prenom||""} ${e.nom||""}`.trim();else if(kind==="prenom")v=e.prenom||"";else if(kind==="matricule")v=e.matricule||"";}return <td key={j} style={{border:"1px solid #cbd5e1",padding:"6px 8px",fontSize:11,textAlign:c.align}}>{v}</td>;})}</tr>)}
                 {eleves.length>3&&<tr><td colSpan={cols.length} style={{textAlign:"center",fontSize:11,color:"#94a3b8",padding:6}}>… +{eleves.length-3} {t("fn_autres_b")}</td></tr>}
