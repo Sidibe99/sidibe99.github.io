@@ -234,7 +234,7 @@ const I18N = {
     sh_bienvenue:"Bienvenue", sh_fiche:"Fiche vierge",
     btn_new_classe:"+ Nouvelle classe", btn_new_matiere:"+ Nouvelle matière", btn_new_prof:"+ Nouveau professeur",
     btn_new_user:"+ Nouvel utilisateur", btn_new_groupe:"+ Nouveau groupe",
-    btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.", sess_new_login:"Nouvelle connexion détectée", sess_new_desc:"Quelqu'un vient de se connecter à votre compte depuis :", sess_deconnecter:"Déconnecter", sess_cetait_moi:"C'était moi", sess_revoked:"Cette session a été déconnectée à distance.", sess_inconnu:"Appareil inconnu",
+    btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.", sess_new_login:"Nouvelle connexion détectée", sess_new_desc:"Quelqu'un vient de se connecter à votre compte depuis :", sess_deconnecter:"Déconnecter", sess_cetait_moi:"C'était moi", sess_revoked:"Cette session a été déconnectée à distance.", sess_inconnu:"Appareil inconnu", sess_appareils:"Appareils connectés", sess_appareils_aide:"Voici les appareils connectés à votre compte. Vous pouvez déconnecter ceux que vous ne reconnaissez pas.", sess_aucun:"Aucun appareil connecté pour le moment.", sess_cet_appareil:"Cet appareil", sess_deco_confirm:"Déconnecter cet appareil ?",
     imp_export:"⬇ Exporter Excel", imp_import:"⬆ Importer Excel", imp_titre:"Importer des élèves (Excel / CSV)", imp_word:"⬇ Exporter Word",
     imp_intro:"Choisissez la classe de destination, puis un fichier Excel (.xlsx) ou CSV. La première ligne doit contenir les intitulés de colonnes.",
     imp_choisir_fichier:"📁 Choisir un fichier", imp_detectes:"élève(s) détecté(s)", imp_importer:"Importer",
@@ -417,7 +417,7 @@ const I18N = {
     sh_bienvenue:"مرحبًا", sh_fiche:"ورقة فارغة",
     btn_new_classe:"+ فصل جديد", btn_new_matiere:"+ مادة جديدة", btn_new_prof:"+ أستاذ جديد",
     btn_new_user:"+ مستخدم جديد", btn_new_groupe:"+ مجموعة جديدة",
-    btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.", sess_new_login:"تم اكتشاف تسجيل دخول جديد", sess_new_desc:"قام شخص ما بتسجيل الدخول إلى حسابك من:", sess_deconnecter:"قطع الاتصال", sess_cetait_moi:"كان أنا", sess_revoked:"تم قطع هذه الجلسة عن بُعد.", sess_inconnu:"جهاز غير معروف",
+    btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.", sess_new_login:"تم اكتشاف تسجيل دخول جديد", sess_new_desc:"قام شخص ما بتسجيل الدخول إلى حسابك من:", sess_deconnecter:"قطع الاتصال", sess_cetait_moi:"كان أنا", sess_revoked:"تم قطع هذه الجلسة عن بُعد.", sess_inconnu:"جهاز غير معروف", sess_appareils:"الأجهزة المتصلة", sess_appareils_aide:"هذه هي الأجهزة المتصلة بحسابك. يمكنك قطع اتصال ما لا تعرفه.", sess_aucun:"لا يوجد جهاز متصل حاليًا.", sess_cet_appareil:"هذا الجهاز", sess_deco_confirm:"قطع اتصال هذا الجهاز؟",
     imp_export:"⬇ تصدير إكسل", imp_import:"⬆ استيراد إكسل", imp_titre:"استيراد التلاميذ (إكسل / CSV)", imp_word:"⬇ تصدير وورد",
     imp_intro:"اختر القسم الوجهة، ثم ملف إكسل (.xlsx) أو CSV. يجب أن يحتوي السطر الأول على عناوين الأعمدة.",
     imp_choisir_fichier:"📁 اختر ملفًا", imp_detectes:"تلميذ تم اكتشافه", imp_importer:"استيراد",
@@ -3574,7 +3574,27 @@ function Depenses({data,ops,etab}) {
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
 // ── PARAMÈTRES ÉTABLISSEMENT ──────────────────────────────────────────────────
-function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand,setBrand,uiZoom,setUiZoom,lang,setLang,notifEnabled,setNotifEnabled,onLogout}) {
+function AppareilsConnectes({currentSessionId}){
+  const [list,setList]=useState(null);
+  const [busy,setBusy]=useState(false);
+  const charger=async()=>{ try{ const {data}=await sb.from("sessions").select("*").order("created_at",{ascending:false}); setList(data||[]); }catch(_){ setList([]); } };
+  useEffect(()=>{ charger(); },[]);
+  const deco=async(id)=>{ if(!confirmSuppr(t("sess_deco_confirm")))return; setBusy(true); try{ await sb.from("sessions").update({revoked:true}).eq("id",id); }catch(_){} await charger(); setBusy(false); };
+  if(list===null) return <div style={{fontSize:13,color:"var(--me-text-2)"}}>…</div>;
+  if(!list.length) return <div style={{fontSize:13,color:"var(--me-text-3)"}}>{t("sess_aucun")}</div>;
+  return <div style={{display:"flex",flexDirection:"column",gap:9}}>
+    {list.map(s=>{ const moi=s.id===currentSessionId; let dte=""; try{dte=new Date(s.created_at).toLocaleString(CURRENT_LANG==="ar"?"ar":"fr-FR");}catch(_){}
+      return <div key={s.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,padding:"11px 13px",borderRadius:11,border:"1.5px solid var(--me-border-2)",background:"var(--me-surface)"}}>
+        <div style={{minWidth:0}}>
+          <div style={{fontSize:13,fontWeight:700,color:"var(--me-text)",display:"flex",alignItems:"center",gap:7,flexWrap:"wrap"}}>📱 {s.appareil||t("sess_inconnu")} {moi&&<span style={{fontSize:10,fontWeight:800,color:"var(--me-brand)",background:"rgba(26,86,219,0.1)",padding:"2px 8px",borderRadius:20}}>{t("sess_cet_appareil")}</span>}</div>
+          <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:2}}>{dte}</div>
+        </div>
+        {!moi&&<button onClick={()=>deco(s.id)} disabled={busy} style={{flexShrink:0,background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:8,padding:"7px 12px",cursor:busy?"default":"pointer",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("sess_deconnecter")}</button>}
+      </div>;
+    })}
+  </div>;
+}
+function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand,setBrand,uiZoom,setUiZoom,lang,setLang,notifEnabled,setNotifEnabled,currentSessionId,onLogout}) {
   const toggleNotif=async()=>{if(notifEnabled){try{localStorage.setItem("monecole_notifs","0");}catch(_){}setNotifEnabled(false);}else{const ok=await askNotif();setNotifEnabled(ok);if(ok)notify(t("notif_actif_titre"),t("notif_actif_corps"),"monecole-test");else alert(t("notif_refus"));}};
   const [form,setForm]=useState({
     nom:etab.nom||"",nom_ar:etab.nom_ar||"",devise_txt:etab.devise_txt||"",annee:etab.annee||"",devise:etab.devise||"GNF",
@@ -3978,57 +3998,10 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
         </div>}
       </Card>}
       <Card s={{marginTop:18}}>
-        <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)",marginBottom:16,fontFamily:"'Sora',sans-serif"}}>⚙️ {t("st_prefs")}</div>
-
-        <Lbl t={t("ui_taille")}>
-          <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <span style={{fontSize:12,color:"var(--me-text-2)",fontWeight:700}}>{t("pref_petit")}</span>
-            <input type="range" min={85} max={150} step={5} value={Math.round(uiZoom*100)} onChange={e=>setUiZoom(parseInt(e.target.value)/100)} style={{flex:1,accentColor:"var(--me-brand)",height:6}}/>
-            <span style={{fontSize:15,color:"var(--me-text-2)",fontWeight:700}}>{t("pref_grand")}</span>
-            <span style={{minWidth:44,textAlign:"right",fontSize:13,fontWeight:800,color:"var(--me-text)"}}>{Math.round(uiZoom*100)}%</span>
-          </div>
-        </Lbl>
-
-        <Lbl t={t("ui_langue")}>
-          <div style={{display:"flex",gap:10}}>
-            {[{v:"fr",f:"🇫🇷",l:"Français"},{v:"ar",f:"🇸🇦",l:"العربية"}].map(o=>(
-              <button key={o.v} onClick={()=>setLang(o.v)} style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"10px",borderRadius:11,cursor:"pointer",border:lang===o.v?"2px solid var(--me-brand)":"1.5px solid var(--me-border-2)",background:lang===o.v?"rgba(26,86,219,0.07)":"var(--me-surface)",color:"var(--me-text)",fontSize:14,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-                <span style={{fontSize:20}}>{o.f}</span>{o.l}
-              </button>
-            ))}
-          </div>
-        </Lbl>
-
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,padding:"6px 0 14px"}}>
-          <div><div style={{fontSize:13,fontWeight:700,color:"var(--me-text)"}}>🔔 {t("st_notif_titre")}</div><div style={{fontSize:11.5,color:"var(--me-text-2)",marginTop:2}}>{notifEnabled?t("notif_on"):t("notif_off")}</div></div>
-          <button onClick={toggleNotif} role="switch" aria-checked={notifEnabled} style={{width:52,height:30,borderRadius:15,border:"none",cursor:"pointer",background:notifEnabled?"#34c759":"#cbd5e1",position:"relative",transition:"background .2s",flexShrink:0,padding:0}}>
-            <span style={{position:"absolute",top:3,left:notifEnabled?25:3,width:24,height:24,borderRadius:"50%",background:"var(--me-surface,#fff)",boxShadow:"0 1px 3px rgba(0,0,0,.3)",transition:"left .2s"}}/>
-          </button>
-        </div>
-
-        <Lbl t={t("st_couleur")}>
-          <div style={{fontSize:12,color:"var(--me-text-2)",marginBottom:11}}>{t("st_couleur_aide")}</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
-            {Object.entries(BRANDS).map(([id,b])=>(
-              <button key={id} onClick={()=>setBrand(id)} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 14px",borderRadius:12,cursor:"pointer",border:brand===id?"2px solid "+b.c1:"1.5px solid var(--me-border-2)",background:brand===id?b.c1+"14":"var(--me-surface)",color:"var(--me-text)",fontSize:13,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-                <span style={{width:20,height:20,borderRadius:"50%",background:"linear-gradient(135deg,"+b.c1+","+b.c2+")",flexShrink:0,boxShadow:"0 2px 6px -1px "+b.c1+"77"}}/>{b.l}{brand===id&&<span style={{color:b.c1,fontSize:14}}>✓</span>}
-              </button>
-            ))}
-          </div>
-        </Lbl>
-
-        <Lbl t={t("ui_apparence")} mb={0}>
-          <div style={{fontSize:12,color:"var(--me-text-2)",marginBottom:11}}>{t("st_theme_aide")}</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
-            {Object.entries(THEMES).map(([id,th])=>(
-              <button key={id} onClick={()=>setTheme(id)} style={{display:"flex",alignItems:"center",gap:9,padding:"10px 14px",borderRadius:12,cursor:"pointer",border:theme===id?"2px solid var(--me-brand)":"1.5px solid var(--me-border-2)",background:theme===id?"rgba(26,86,219,0.07)":"var(--me-surface)",color:"var(--me-text)",fontSize:13,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-                <span style={{width:22,height:22,borderRadius:7,background:th.v.bg,flexShrink:0,border:"1px solid var(--me-border-2)",boxShadow:"inset 0 0 0 3px "+th.v.surface}}/>{th.l}{theme===id&&<span style={{color:"var(--me-brand)",fontSize:14}}>✓</span>}
-              </button>
-            ))}
-          </div>
-        </Lbl>
+        <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)",marginBottom:6,fontFamily:"'Sora',sans-serif"}}>📱 {t("sess_appareils")}</div>
+        <div style={{fontSize:12,color:"var(--me-text-2)",marginBottom:14}}>{t("sess_appareils_aide")}</div>
+        <AppareilsConnectes currentSessionId={currentSessionId}/>
       </Card>
-
       <Card s={{marginTop:18}}>
         <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)",marginBottom:14,fontFamily:"'Sora',sans-serif"}}>👤 {t("st_compte")}</div>
         <div style={{display:"flex",justifyContent:"flex-end"}}>
@@ -4221,6 +4194,7 @@ function App() {
   const [currentUser,setCurrentUser]=useState(null);
   const [newLogin,setNewLogin]=useState(null); // info d'une autre connexion détectée
   const mySessionRef=useRef(null); // id de la ligne sessions de CE navigateur
+  const [mySessionId,setMySessionId]=useState(null);
   const [etab,setEtab]=useState(null);
   const [page,setPage]=useState(()=>{try{return localStorage.getItem("monecole_page")||"dashboard";}catch(_){return "dashboard";}});
   const [lang,setLang]=useState(CURRENT_LANG);
@@ -4360,7 +4334,7 @@ function App() {
         const auth_uid=session.user.id;
         const {data:row}=await sb.from("sessions").insert({auth_uid,appareil:deviceLabel(),revoked:false}).select().single();
         if(cancelled){ if(row&&row.id){try{await sb.from("sessions").delete().eq("id",row.id);}catch(_){}} return; }
-        if(row&&row.id) mySessionRef.current=row.id;
+        if(row&&row.id){ mySessionRef.current=row.id; setMySessionId(row.id); }
         chan=sb.channel("sessions-"+auth_uid)
           .on("postgres_changes",{event:"INSERT",schema:"public",table:"sessions",filter:"auth_uid=eq."+auth_uid},(p)=>{ const n=p.new; if(n&&n.id!==mySessionRef.current) setNewLogin({id:n.id,appareil:n.appareil||t("sess_inconnu")}); })
           .on("postgres_changes",{event:"UPDATE",schema:"public",table:"sessions",filter:"auth_uid=eq."+auth_uid},(p)=>{ const n=p.new; if(n&&n.id===mySessionRef.current&&n.revoked){ try{sb.auth.signOut();}catch(_){} try{localStorage.removeItem("monecole_uid");}catch(_){} try{alert(t("sess_revoked"));}catch(_){} setCurrentUser(null); setScreen("login"); } })
@@ -4416,7 +4390,7 @@ function App() {
     presences:<Presences data={scopedData} ops={ops} etab={etab||{}}/>,
     messagerie:<Messagerie data={data} ops={ops} currentUser={currentUser}/>,
     utilisateurs:<Utilisateurs data={data} ops={ops} currentUser={currentUser} etab={etab||{}}/>,
-    parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser} theme={theme} setTheme={setTheme} brand={brand} setBrand={setBrand} uiZoom={uiZoom} setUiZoom={setUiZoom} lang={lang} setLang={setLang} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} onLogout={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>,
+    parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser} theme={theme} setTheme={setTheme} brand={brand} setBrand={setBrand} uiZoom={uiZoom} setUiZoom={setUiZoom} lang={lang} setLang={setLang} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} currentSessionId={mySessionId} onLogout={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>,
   };
 
   return(
