@@ -882,7 +882,7 @@ const Btn = ({ch,v="primary",onClick,disabled,full,s={}}) => {
 const Badge = ({role}) => <span style={{background:(ROLE_CLR[role]||"#6b7280")+"20",color:ROLE_CLR[role]||"#6b7280",border:`1px solid ${ROLE_CLR[role]||"#6b7280"}35`,padding:"2px 9px",borderRadius:999,fontSize:10,fontWeight:700,textTransform:"uppercase"}}>{role}</span>;
 const Card = ({children,s={}}) => <div className="me-card" style={{background:"var(--me-surface)",borderRadius:16,padding:22,boxShadow:"0 1px 3px rgba(15,23,42,.04),0 6px 18px -10px rgba(15,23,42,.12)",border:"1px solid var(--me-border)",...s}}>{children}</div>;
 const Modal = ({title,onClose,children,w=520}) => (
-  <div className="me-modal-bg" style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.5)",zIndex:999,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(8px)",padding:16}} onClick={onClose}>
+  <div className="me-modal-bg" style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.5)",zIndex:999,display:"flex",alignItems:"center",justifyContent:"center",WebkitBackdropFilter:"blur(8px)",backdropFilter:"blur(8px)",padding:16}} onClick={onClose}>
     <div className="me-modal" style={{background:"var(--me-surface)",borderRadius:20,padding:28,width:w,maxWidth:"100%",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 32px 70px rgba(15,23,42,0.28)"}} onClick={e=>e.stopPropagation()}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
         <h3 style={{margin:0,fontSize:17,fontWeight:800,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>{title}</h3>
@@ -959,11 +959,11 @@ function ActivationScreen({onDone}) {
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1a56db 100%)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
       <div style={{width:420,maxWidth:"100%"}}>
         <div style={{textAlign:"center",marginBottom:28}}>
-          <div style={{width:70,height:70,borderRadius:22,background:"rgba(255,255,255,0.12)",backdropFilter:"blur(10px)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:34,margin:"0 auto 14px",border:"1px solid rgba(255,255,255,0.18)"}}>🎓</div>
+          <div style={{width:70,height:70,borderRadius:22,background:"rgba(255,255,255,0.12)",WebkitBackdropFilter:"blur(10px)",backdropFilter:"blur(10px)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:34,margin:"0 auto 14px",border:"1px solid rgba(255,255,255,0.18)"}}>🎓</div>
           <h1 style={{color:"#fff",fontSize:30,fontWeight:900,margin:"0 0 5px",letterSpacing:-1}}>MonEcole</h1>
           <p style={{color:"rgba(255,255,255,0.55)",margin:0,fontSize:13}}>Gestion scolaire · Guinée · Synchronisée</p>
         </div>
-        <div style={{background:"rgba(255,255,255,0.07)",backdropFilter:"blur(20px)",borderRadius:20,padding:30,border:"1px solid rgba(255,255,255,0.1)"}}>
+        <div style={{background:"rgba(255,255,255,0.07)",WebkitBackdropFilter:"blur(20px)",backdropFilter:"blur(20px)",borderRadius:20,padding:30,border:"1px solid rgba(255,255,255,0.1)"}}>
           <p style={{color:"rgba(255,255,255,0.65)",fontSize:13,margin:"0 0 16px",textAlign:"center"}}>🔑 Code d'activation</p>
           <input value={code} onChange={e=>setCode(e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()} placeholder="EX: MONECOLE-2026"
             style={{width:"100%",padding:"13px 16px",borderRadius:11,border:`2px solid ${err?"#ef4444":"rgba(255,255,255,0.18)"}`,background:"rgba(255,255,255,0.09)",color:"#fff",fontSize:15,fontWeight:800,letterSpacing:3,textAlign:"center",outline:"none",boxSizing:"border-box",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
@@ -4296,6 +4296,11 @@ function App() {
     const st=document.createElement("style"); st.id="me-responsive";
     st.textContent=`
       :root{--me-bg:linear-gradient(135deg,#eef2f7,#e8eef6);--me-surface:#ffffff;--me-surface-2:#f8fafc;--me-border:#eef2f7;--me-border-2:#e2e8f0;--me-text:#0f172a;--me-text-2:#64748b;--me-text-3:#94a3b8;--me-brand:#1a56db;--me-brand2:#1e40af;}
+      html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+      input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]),textarea{-webkit-appearance:none;appearance:none;}
+      img{max-width:100%;}
+      .me-main{overscroll-behavior:contain;}
+      @supports not (height:100dvh){ .me-fullh{height:100vh !important;} }
       html,body{max-width:100%;overflow-x:hidden;}
       *{-webkit-tap-highlight-color:rgba(0,0,0,0);}
       button,a,select,label,[role=button]{touch-action:manipulation;}
@@ -4387,7 +4392,7 @@ function App() {
   };
 
   return(
-    <div className={TH.dark?"me-dark":""} style={{display:"flex",height:"100dvh",overflow:"hidden",fontFamily:"'Plus Jakarta Sans',sans-serif",background:"var(--me-bg)","--me-bg":TH.v.bg,"--me-surface":TH.v.surface,"--me-surface-2":TH.v.s2,"--me-border":TH.v.border,"--me-border-2":TH.v.border2,"--me-text":TH.v.text,"--me-text-2":TH.v.text2,"--me-text-3":TH.v.text3,"--me-brand":BR.c1,"--me-brand2":BR.c2}}>
+    <div className={"me-fullh "+(TH.dark?"me-dark":"")} style={{display:"flex",height:"100dvh",overflow:"hidden",fontFamily:"'Plus Jakarta Sans',sans-serif",background:"var(--me-bg)","--me-bg":TH.v.bg,"--me-surface":TH.v.surface,"--me-surface-2":TH.v.s2,"--me-border":TH.v.border,"--me-border-2":TH.v.border2,"--me-text":TH.v.text,"--me-text-2":TH.v.text2,"--me-text-3":TH.v.text3,"--me-brand":BR.c1,"--me-brand2":BR.c2}}>
       <style>{`:root{--me-bg:linear-gradient(135deg,#eef2f7 0%,#e8eef6 100%);--me-surface:#fff;--me-surface-2:#f8fafc;--me-border:#eef2f7;--me-border-2:#e2e8f0;--me-text:#0f172a;--me-text-2:#64748b;--me-text-3:#94a3b8;}
 .me-main{color:var(--me-text);}
 .me-row:hover td{background:var(--me-surface-2)!important;}
