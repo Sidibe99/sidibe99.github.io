@@ -913,10 +913,12 @@ const Empty = ({icon,text}) => <div style={{textAlign:"center",padding:"60px 20p
 const Tbl = ({cols,rows,empty}) => (
   <div style={{background:"var(--me-surface)",borderRadius:14,overflow:"hidden",boxShadow:"0 1px 8px rgba(0,0,0,0.06)",border:"1px solid var(--me-border)"}}>
     {rows.length===0?empty:(
+      <div className="me-tbl-scroll" style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
       <table style={{width:"100%",borderCollapse:"collapse"}}>
         <thead><tr style={{background:"var(--me-surface-2)"}}>{cols.map(c=><th key={c} style={{padding:"11px 15px",textAlign:"left",fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase",letterSpacing:0.8,whiteSpace:"nowrap"}}>{c}</th>)}</tr></thead>
         <tbody>{rows}</tbody>
       </table>
+      </div>
     )}
   </div>
 );
@@ -4183,6 +4185,7 @@ function App() {
   const [etab,setEtab]=useState(null);
   const [page,setPage]=useState(()=>{try{return localStorage.getItem("monecole_page")||"dashboard";}catch(_){return "dashboard";}});
   const [lang,setLang]=useState(CURRENT_LANG);
+  CURRENT_LANG=lang; // synchronise la langue lue par t()/txt() dès ce rendu (changement immédiat en 1 clic)
   const [uiZoom,setUiZoom]=useState(()=>{try{const v=parseFloat(localStorage.getItem("monecole_zoom"));return v&&v>=0.85&&v<=1.6?v:1.1;}catch(_){return 1.1;}});
   const [isMobile,setIsMobile]=useState(()=>{try{return window.innerWidth<860;}catch(_){return false;}});
   const [navOpen,setNavOpen]=useState(false);
@@ -4192,6 +4195,7 @@ function App() {
   useEffect(()=>{try{localStorage.setItem("monecole_theme",theme);}catch(_){}},[theme]);
   const TH=THEMES[theme]||THEMES.clair;
   useEffect(()=>{const onR=()=>{try{setIsMobile(window.innerWidth<860);}catch(_){}};window.addEventListener("resize",onR);return ()=>window.removeEventListener("resize",onR);},[]);
+  useEffect(()=>{try{let m=document.querySelector('meta[name=viewport]');if(!m){m=document.createElement("meta");m.name="viewport";document.head.appendChild(m);}m.setAttribute("content","width=device-width, initial-scale=1, viewport-fit=cover");}catch(_){}},[]);
   useEffect(()=>{try{localStorage.setItem("monecole_page",page);}catch(_){}},[page]);
   useEffect(()=>{try{localStorage.setItem("monecole_zoom",String(uiZoom));}catch(_){}},[uiZoom]);
   const [msgSeen,setMsgSeen]=useState(0);
@@ -4252,16 +4256,22 @@ function App() {
 
   // Ajustements responsives cosmétiques (le layout principal est piloté par isMobile)
   useEffect(()=>{
+    try{const mv=document.querySelector('meta[name="viewport"]');if(mv)mv.setAttribute("content","width=device-width, initial-scale=1, viewport-fit=cover");}catch(_){}
     if(document.getElementById("me-responsive")) return;
     const st=document.createElement("style"); st.id="me-responsive";
     st.textContent=`
       html,body{max-width:100%;overflow-x:hidden;}
-      .me-main{min-width:0;}
+      *{-webkit-tap-highlight-color:rgba(0,0,0,0);}
+      button,a,select,label,[role=button]{touch-action:manipulation;}
+      .me-main{min-width:0;-webkit-overflow-scrolling:touch;}
       .me-page{max-width:100%;}
       .me-page img{max-width:100%;height:auto;}
+      .me-tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
       body{zoom:1.12;}
+      @media (max-width:1100px){ body{zoom:1.08;} }
       @media (max-width:860px){
-        body{zoom:1.06;}
+        body{zoom:1.0;}
+        input,select,textarea{font-size:16px !important;}
         .me-shdr{flex-wrap:wrap}
         .me-shdr h2{font-size:19px !important}
         .me-page table{font-size:11.5px}
@@ -4270,7 +4280,7 @@ function App() {
         .me-msg-grid > .me-card:first-child{max-height:38vh;}
         .me-msg-grid > .me-card:last-child{min-height:60vh;}
       }
-      @media (max-width:420px){ .me-card{padding:14px !important} }
+      @media (max-width:420px){ .me-card{padding:14px !important} .me-page td,.me-page th{padding:6px 6px !important} }
     `;
     document.head.appendChild(st);
   },[]);
@@ -4343,14 +4353,22 @@ function App() {
     <div className={TH.dark?"me-dark":""} style={{display:"flex",height:"100dvh",overflow:"hidden",fontFamily:"'Plus Jakarta Sans',sans-serif",background:"var(--me-bg)","--me-bg":TH.v.bg,"--me-surface":TH.v.surface,"--me-surface-2":TH.v.s2,"--me-border":TH.v.border,"--me-border-2":TH.v.border2,"--me-text":TH.v.text,"--me-text-2":TH.v.text2,"--me-text-3":TH.v.text3}}>
       <style>{`:root{--me-bg:linear-gradient(135deg,#eef2f7 0%,#e8eef6 100%);--me-surface:#fff;--me-surface-2:#f8fafc;--me-border:#eef2f7;--me-border-2:#e2e8f0;--me-text:#0f172a;--me-text-2:#64748b;--me-text-3:#94a3b8;}
 .me-main{color:var(--me-text);}
-.me-row:hover td{background:var(--me-surface-2)!important;}`}</style>
+.me-row:hover td{background:var(--me-surface-2)!important;}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+*{-webkit-tap-highlight-color:transparent;}
+body{overscroll-behavior-y:none;}
+.me-main{-webkit-overflow-scrolling:touch;}
+@media (max-width:860px){
+  input,select,textarea{font-size:16px!important;}
+}
+@media print{ .me-noprint{display:none!important;} }`}</style>
       {toast&&<Toast msg={toast.msg} type={toast.type}/>}
-      {isMobile&&<div style={{position:"fixed",top:0,left:0,right:0,height:50,background:"linear-gradient(180deg,#0f172a,#13203a)",zIndex:50,display:"flex",alignItems:"center",gap:11,padding:"0 12px",boxShadow:"0 2px 12px rgba(0,0,0,.3)"}}>
+      {isMobile&&<div style={{position:"fixed",top:0,left:0,right:0,height:"calc(50px + env(safe-area-inset-top))",background:"linear-gradient(180deg,#0f172a,#13203a)",zIndex:50,display:"flex",alignItems:"center",gap:11,padding:"env(safe-area-inset-top) 12px 0",boxShadow:"0 2px 12px rgba(0,0,0,.3)"}}>
         <button onClick={()=>setNavOpen(true)} aria-label="Menu" style={{background:"rgba(255,255,255,0.12)",border:"none",color:"#fff",borderRadius:9,width:38,height:38,fontSize:19,cursor:"pointer",lineHeight:1}}>☰</button>
         <div style={{fontWeight:800,fontSize:15,color:"#fff",fontFamily:"'Sora',sans-serif"}}>MonEcole</div>
       </div>}
       {isMobile&&navOpen&&<div onClick={()=>setNavOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.45)",zIndex:55}}/>}
-      <div style={isMobile?{position:"fixed",top:0,left:0,height:"100dvh",width:240,maxWidth:"84vw",background:"linear-gradient(180deg,#0f172a 0%,#13203a 100%)",display:"flex",flexDirection:"column",zIndex:60,transform:navOpen?"translateX(0)":"translateX(-100%)",transition:"transform .25s ease",boxShadow:navOpen?"6px 0 34px rgba(0,0,0,.45)":"none"}:{width:214,height:"100dvh",background:"linear-gradient(180deg,#0f172a 0%,#13203a 100%)",display:"flex",flexDirection:"column",flexShrink:0,boxShadow:"2px 0 18px rgba(15,23,42,.18)"}}>
+      <div style={isMobile?{position:"fixed",top:0,left:0,height:"100dvh",width:240,maxWidth:"84vw",background:"linear-gradient(180deg,#0f172a 0%,#13203a 100%)",display:"flex",flexDirection:"column",zIndex:60,paddingTop:"env(safe-area-inset-top)",paddingBottom:"env(safe-area-inset-bottom)",transform:navOpen?"translateX(0)":"translateX(-100%)",transition:"transform .25s ease",boxShadow:navOpen?"6px 0 34px rgba(0,0,0,.45)":"none"}:{width:214,height:"100dvh",background:"linear-gradient(180deg,#0f172a 0%,#13203a 100%)",display:"flex",flexDirection:"column",flexShrink:0,boxShadow:"2px 0 18px rgba(15,23,42,.18)"}}>
         <div style={{padding:"18px 13px",borderBottom:"1px solid rgba(255,255,255,0.07)",flexShrink:0}}>
           <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:11}}>
             <div style={{width:38,height:38,borderRadius:11,background:(etab?.logo_app||etab?.logo)?"#fff":"linear-gradient(135deg,#1a56db,#1e40af)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,overflow:"hidden",border:(etab?.logo_app||etab?.logo)?"1px solid rgba(255,255,255,0.15)":"none",boxShadow:"0 4px 12px -4px rgba(26,86,219,.6)"}}>{(etab?.logo_app||etab?.logo)?<img src={etab.logo_app||etab.logo} alt="logo" style={{width:"100%",height:"100%",objectFit:"contain"}}/>:"🎓"}</div>
@@ -4386,10 +4404,10 @@ function App() {
           })()}
         </nav>
       </div>
-      <div className="me-main" style={{flex:1,overflowY:"auto",zoom:uiZoom,padding:isMobile?"58px 13px 18px":"24px 26px"}}><div key={safePage} className="me-page">{pages[safePage]}</div></div>
+      <div className="me-main" style={{flex:1,overflowY:"auto",zoom:uiZoom,padding:isMobile?"calc(58px + env(safe-area-inset-top)) 13px calc(18px + env(safe-area-inset-bottom))":"24px 26px"}}><div key={safePage} className="me-page">{pages[safePage]}</div></div>
       {allowed.includes("messagerie")&&safePage!=="messagerie"&&(()=>{
         const unread=currentUser?(data.messages||[]).filter(m=>m.auteur_id!==currentUser.id&&new Date(m.created_at).getTime()>msgSeen).length:0;
-        return <button onClick={()=>setPage("messagerie")} title={t("nav_messagerie")} aria-label={t("nav_messagerie")} style={{position:"fixed",right:isMobile?16:26,bottom:isMobile?16:26,zIndex:80,width:56,height:56,borderRadius:"50%",border:"none",cursor:"pointer",background:"linear-gradient(135deg,#1a56db,#1e40af)",color:"#fff",fontSize:24,boxShadow:"0 10px 26px -6px rgba(26,86,219,.7)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+        return <button onClick={()=>setPage("messagerie")} title={t("nav_messagerie")} aria-label={t("nav_messagerie")} style={{position:"fixed",right:isMobile?16:26,bottom:isMobile?"calc(16px + env(safe-area-inset-bottom))":26,zIndex:80,width:56,height:56,borderRadius:"50%",border:"none",cursor:"pointer",background:"linear-gradient(135deg,#1a56db,#1e40af)",color:"#fff",fontSize:24,boxShadow:"0 10px 26px -6px rgba(26,86,219,.7)",display:"flex",alignItems:"center",justifyContent:"center"}}>
           💬
           {unread>0&&<span style={{position:"absolute",top:-3,right:-3,minWidth:21,height:21,padding:"0 5px",borderRadius:11,background:"#ef4444",color:"#fff",fontSize:11,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",border:"2px solid #fff",boxSizing:"border-box"}}>{unread>99?"99+":unread}</span>}
         </button>;
@@ -4400,11 +4418,11 @@ function App() {
         const fabBottom=base+(msgFab?68:0);
         const toggleNotif=async()=>{if(notifEnabled){try{localStorage.setItem("monecole_notifs","0");}catch(_){}setNotifEnabled(false);}else{const ok=await askNotif();setNotifEnabled(ok);if(ok)notify(t("notif_actif_titre"),t("notif_actif_corps"),"monecole-test");else alert(t("notif_refus"));}};
         return <>
-          <button onClick={()=>{setQuickOpen(o=>!o);setThemeOpen(false);}} title={t("st_prefs")} aria-label={t("st_prefs")} style={{position:"fixed",right:base,bottom:fabBottom,zIndex:80,width:48,height:48,borderRadius:"50%",border:"none",cursor:"pointer",background:"var(--me-surface)",color:"var(--me-text)",fontSize:21,boxShadow:"0 8px 22px -6px rgba(15,23,42,.4)",display:"flex",alignItems:"center",justifyContent:"center"}}>⚙️</button>
-          <button onClick={()=>{setThemeOpen(o=>!o);setQuickOpen(false);}} title={t("ui_apparence")} aria-label={t("ui_apparence")} style={{position:"fixed",right:base,bottom:fabBottom+60,zIndex:80,width:48,height:48,borderRadius:"50%",border:"none",cursor:"pointer",background:"var(--me-surface)",color:"var(--me-text)",fontSize:20,boxShadow:"0 8px 22px -6px rgba(15,23,42,.4)",display:"flex",alignItems:"center",justifyContent:"center"}}>🎨</button>
+          <button onClick={()=>{setQuickOpen(o=>!o);setThemeOpen(false);}} title={t("st_prefs")} aria-label={t("st_prefs")} style={{position:"fixed",right:base,bottom:`calc(${fabBottom}px + env(safe-area-inset-bottom))`,zIndex:80,width:48,height:48,borderRadius:"50%",border:"none",cursor:"pointer",background:"var(--me-surface)",color:"var(--me-text)",fontSize:21,boxShadow:"0 8px 22px -6px rgba(15,23,42,.4)",display:"flex",alignItems:"center",justifyContent:"center"}}>⚙️</button>
+          <button onClick={()=>{setThemeOpen(o=>!o);setQuickOpen(false);}} title={t("ui_apparence")} aria-label={t("ui_apparence")} style={{position:"fixed",right:base,bottom:`calc(${fabBottom+60}px + env(safe-area-inset-bottom))`,zIndex:80,width:48,height:48,borderRadius:"50%",border:"none",cursor:"pointer",background:"var(--me-surface)",color:"var(--me-text)",fontSize:20,boxShadow:"0 8px 22px -6px rgba(15,23,42,.4)",display:"flex",alignItems:"center",justifyContent:"center"}}>🎨</button>
           {themeOpen&&<>
             <div onClick={()=>setThemeOpen(false)} style={{position:"fixed",inset:0,zIndex:88}}/>
-            <div style={{position:"fixed",right:base,bottom:fabBottom+118,zIndex:89,width:232,maxWidth:"90vw",background:"var(--me-surface)",borderRadius:16,border:"1px solid var(--me-border)",boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",padding:14}}>
+            <div style={{position:"fixed",right:base,bottom:`calc(${fabBottom+118}px + env(safe-area-inset-bottom))`,zIndex:89,width:232,maxWidth:"90vw",background:"var(--me-surface)",borderRadius:16,border:"1px solid var(--me-border)",boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",padding:14}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:11}}>
                 <div style={{fontWeight:800,fontSize:13.5,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>🎨 {t("ui_apparence")}</div>
                 <button onClick={()=>setThemeOpen(false)} style={{background:"var(--me-surface-2)",color:"var(--me-text-2)",border:"none",borderRadius:8,width:26,height:26,cursor:"pointer",fontSize:12}}>✕</button>
@@ -4420,7 +4438,7 @@ function App() {
           </>}
           {quickOpen&&<>
             <div onClick={()=>setQuickOpen(false)} style={{position:"fixed",inset:0,zIndex:88}}/>
-            <div style={{position:"fixed",right:base,bottom:fabBottom+58,zIndex:89,width:286,maxWidth:"92vw",background:"var(--me-surface)",borderRadius:18,border:"1px solid var(--me-border)",boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",padding:16}}>
+            <div style={{position:"fixed",right:base,bottom:`calc(${fabBottom+58}px + env(safe-area-inset-bottom))`,zIndex:89,width:286,maxWidth:"92vw",background:"var(--me-surface)",borderRadius:18,border:"1px solid var(--me-border)",boxShadow:"0 24px 60px -12px rgba(0,0,0,.4)",padding:16}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:13}}>
                 <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>⚙️ {t("st_prefs")}</div>
                 <button onClick={()=>setQuickOpen(false)} style={{background:"var(--me-surface-2)",color:"var(--me-text-2)",border:"none",borderRadius:8,width:27,height:27,cursor:"pointer",fontSize:13}}>✕</button>
