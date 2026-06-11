@@ -4205,7 +4205,7 @@ const BRANDS={
 function App() {
   // Mode création (éditeur) seulement si l'URL contient #admin-create
   const adminMode = isAdminCreateMode();
-  const hasSession = (()=>{ try{ return !adminMode && !!localStorage.getItem("monecole_uid"); }catch(_){ return false; } })();
+  const hasSession = (()=>{ try{ if(adminMode) return false; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf("sb-")===0&&k.indexOf("-auth-token")>0) return true; } return false; }catch(_){ return false; } })();
   const [screen,setScreen]=useState(adminMode?"master":"login");
   const [booting,setBooting]=useState(hasSession); // restauration de session en cours
   const [codeActivation,setCodeActivation]=useState("");
@@ -4324,14 +4324,15 @@ function App() {
   // Restaure l'utilisateur connecté après un rafraîchissement (session stockée par identifiant)
   useEffect(()=>{
     if(!booting) return;
-    let uid=null; try{ uid=localStorage.getItem("monecole_uid"); }catch(_){}
-    if(!uid){ setBooting(false); return; }
     (async()=>{
       try{
-        const {data:u,error}=await sb.from("utilisateurs").select("*,etablissements(*)").eq("id",uid).single();
+        const {data:{session}}=await sb.auth.getSession();
+        if(!session||!session.user){ try{localStorage.removeItem("monecole_uid");}catch(_){} setScreen("login"); setBooting(false); return; }
+        const {data:u,error}=await sb.from("utilisateurs").select("*,etablissements(*)").eq("auth_id",session.user.id).limit(1).maybeSingle();
         if(error||!u) throw error||new Error("session invalide");
+        try{localStorage.setItem("monecole_uid",String(u.id));}catch(_){}
         setCurrentUser(u); setEtab(u.etablissements||null); setScreen("app");
-      }catch(_){ try{localStorage.removeItem("monecole_uid");}catch(__){} setScreen("login"); }
+      }catch(_){ try{await sb.auth.signOut();}catch(__){} try{localStorage.removeItem("monecole_uid");}catch(__){} setScreen("login"); }
       setBooting(false);
     })();
   },[booting]);
