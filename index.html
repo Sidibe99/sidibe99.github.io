@@ -4295,6 +4295,7 @@ function App() {
     if(document.getElementById("me-responsive")) return;
     const st=document.createElement("style"); st.id="me-responsive";
     st.textContent=`
+      :root{--me-bg:linear-gradient(135deg,#eef2f7,#e8eef6);--me-surface:#ffffff;--me-surface-2:#f8fafc;--me-border:#eef2f7;--me-border-2:#e2e8f0;--me-text:#0f172a;--me-text-2:#64748b;--me-text-3:#94a3b8;--me-brand:#1a56db;--me-brand2:#1e40af;}
       html,body{max-width:100%;overflow-x:hidden;}
       *{-webkit-tap-highlight-color:rgba(0,0,0,0);}
       button,a,select,label,[role=button]{touch-action:manipulation;}
@@ -4350,7 +4351,7 @@ function App() {
   if(screen==="onboarding") return <Onboarding codeActivation={codeActivation} onDone={(e,a)=>{try{if(a&&a.id!=null)localStorage.setItem("monecole_uid",String(a.id));}catch(_){}setEtab(e);setCurrentUser(a);setScreen("app");}}/>;
 
   // Écran normal pour les écoles : connexion directe
-  if(screen==="login") return <Login lang={lang} setLang={setLang} onLogin={(u,e)=>{try{if(u&&u.id!=null)localStorage.setItem("monecole_uid",String(u.id));}catch(_){}setCurrentUser(u);setEtab(e||etab);setScreen("app");}}/>;
+  if(screen==="login") return <Login lang={lang} setLang={setLang} onLogin={(u,e)=>{try{if(u&&u.id!=null)localStorage.setItem("monecole_uid",String(u.id));}catch(_){}setCurrentUser(u);setEtab(e||etab);setPage("dashboard");setScreen("app");}}/>;
 
   // Sécurité : un professeur ne peut afficher que les pages autorisées
   const allowed=pagesForUser(currentUser);
