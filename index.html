@@ -234,7 +234,7 @@ const I18N = {
     sh_bienvenue:"Bienvenue", sh_fiche:"Fiche vierge",
     btn_new_classe:"+ Nouvelle classe", btn_new_matiere:"+ Nouvelle matière", btn_new_prof:"+ Nouveau professeur",
     btn_new_user:"+ Nouvel utilisateur", btn_new_groupe:"+ Nouveau groupe",
-    btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.",
+    btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.", sess_new_login:"Nouvelle connexion détectée", sess_new_desc:"Quelqu'un vient de se connecter à votre compte depuis :", sess_deconnecter:"Déconnecter", sess_cetait_moi:"C'était moi", sess_revoked:"Cette session a été déconnectée à distance.", sess_inconnu:"Appareil inconnu",
     imp_export:"⬇ Exporter Excel", imp_import:"⬆ Importer Excel", imp_titre:"Importer des élèves (Excel / CSV)", imp_word:"⬇ Exporter Word",
     imp_intro:"Choisissez la classe de destination, puis un fichier Excel (.xlsx) ou CSV. La première ligne doit contenir les intitulés de colonnes.",
     imp_choisir_fichier:"📁 Choisir un fichier", imp_detectes:"élève(s) détecté(s)", imp_importer:"Importer",
@@ -417,7 +417,7 @@ const I18N = {
     sh_bienvenue:"مرحبًا", sh_fiche:"ورقة فارغة",
     btn_new_classe:"+ فصل جديد", btn_new_matiere:"+ مادة جديدة", btn_new_prof:"+ أستاذ جديد",
     btn_new_user:"+ مستخدم جديد", btn_new_groupe:"+ مجموعة جديدة",
-    btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.",
+    btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.", sess_new_login:"تم اكتشاف تسجيل دخول جديد", sess_new_desc:"قام شخص ما بتسجيل الدخول إلى حسابك من:", sess_deconnecter:"قطع الاتصال", sess_cetait_moi:"كان أنا", sess_revoked:"تم قطع هذه الجلسة عن بُعد.", sess_inconnu:"جهاز غير معروف",
     imp_export:"⬇ تصدير إكسل", imp_import:"⬆ استيراد إكسل", imp_titre:"استيراد التلاميذ (إكسل / CSV)", imp_word:"⬇ تصدير وورد",
     imp_intro:"اختر القسم الوجهة، ثم ملف إكسل (.xlsx) أو CSV. يجب أن يحتوي السطر الأول على عناوين الأعمدة.",
     imp_choisir_fichier:"📁 اختر ملفًا", imp_detectes:"تلميذ تم اكتشافه", imp_importer:"استيراد",
@@ -612,6 +612,14 @@ const t = (k)=> (I18N[CURRENT_LANG] && I18N[CURRENT_LANG][k]!=null) ? I18N[CURRE
 // Nom bilingue saisi par l'école : renvoie l'arabe si la langue est l'arabe ET qu'une version arabe existe, sinon le français.
 const txt = (fr, ar)=> (CURRENT_LANG==="ar" && ar!=null && String(ar).trim()!=="") ? ar : (fr||"");
 const confirmSuppr = (msg)=>{ try{ return window.confirm(msg || t("confirm_suppr")); }catch(_){ return true; } };
+const deviceLabel = ()=>{ try{
+  const ua=navigator.userAgent||"";
+  let nav="Navigateur";
+  if(/Edg\//.test(ua))nav="Edge"; else if(/SamsungBrowser/.test(ua))nav="Samsung Internet"; else if(/OPR\//.test(ua))nav="Opera"; else if(/Firefox\//.test(ua))nav="Firefox"; else if(/Chrome\//.test(ua))nav="Chrome"; else if(/Safari\//.test(ua))nav="Safari";
+  let os="";
+  if(/iPhone/.test(ua))os="iPhone"; else if(/iPad/.test(ua))os="iPad"; else if(/Android/.test(ua))os="Android"; else if(/Mac OS X/.test(ua))os="Mac"; else if(/Windows/.test(ua))os="Windows"; else if(/Linux/.test(ua))os="Linux";
+  return os?`${nav} · ${os}`:nav;
+}catch(_){ return "Appareil inconnu"; } };
 
 // Sélecteur de langue FR / Arabe. dark=true pour fond sombre (barre latérale).
 function LangToggle({lang,setLang,dark}){
@@ -4211,6 +4219,8 @@ function App() {
   const [codeActivation,setCodeActivation]=useState("");
   const [masterPw,setMasterPw]=useState("");
   const [currentUser,setCurrentUser]=useState(null);
+  const [newLogin,setNewLogin]=useState(null); // info d'une autre connexion détectée
+  const mySessionRef=useRef(null); // id de la ligne sessions de CE navigateur
   const [etab,setEtab]=useState(null);
   const [page,setPage]=useState(()=>{try{return localStorage.getItem("monecole_page")||"dashboard";}catch(_){return "dashboard";}});
   const [lang,setLang]=useState(CURRENT_LANG);
@@ -4308,10 +4318,7 @@ function App() {
       .me-page{max-width:100%;}
       .me-page img{max-width:100%;height:auto;}
       .me-tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-      body{zoom:1.12;}
-      @media (max-width:1100px){ body{zoom:1.08;} }
       @media (max-width:860px){
-        body{zoom:1.0;}
         input,select,textarea{font-size:16px !important;}
         .me-shdr{flex-wrap:wrap}
         .me-shdr h2{font-size:19px !important}
@@ -4341,6 +4348,27 @@ function App() {
       setBooting(false);
     })();
   },[booting]);
+
+  // Sessions actives : alerte de nouvelle connexion + déconnexion à distance (table "sessions" + temps réel Supabase)
+  useEffect(()=>{
+    if(!currentUser||screen!=="app") return;
+    let chan=null, cancelled=false;
+    (async()=>{
+      try{
+        const {data:{session}}=await sb.auth.getSession();
+        if(!session||!session.user) return;
+        const auth_uid=session.user.id;
+        const {data:row}=await sb.from("sessions").insert({auth_uid,appareil:deviceLabel(),revoked:false}).select().single();
+        if(cancelled){ if(row&&row.id){try{await sb.from("sessions").delete().eq("id",row.id);}catch(_){}} return; }
+        if(row&&row.id) mySessionRef.current=row.id;
+        chan=sb.channel("sessions-"+auth_uid)
+          .on("postgres_changes",{event:"INSERT",schema:"public",table:"sessions",filter:"auth_uid=eq."+auth_uid},(p)=>{ const n=p.new; if(n&&n.id!==mySessionRef.current) setNewLogin({id:n.id,appareil:n.appareil||t("sess_inconnu")}); })
+          .on("postgres_changes",{event:"UPDATE",schema:"public",table:"sessions",filter:"auth_uid=eq."+auth_uid},(p)=>{ const n=p.new; if(n&&n.id===mySessionRef.current&&n.revoked){ try{sb.auth.signOut();}catch(_){} try{localStorage.removeItem("monecole_uid");}catch(_){} try{alert(t("sess_revoked"));}catch(_){} setCurrentUser(null); setScreen("login"); } })
+          .subscribe();
+      }catch(_){ /* table absente / hors-ligne : fonctionnalité inactive sans gêner l'app */ }
+    })();
+    return ()=>{ cancelled=true; try{ if(mySessionRef.current) sb.from("sessions").delete().eq("id",mySessionRef.current); }catch(_){} try{ if(chan) sb.removeChannel(chan); }catch(_){} mySessionRef.current=null; };
+  },[currentUser&&currentUser.id,screen]);
 
   if(booting) return (
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16,fontFamily:"'Plus Jakarta Sans',sans-serif",color:"#fff"}}>
@@ -4393,6 +4421,14 @@ function App() {
 
   return(
     <div className={"me-fullh "+(TH.dark?"me-dark":"")} style={{display:"flex",height:"100dvh",overflow:"hidden",fontFamily:"'Plus Jakarta Sans',sans-serif",background:"var(--me-bg)","--me-bg":TH.v.bg,"--me-surface":TH.v.surface,"--me-surface-2":TH.v.s2,"--me-border":TH.v.border,"--me-border-2":TH.v.border2,"--me-text":TH.v.text,"--me-text-2":TH.v.text2,"--me-text-3":TH.v.text3,"--me-brand":BR.c1,"--me-brand2":BR.c2}}>
+      {newLogin&&<div style={{position:"fixed",top:0,left:0,right:0,zIndex:1000,background:"linear-gradient(135deg,#b91c1c,#dc2626)",color:"#fff",padding:"calc(10px + env(safe-area-inset-top)) 16px 12px",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap",boxShadow:"0 6px 20px -4px rgba(0,0,0,.4)"}}>
+        <div style={{flex:1,minWidth:200}}>
+          <div style={{fontWeight:800,fontSize:14,fontFamily:"'Sora',sans-serif"}}>🔐 {t("sess_new_login")}</div>
+          <div style={{fontSize:12.5,opacity:.95,marginTop:2}}>{t("sess_new_desc")} <b>{newLogin.appareil}</b></div>
+        </div>
+        <button onClick={async()=>{try{await sb.from("sessions").update({revoked:true}).eq("id",newLogin.id);}catch(_){} setNewLogin(null);}} style={{background:"#fff",color:"#b91c1c",border:"none",borderRadius:9,padding:"9px 14px",fontWeight:800,fontSize:13,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("sess_deconnecter")}</button>
+        <button onClick={()=>setNewLogin(null)} style={{background:"rgba(255,255,255,0.18)",color:"#fff",border:"none",borderRadius:9,padding:"9px 14px",fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("sess_cetait_moi")}</button>
+      </div>}
       <style>{`:root{--me-bg:linear-gradient(135deg,#eef2f7 0%,#e8eef6 100%);--me-surface:#fff;--me-surface-2:#f8fafc;--me-border:#eef2f7;--me-border-2:#e2e8f0;--me-text:#0f172a;--me-text-2:#64748b;--me-text-3:#94a3b8;}
 .me-main{color:var(--me-text);}
 .me-row:hover td{background:var(--me-surface-2)!important;}
@@ -4442,10 +4478,12 @@ body{overscroll-behavior-y:none;}
                   {items.map(navBtn)}
                 </div>;
               })}
-              <button onClick={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}} className="me-nav" style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"11px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",marginTop:14,background:"rgba(239,68,68,0.15)",color:"#fca5a5",fontWeight:700,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}><span style={{fontSize:16}}>🚪</span>{t("logout")}</button>
             </>;
           })()}
         </nav>
+        <div style={{flexShrink:0,padding:"8px 10px calc(10px + env(safe-area-inset-bottom))",borderTop:"1px solid rgba(255,255,255,0.08)"}}>
+          <button onClick={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}} className="me-nav" style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"11px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",background:"rgba(239,68,68,0.15)",color:"#fca5a5",fontWeight:700,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}><span style={{fontSize:16}}>🚪</span>{t("logout")}</button>
+        </div>
       </div>
       <div className="me-main" style={{flex:1,overflowY:"auto",zoom:uiZoom,padding:isMobile?"calc(58px + env(safe-area-inset-top)) 13px calc(18px + env(safe-area-inset-bottom))":"24px 26px"}}><div key={safePage} className="me-page">{pages[safePage]}</div></div>
       {allowed.includes("messagerie")&&safePage!=="messagerie"&&(()=>{
