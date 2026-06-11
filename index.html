@@ -1537,7 +1537,8 @@ function Dashboard({data,etab,setPage,currentUser}) {
 }
 
 // ── CLASSES ───────────────────────────────────────────────────────────────────
-function Classes({data,ops,etab}) {
+function Classes({data,ops,etab,currentUser}) {
+  const isProf=currentUser?.role==="Professeur";
   const [modal,setModal]=useState(null);
   const [form,setForm]=useState({nom:"",nom_ar:"",niveau:"",niveau_detail:"",serie:"",effectif:"",frais_annuel_classe:"",frais_inscription_classe:"",classe_suivante_id:""});
   const [loading,setLoading]=useState(false);
@@ -1583,7 +1584,7 @@ function Classes({data,ops,etab}) {
   };
   return(
     <div>
-      <SHdr title={t("nav_classes")+" 🏫"} sub={`${data.classes.length} ${t("cl_count")}`} action={<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><ExportBar name="classes" title={t("nav_classes")} getRows={()=>data.classes.map(c=>({Classe:c.nom,Cycle:c.niveau||"",Niveau:c.niveau_detail||"","Série":c.serie||"",Effectif:data.eleves.filter(e=>e.classe_id===c.id).length,"Frais annuel":c.frais_annuel_classe||"","Frais inscription":c.frais_inscription_classe||""}))}/>{data.classes.length>0&&<Btn ch={t("cl_passage")} v="ghost" onClick={()=>setPromo(true)}/>}<Btn ch={t("btn_new_classe")} v="primary" onClick={openNew}/></div>}/>
+      <SHdr title={t("nav_classes")+" 🏫"} sub={`${data.classes.length} ${t("cl_count")}`} action={<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><ExportBar name="classes" title={t("nav_classes")} getRows={()=>data.classes.map(c=>({Classe:c.nom,Cycle:c.niveau||"",Niveau:c.niveau_detail||"","Série":c.serie||"",Effectif:data.eleves.filter(e=>e.classe_id===c.id).length,"Frais annuel":c.frais_annuel_classe||"","Frais inscription":c.frais_inscription_classe||""}))}/>{!isProf&&<>{data.classes.length>0&&<Btn ch={t("cl_passage")} v="ghost" onClick={()=>setPromo(true)}/>}<Btn ch={t("btn_new_classe")} v="primary" onClick={openNew}/></>}</div>}/>
       {data.classes.length===0?<Card><Empty icon="🏫" text={t("cl_empty")}/></Card>:(
         <div style={{display:"flex",flexDirection:"column",gap:18}}>
           {CYCLES.map(cyc=>{
@@ -1601,8 +1602,8 @@ function Classes({data,ops,etab}) {
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:6}}>
                       <span style={{background:"rgba(26,86,219,0.12)",color:"var(--me-brand)",borderRadius:7,padding:"3px 9px",fontSize:11,fontWeight:700}}>👤 {data.eleves.filter(e=>e.classe_id===c.id).length}</span>
                       <div style={{display:"flex",gap:5}}>
-                        <button onClick={()=>{setErr("");setForm({nom:c.nom,nom_ar:c.nom_ar||"",niveau:c.niveau||"",niveau_detail:c.niveau_detail||"",serie:c.serie||"",effectif:c.effectif||"",frais_annuel_classe:c.frais_annuel_classe??"",frais_inscription_classe:c.frais_inscription_classe??"",classe_suivante_id:c.classe_suivante_id??""});setModal(c.id);}} style={{background:"var(--me-surface-2,#f1f5f9)",color:"var(--me-text-2)",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
-                        <button onClick={()=>ops.deleteClass(c.id)} style={{background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_supprimer")}</button>
+                        {!isProf&&<><button onClick={()=>{setErr("");setForm({nom:c.nom,nom_ar:c.nom_ar||"",niveau:c.niveau||"",niveau_detail:c.niveau_detail||"",serie:c.serie||"",effectif:c.effectif||"",frais_annuel_classe:c.frais_annuel_classe??"",frais_inscription_classe:c.frais_inscription_classe??"",classe_suivante_id:c.classe_suivante_id??""});setModal(c.id);}} style={{background:"var(--me-surface-2,#f1f5f9)",color:"var(--me-text-2)",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
+                        <button onClick={()=>ops.deleteClass(c.id)} style={{background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_supprimer")}</button></>}
                       </div>
                     </div>
                   </Card>
@@ -1647,7 +1648,8 @@ function Classes({data,ops,etab}) {
 }
 
 // ── MATIÈRES ──────────────────────────────────────────────────────────────────
-function Matieres({data,ops}) {
+function Matieres({data,ops,currentUser}) {
+  const isProf=currentUser?.role==="Professeur";
   const [modal,setModal]=useState(null);
   const [form,setForm]=useState({nom:"",nom_ar:"",coefficient:1,enseignant:"",cycles:[]});
   const [loading,setLoading]=useState(false);
@@ -1668,7 +1670,7 @@ function Matieres({data,ops}) {
   const matCycle=cyc=>data.matieres.filter(m=>!m.cycles||m.cycles.length===0||m.cycles.includes(cyc));
   return(
     <div>
-      <SHdr title={t("nav_matieres")+" 📖"} sub={`${data.matieres.length} ${t("ma_count")}`} action={<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><ExportBar name="matieres" title={t("nav_matieres")} getRows={()=>data.matieres.map(m=>({"Matière":m.nom,Coefficient:m.coefficient,Enseignant:m.enseignant||"",Cycles:(m.cycles||[]).join(", ")}))}/><Btn ch={t("btn_new_matiere")} v="primary" onClick={openNew}/></div>}/>
+      <SHdr title={t("nav_matieres")+" 📖"} sub={`${data.matieres.length} ${t("ma_count")}`} action={<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><ExportBar name="matieres" title={t("nav_matieres")} getRows={()=>data.matieres.map(m=>({"Matière":m.nom,Coefficient:m.coefficient,Enseignant:m.enseignant||"",Cycles:(m.cycles||[]).join(", ")}))}/>{!isProf&&<Btn ch={t("btn_new_matiere")} v="primary" onClick={openNew}/>}</div>}/>
       {data.matieres.length===0?<Card><Empty icon="📖" text={t("ma_empty")}/></Card>:(
         <div style={{display:"flex",flexDirection:"column",gap:18}}>
           {CYCLES.map(cyc=>{
@@ -1686,8 +1688,8 @@ function Matieres({data,ops}) {
                       <td style={{padding:"10px 14px",fontSize:12,color:"var(--me-text-2)"}}>{m.enseignant||"—"}</td>
                       <td style={{padding:"10px 14px",fontSize:11,color:"var(--me-text-3)"}}>{(!m.cycles||m.cycles.length===0)?t("ma_tous"):m.cycles.map(c=>(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[c]||c)).join(", ")}</td>
                       <td style={{padding:"10px 14px",textAlign:"right"}}><div style={{display:"inline-flex",gap:6}}>
-                        <button onClick={()=>{setErr("");setForm({nom:m.nom,nom_ar:m.nom_ar||"",coefficient:m.coefficient,enseignant:m.enseignant||"",cycles:m.cycles||[]});setModal(m.id);}} style={{background:"var(--me-surface-2,#f1f5f9)",border:"none",borderRadius:7,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_modifier")}</button>
-                        <button onClick={()=>ops.deleteMat(m.id)} style={{background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:7,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_supprimer")}</button>
+                        {!isProf&&<><button onClick={()=>{setErr("");setForm({nom:m.nom,nom_ar:m.nom_ar||"",coefficient:m.coefficient,enseignant:m.enseignant||"",cycles:m.cycles||[]});setModal(m.id);}} style={{background:"var(--me-surface-2,#f1f5f9)",border:"none",borderRadius:7,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_modifier")}</button>
+                        <button onClick={()=>ops.deleteMat(m.id)} style={{background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:7,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_supprimer")}</button></>}
                       </div></td>
                     </tr>
                   ))}</tbody>
@@ -2324,7 +2326,8 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
   );
 }
 
-function Eleves({data,ops,etab}) {
+function Eleves({data,ops,etab,currentUser}) {
+  const isProf=currentUser?.role==="Professeur";
   const [modal,setModal]=useState(null);const [search,setSearch]=useState("");const [filterCl,setFilterCl]=useState("");
   const [form,setForm]=useState({nom:"",prenom:"",genre:"",classe_id:"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",inscPayee:false});
   const [loading,setLoading]=useState(false);const [err,setErr]=useState("");
@@ -2388,13 +2391,13 @@ function Eleves({data,ops,etab}) {
       <SHdr title={t("nav_eleves")+" 👨‍🎓"} sub={`${data.eleves.length} ${t("el_total")}`} action={
         <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"flex-end"}}>
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t("el_search")} style={{padding:"8px 12px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",width:160}}/>
-          <Btn ch={t("el_inscrire")} v="primary" onClick={()=>{setErr("");setForm({nom:"",prenom:"",genre:"",classe_id:classesCycle[0]?.id||data.classes[0]?.id||"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",inscPayee:false});setModal("add");}}/>
+          {!isProf&&<Btn ch={t("el_inscrire")} v="primary" onClick={()=>{setErr("");setForm({nom:"",prenom:"",genre:"",classe_id:classesCycle[0]?.id||data.classes[0]?.id||"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",inscPayee:false});setModal("add");}}/>}
         </div>
       }/>
       <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
         <Btn ch={t("imp_export")} v="ghost" onClick={doExport}/>
         <Btn ch={t("imp_word")} v="ghost" onClick={doExportWord}/>
-        <Btn ch={t("imp_import")} v="ghost" onClick={()=>{setImpErr("");setImpRows([]);setImpClasse(classesCycle[0]?.id||data.classes[0]?.id||"");setImpOpen(true);}}/>
+        {!isProf&&<Btn ch={t("imp_import")} v="ghost" onClick={()=>{setImpErr("");setImpRows([]);setImpClasse(classesCycle[0]?.id||data.classes[0]?.id||"");setImpOpen(true);}}/>}
       </div>
       <div style={{display:"flex",gap:8,marginBottom:18}}>
         {CYCLES.map(cyc=>{const actif=cycle===cyc;const n=countCycle(cyc);return(
@@ -2428,8 +2431,8 @@ function Eleves({data,ops,etab}) {
                         </div></td>
                         <td style={{padding:"10px 6px",fontFamily:"monospace",fontSize:12,color:"var(--me-text-2)"}}>{e.matricule}</td>
                         <td style={{padding:"10px 18px",textAlign:"right"}}><div style={{display:"inline-flex",gap:6}}>
-                          <button onClick={()=>{setErr("");setForm({nom:e.nom,prenom:e.prenom,genre:e.genre||"",classe_id:e.classe_id,date_naissance:e.date_naissance||"",lieu_naissance:e.lieu_naissance||"",tuteur:e.tuteur||"",pere:e.pere||"",tel_pere:e.tel_pere||"",mere:e.mere||"",tel_mere:e.tel_mere||"",telephone:e.telephone||"",frais_annuel:e.frais_annuel??"",frais_inscription_eleve:e.frais_inscription_eleve??"",inscPayee:false});setModal(e.id);}} style={{background:"var(--me-surface-2,#f1f5f9)",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_modifier")}</button>
-                          <button onClick={()=>ops.deleteEleve(e.id)} style={{background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_supprimer")}</button>
+                          {!isProf&&<><button onClick={()=>{setErr("");setForm({nom:e.nom,prenom:e.prenom,genre:e.genre||"",classe_id:e.classe_id,date_naissance:e.date_naissance||"",lieu_naissance:e.lieu_naissance||"",tuteur:e.tuteur||"",pere:e.pere||"",tel_pere:e.tel_pere||"",mere:e.mere||"",tel_mere:e.tel_mere||"",telephone:e.telephone||"",frais_annuel:e.frais_annuel??"",frais_inscription_eleve:e.frais_inscription_eleve??"",inscPayee:false});setModal(e.id);}} style={{background:"var(--me-surface-2,#f1f5f9)",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_modifier")}</button>
+                          <button onClick={()=>ops.deleteEleve(e.id)} style={{background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_supprimer")}</button></>}
                         </div></td>
                       </tr>
                     ))}</tbody>
@@ -3697,22 +3700,6 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
       </div>
       {section==="apparence"&&<Card s={{marginBottom:14}}>
         <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:12}}>{t("st_logos")}</div>
-        <div style={{background:"rgba(26,86,219,0.12)",border:"1px solid #dbeafe",borderRadius:11,padding:13,marginBottom:16}}>
-          <div style={{fontSize:12,fontWeight:700,color:"var(--me-brand)",marginBottom:3}}>{t("st_logo_app")}</div>
-          <div style={{fontSize:10.5,color:"var(--me-text-2)",marginBottom:10}}>{t("st_logo_app_d")}</div>
-          <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
-            <div style={{width:64,height:64,borderRadius:14,border:"2px dashed #93c5fd",background:"var(--me-surface,#fff)",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
-              {(form.logo_app||form.logo)?<img src={form.logo_app||form.logo} alt="logo app" style={{width:"100%",height:"100%",objectFit:"contain"}}/>:<span style={{fontSize:24}}>🎓</span>}
-            </div>
-            <div style={{flex:1}}>
-              <label style={{display:"inline-block",padding:"7px 13px",background:"var(--me-brand)",color:"#fff",borderRadius:8,fontSize:11,fontWeight:700,cursor:"pointer",marginBottom:7}}>{t("st_televerser")}
-                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>500000){alert(t("st_img_lourde"));return;}const r=new FileReader();r.onload=()=>setForm(ff=>({...ff,logo_app:r.result}));r.readAsDataURL(f);}}/>
-              </label>
-              <Inp label={t("st_ou_url")} value={form.logo_app?.startsWith("data:")?"":(form.logo_app||"")} onChange={set("logo_app")} placeholder="https://..."/>
-              {form.logo_app&&<button onClick={()=>setForm(f=>({...f,logo_app:""}))} style={{marginTop:5,background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:6,padding:"4px 9px",cursor:"pointer",fontSize:10,fontWeight:700}}>{t("st_retirer")}</button>}
-            </div>
-          </div>
-        </div>
         <div style={{fontWeight:700,fontSize:12,color:"var(--me-text)",marginBottom:6}}>{t("st_logos_doc")}</div>
         <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:14}}>{t("st_logos_doc_d1")}<b>{t("st_logos_doc_b")}</b>{t("st_logos_doc_d2")}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
@@ -3898,6 +3885,25 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
         <div style={{display:"flex",gap:10,justifyContent:"flex-end",marginTop:16,alignItems:"center"}}>
           {saved&&<span style={{color:"#059669",fontSize:12,fontWeight:700}}>{t("st_enregistre")}</span>}
           <Btn ch={loading?t("st_enregistrement"):t("no_save")} v="success" onClick={save} disabled={loading}/>
+        </div>
+      </Card>}
+      {section==="ecole"&&<Card s={{marginBottom:14}}>
+        <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:12}}>{t("st_logos")}</div>
+                <div style={{background:"rgba(26,86,219,0.12)",border:"1px solid #dbeafe",borderRadius:11,padding:13,marginBottom:16}}>
+          <div style={{fontSize:12,fontWeight:700,color:"var(--me-brand)",marginBottom:3}}>{t("st_logo_app")}</div>
+          <div style={{fontSize:10.5,color:"var(--me-text-2)",marginBottom:10}}>{t("st_logo_app_d")}</div>
+          <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+            <div style={{width:64,height:64,borderRadius:14,border:"2px dashed #93c5fd",background:"var(--me-surface,#fff)",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
+              {(form.logo_app||form.logo)?<img src={form.logo_app||form.logo} alt="logo app" style={{width:"100%",height:"100%",objectFit:"contain"}}/>:<span style={{fontSize:24}}>🎓</span>}
+            </div>
+            <div style={{flex:1}}>
+              <label style={{display:"inline-block",padding:"7px 13px",background:"var(--me-brand)",color:"#fff",borderRadius:8,fontSize:11,fontWeight:700,cursor:"pointer",marginBottom:7}}>{t("st_televerser")}
+                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>500000){alert(t("st_img_lourde"));return;}const r=new FileReader();r.onload=()=>setForm(ff=>({...ff,logo_app:r.result}));r.readAsDataURL(f);}}/>
+              </label>
+              <Inp label={t("st_ou_url")} value={form.logo_app?.startsWith("data:")?"":(form.logo_app||"")} onChange={set("logo_app")} placeholder="https://..."/>
+              {form.logo_app&&<button onClick={()=>setForm(f=>({...f,logo_app:""}))} style={{marginTop:5,background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:6,padding:"4px 9px",cursor:"pointer",fontSize:10,fontWeight:700}}>{t("st_retirer")}</button>}
+            </div>
+          </div>
         </div>
       </Card>}
       {section==="ecole"&&<Card s={{marginBottom:14}}>
@@ -4387,9 +4393,9 @@ function App() {
 
   const pages={
     dashboard:<Dashboard data={scopedData} etab={etab||{}} setPage={setPage} currentUser={currentUser}/>,
-    classes:<Classes data={scopedData} ops={ops} etab={etab||{}}/>,
-    matieres:<Matieres data={scopedData} ops={ops}/>,
-    eleves:<Eleves data={scopedData} ops={ops} etab={etab||{}}/>,
+    classes:<Classes data={scopedData} ops={ops} etab={etab||{}} currentUser={currentUser}/>,
+    matieres:<Matieres data={scopedData} ops={ops} currentUser={currentUser}/>,
+    eleves:<Eleves data={scopedData} ops={ops} etab={etab||{}} currentUser={currentUser}/>,
     professeurs:<Professeurs data={scopedData} ops={ops} etab={etab||{}}/>,
     emploi:<EmploiTemps data={scopedData} ops={ops} etab={etab||{}} currentUser={currentUser}/>,
     notes:<Notes data={scopedData} ops={ops} etab={etab||{}} currentUser={currentUser}/>,
