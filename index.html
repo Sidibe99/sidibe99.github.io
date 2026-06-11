@@ -393,7 +393,7 @@ const I18N = {
     st_frais_classe:"📋 Frais par classe", st_frais_classe_d:"Définissez le montant propre à chaque classe (ex : 1ère année 100 000/mois, 2ème année 135 000/mois). Laisser vide = valeur par défaut de l'école.",
     st_creez_classes:"Créez d'abord des classes dans l'onglet Classes.", st_th_classe:"Classe", st_th_mensuel:"Mensuel", st_th_annuel:"Annuel", st_th_insc:"Inscription",
     st_frais_saved:"✓ Frais enregistrés", st_save_frais:"💾 Enregistrer les frais",
-    st_tab_ecole:"🏫 École", st_tab_apparence:"🎨 Apparence", st_tab_documents:"🏛️ En-tête & langue", st_tab_paiement:"💰 Paiement"
+    st_tab_ecole:"🏫 École", st_tab_apparence:"🎨 Apparence", st_tab_documents:"🏛️ En-tête & langue", st_tab_paiement:"💰 Paiement", st_tab_compte:"👤 Compte"
   },
   ar:{
     login_sub:"سجّل الدخول للمتابعة", login_id:"اسم المستخدم", login_pw:"كلمة المرور",
@@ -576,7 +576,7 @@ const I18N = {
     st_frais_classe:"📋 الرسوم حسب القسم", st_frais_classe_d:"حدّد المبلغ الخاص بكل قسم (مثال: السنة الأولى 100000/شهر، الثانية 135000/شهر). اتركه فارغًا = القيمة الافتراضية للمدرسة.",
     st_creez_classes:"أنشئ أقسامًا أولًا في تبويب الأقسام.", st_th_classe:"القسم", st_th_mensuel:"شهري", st_th_annuel:"سنوي", st_th_insc:"التسجيل",
     st_frais_saved:"✓ تم حفظ الرسوم", st_save_frais:"💾 حفظ الرسوم",
-    st_tab_ecole:"🏫 المدرسة", st_tab_apparence:"🎨 المظهر", st_tab_documents:"🏛️ الترويسة واللغة", st_tab_paiement:"💰 الدفع"
+    st_tab_ecole:"🏫 المدرسة", st_tab_apparence:"🎨 المظهر", st_tab_documents:"🏛️ الترويسة واللغة", st_tab_paiement:"💰 الدفع", st_tab_compte:"👤 الحساب"
   }
 };
 let CURRENT_LANG = (()=>{ try{ return localStorage.getItem("monecole_lang")||"fr"; }catch(_){ return "fr"; } })();
@@ -3617,7 +3617,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
   const [saved,setSaved]=useState(false);
   // Admin : toutes les sections. Sinon : uniquement ce qui concerne les documents.
   const isAdminP = currentUser?.role==="Administrateur";
-  const sectionsDispo = isAdminP ? ["ecole","apparence","documents","paiement"] : ["apparence","documents"];
+  const sectionsDispo = isAdminP ? ["ecole","apparence","documents","paiement","compte"] : ["apparence","documents","compte"];
   const [section,setSection]=useState(isAdminP?"ecole":"documents");
   // Frais par classe (édition groupée)
   const [fraisClasses,setFraisClasses]=useState(()=>{
@@ -3681,7 +3681,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
     <div>
       <SHdr title={t("nav_parametres")+" ⚙️"} sub={t("st_sub")}/>
       <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:18}}>
-        {[["ecole",t("st_tab_ecole"),"#1a56db"],["apparence",t("st_tab_apparence"),"#7c3aed"],["documents",t("st_tab_documents"),"#0891b2"],["paiement",t("st_tab_paiement"),"#059669"]].filter(([id])=>sectionsDispo.includes(id)).map(([id,lbl,c])=>{const on=section===id;return(
+        {[["ecole",t("st_tab_ecole"),"#1a56db"],["apparence",t("st_tab_apparence"),"#7c3aed"],["documents",t("st_tab_documents"),"#0891b2"],["paiement",t("st_tab_paiement"),"#059669"],["compte",t("st_tab_compte"),"#475569"]].filter(([id])=>sectionsDispo.includes(id)).map(([id,lbl,c])=>{const on=section===id;return(
           <button key={id} onClick={()=>setSection(id)} style={{padding:"11px 18px",borderRadius:12,border:on?`2px solid ${c}`:`1.5px solid ${c}33`,background:on?c:"#fff",color:on?"#fff":c,fontSize:14.5,fontWeight:800,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",boxShadow:on?`0 4px 12px -4px ${c}99`:"none",transition:"all .15s"}}>{lbl}</button>
         );})}
       </div>
@@ -3997,17 +3997,17 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
           <Btn ch={savingFrais?t("st_enregistrement"):t("st_save_frais")} v="success" onClick={saveFrais} disabled={savingFrais}/>
         </div>}
       </Card>}
-      <Card s={{marginTop:18}}>
+      {section==="compte"&&<Card s={{marginTop:18}}>
         <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)",marginBottom:6,fontFamily:"'Sora',sans-serif"}}>📱 {t("sess_appareils")}</div>
         <div style={{fontSize:12,color:"var(--me-text-2)",marginBottom:14}}>{t("sess_appareils_aide")}</div>
         <AppareilsConnectes currentSessionId={currentSessionId}/>
-      </Card>
-      <Card s={{marginTop:18}}>
+      </Card>}
+      {section==="compte"&&<Card s={{marginTop:18}}>
         <div style={{fontWeight:800,fontSize:15,color:"var(--me-text)",marginBottom:14,fontFamily:"'Sora',sans-serif"}}>👤 {t("st_compte")}</div>
         <div style={{display:"flex",justifyContent:"flex-end"}}>
           <Btn ch={"🚪 "+t("logout")} v="danger" onClick={onLogout}/>
         </div>
-      </Card>
+      </Card>}
     </div>
   );
 }
