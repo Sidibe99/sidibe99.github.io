@@ -4199,6 +4199,25 @@ const BRANDS={
   violet:{l:"Violet",c1:"#7c3aed",c2:"#6d28d9"},
   orange:{l:"Orange",c1:"#ea580c",c2:"#c2410c"},
 };
+/* PWA : manifeste + service worker (injectés au runtime car l'entête HTML est figée) */
+(function(){
+  try{
+    if(typeof document==="undefined")return;
+    var head=document.head||document.getElementsByTagName("head")[0];
+    var add=function(tag,attrs){var el=document.createElement(tag);for(var k in attrs){el.setAttribute(k,attrs[k]);}head.appendChild(el);return el;};
+    if(!document.querySelector('link[rel="manifest"]'))add("link",{rel:"manifest",href:"/manifest.webmanifest"});
+    if(!document.querySelector('meta[name="theme-color"]'))add("meta",{name:"theme-color",content:"#1a56db"});
+    if(!document.querySelector('link[rel="apple-touch-icon"]'))add("link",{rel:"apple-touch-icon",href:"/apple-touch-icon.png"});
+    add("meta",{name:"apple-mobile-web-app-capable",content:"yes"});
+    add("meta",{name:"mobile-web-app-capable",content:"yes"});
+    add("meta",{name:"apple-mobile-web-app-status-bar-style",content:"default"});
+    add("meta",{name:"apple-mobile-web-app-title",content:"MonEcole"});
+  }catch(e){}
+})();
+if(typeof navigator!=="undefined" && navigator.serviceWorker){
+  try{ window.addEventListener("load",function(){ navigator.serviceWorker.register("/sw.js").catch(function(){}); }); }catch(e){}
+}
+
 function App() {
   // Mode création (éditeur) seulement si l'URL contient #admin-create
   const adminMode = isAdminCreateMode();
