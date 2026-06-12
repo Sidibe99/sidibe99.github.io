@@ -1446,7 +1446,9 @@ function Dashboard({data,etab,setPage,currentUser}) {
   const dashHeader=(
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:18,flexWrap:"wrap",gap:12}}>
       <div><h2 style={{margin:0,fontSize:22,fontWeight:800,color:"var(--me-text)",fontFamily:"'Sora',sans-serif",letterSpacing:-0.5}}>{t("nav_dashboard")} 📊</h2><p style={{margin:"5px 0 0",color:"var(--me-text-2)",fontSize:13}}>{etab.annee||""} · {etab.systeme==="semestre"?t("sys_sem"):t("sys_trim")} · {t("db_realtime")}</p></div>
-      <div style={{display:"flex",alignItems:"center",gap:10}}>
+      <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",justifyContent:"flex-end"}}>
+        {allowed.includes("eleves")&&!isProf&&<button onClick={()=>{try{localStorage.setItem("monecole_quick","inscrire");}catch(_){}setPage("eleves");}} title={t("el_inscrire")} style={{background:"linear-gradient(135deg,var(--me-brand),var(--me-brand2))",color:"#fff",border:"none",borderRadius:13,height:46,padding:"0 15px",cursor:"pointer",fontSize:13,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",boxShadow:"0 4px 12px -6px rgba(26,86,219,.55)"}}>+ {t("el_inscrire")}</button>}
+        {allowed.includes("paiements")&&<button onClick={()=>setPage("paiements")} title={t("nav_paiements")} style={{background:"var(--me-surface,#fff)",color:"var(--me-brand)",border:"1.5px solid var(--me-brand)",borderRadius:13,height:46,padding:"0 15px",cursor:"pointer",fontSize:13,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("nav_paiements")}</button>}
         <button onClick={()=>setShowCalc(true)} title={t("calc_titre")} style={{background:"var(--me-surface,#fff)",border:"1.5px solid #e2e8f0",borderRadius:13,width:46,height:46,cursor:"pointer",boxShadow:"0 4px 12px -7px rgba(0,0,0,.25)",display:"flex",alignItems:"center",justifyContent:"center"}}>
           <svg width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="3" fill="#1a56db"/><rect x="6.5" y="4.2" width="11" height="4.3" rx="1.4" fill="#bfdbfe"/><circle cx="8" cy="12" r="1.15" fill="#fff"/><circle cx="12" cy="12" r="1.15" fill="#fff"/><circle cx="16" cy="12" r="1.15" fill="#fff"/><circle cx="8" cy="15.6" r="1.15" fill="#fff"/><circle cx="12" cy="15.6" r="1.15" fill="#fff"/><circle cx="16" cy="15.6" r="1.15" fill="#fff"/><circle cx="8" cy="19.2" r="1.15" fill="#fff"/><circle cx="12" cy="19.2" r="1.15" fill="#fff"/><circle cx="16" cy="19.2" r="1.15" fill="#fde047"/></svg>
         </button>
@@ -2424,12 +2426,14 @@ function Eleves({data,ops,etab,currentUser}) {
   const classesCycle=data.classes.filter(c=>(c.niveau||"Primaire")===cycle);
   const countCycle=cyc=>data.eleves.filter(e=>{const c=data.classes.find(x=>x.id===e.classe_id);return (c?.niveau||"Primaire")===cyc;}).length;
   const matchSearch=e=>`${e.prenom} ${e.nom} ${e.matricule}`.toLowerCase().includes(search.toLowerCase());
+  const openInscrire=()=>{setErr("");setForm({nom:"",prenom:"",genre:"",classe_id:classesCycle[0]?.id||data.classes[0]?.id||"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",inscPayee:false});setModal("add");};
+  useEffect(()=>{try{if(localStorage.getItem("monecole_quick")==="inscrire"){localStorage.removeItem("monecole_quick");if(!isProf)openInscrire();}}catch(_){}},[]);
   return(
     <div>
       <SHdr title={t("nav_eleves")+" 👨‍🎓"} sub={`${data.eleves.length} ${t("el_total")}`} action={
         <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"flex-end"}}>
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t("el_search")} style={{padding:"8px 12px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",width:160}}/>
-          {!isProf&&<Btn ch={t("el_inscrire")} v="primary" onClick={()=>{setErr("");setForm({nom:"",prenom:"",genre:"",classe_id:classesCycle[0]?.id||data.classes[0]?.id||"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",inscPayee:false});setModal("add");}}/>}
+          {!isProf&&<Btn ch={t("el_inscrire")} v="primary" onClick={openInscrire}/>}
         </div>
       }/>
       <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
@@ -2950,19 +2954,19 @@ function Paiements({data,ops,etab}) {
     const sep="━━━━━━━━━━━━";
     const li=[
       `*${etab.nom||"MonEcole"}*`,
-      `🧾 ${L("REÇU DE PAIEMENT","وصل دفع")}  •  N° ${p.recu}`,
+      `*${L("REÇU DE PAIEMENT","وصل دفع")}*   N° ${p.recu}`,
       sep,
-      `👤 ${L("Élève","التلميذ")} : ${el?.prenom||""} ${el?.nom||""}`,
-      `🆔 ${L("Matricule","رقم التسجيل")} : ${el?.matricule||"—"}`,
-      `🏫 ${L("Classe","القسم")} : ${cl?.nom||"—"}`,
-      `📋 ${L("Type","النوع")} : ${p.type}${p.mois?" — "+p.mois:""}`,
-      p.moyen?`💳 ${L("Moyen","وسيلة الدفع")} : ${p.moyen}`:null,
+      `*${L("Élève","التلميذ")}* : ${el?.prenom||""} ${el?.nom||""}`,
+      `*${L("Matricule","رقم التسجيل")}* : ${el?.matricule||"—"}`,
+      `*${L("Classe","القسم")}* : ${cl?.nom||"—"}`,
+      `*${L("Type","النوع")}* : ${p.type}${p.mois?" — "+p.mois:""}`,
+      p.moyen?`*${L("Moyen","وسيلة الدفع")}* : ${p.moyen}`:null,
       sep,
-      `💰 ${L("Montant versé","المبلغ المدفوع")} : *${fmtMoney(p.montant,devise)}*`,
-      annuel>0?`📌 ${L("Reste annuel","المتبقي السنوي")} : ${fmtMoney(resteAn,devise)}`:null,
-      `📅 ${L("Date","التاريخ")} : ${p.date}`,
+      `*${L("Montant versé","المبلغ المدفوع")}* : *${fmtMoney(p.montant,devise)}*`,
+      annuel>0?`*${L("Reste annuel","المتبقي السنوي")}* : ${fmtMoney(resteAn,devise)}`:null,
+      `*${L("Date","التاريخ")}* : ${p.date}`,
       sep,
-      `_${L("Merci de votre confiance","شكرًا لثقتكم")} 🙏_`,
+      `_${L("Merci de votre confiance","شكرًا لثقتكم")}_`,
     ].filter(Boolean);
     return li.join("\n");
   };
@@ -2970,7 +2974,13 @@ function Paiements({data,ops,etab}) {
   const pdfRecu=(p)=>printHTML(recuHTML(p),`Recu_${p.recu}`,{compact:true,etab});
   const waRecu=(p)=>{
     const txt=encodeURIComponent(recuTexte(p));
-    window.open(`https://wa.me/?text=${txt}`,"_blank");
+    // Ouvre directement l'application WhatsApp (plus fluide que WhatsApp Web)
+    let parti=false; const onHide=()=>{ parti=true; };
+    try{ document.addEventListener("visibilitychange",onHide,{once:true}); window.addEventListener("blur",onHide,{once:true}); }catch(_){}
+    try{ window.location.href=`whatsapp://send?text=${txt}`; }catch(_){}
+    // Repli vers WhatsApp Web seulement si l'app ne s'est pas ouverte
+    setTimeout(()=>{ try{ document.removeEventListener("visibilitychange",onHide); window.removeEventListener("blur",onHide); }catch(_){}
+      if(!parti && !document.hidden){ window.open(`https://wa.me/?text=${txt}`,"_blank"); } },1500);
   };
   const mailRecu=(p)=>{
     const el=data.eleves.find(e=>e.id===p.eleve_id);
