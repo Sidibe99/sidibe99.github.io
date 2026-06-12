@@ -650,7 +650,6 @@ const recuToBlob = async (html) => {
   finally{ try{ document.body.removeChild(box); }catch(_){ } }
   return blob;
 };
-try{ ensureH2C(); }catch(_){}
 const deviceLabel = ()=>{ try{
   const ua=navigator.userAgent||"";
   let nav="Navigateur";
@@ -2907,7 +2906,7 @@ function Paiements({data,ops,etab}) {
     const resteEch=p.mois&&partEch?Math.max(0,partEch-payeEch):null;
     const row=(k,v,hi)=>`<div style="display:flex;justify-content:space-between;padding:3px 0;${hi?"color:#c2410c;font-weight:700":"color:#334155"}"><span style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:.3px">${k}</span><span style="font-weight:600">${v}</span></div>`;
     const arD=etab.langue==="ar";const bilD=etab.langue==="fr_ar";
-    const arS=s=>`<span style="font-family:'Traditional Arabic','Amiri',serif;direction:rtl">${s}</span>`;
+    const arS=s=>`<span style="font-family:'Geeza Pro','Noto Naskh Arabic','Amiri','Traditional Arabic','Arial',sans-serif;direction:rtl;unicode-bidi:isolate;font-size:1.05em">${s}</span>`;
     const dl=(fr,ar)=>arD?(ar?arS(ar):fr):(bilD&&ar?`${fr} <span style="color:#cbd5e1;font-weight:400">/</span> ${arS(ar)}`:fr);
     return `<div class="recu">
       <div class="recu-officiel">
@@ -2946,34 +2945,30 @@ function Paiements({data,ops,etab}) {
   const recuTexte=(p)=>{
     const el=data.eleves.find(e=>e.id===p.eleve_id);const cl=data.classes.find(c=>c.id===el?.classe_id);
     const annuel=fraisAnnuelEleve(el,etab,cl);const resteAn=Math.max(0,annuel-totalPayeEleve(p.eleve_id));
-    const arD=etab.langue==="ar";const bilD=etab.langue==="fr_ar";const dl=(fr,ar)=>arD&&ar?ar:(bilD&&ar?`${fr} / ${ar}`:fr);
-    return `*${etab.nom||"MonEcole"}* — ${dl("Reçu","وصل")} ${p.recu}\n`+
-      `${dl("Élève","التلميذ")} : ${el?.prenom||""} ${el?.nom||""} (${el?.matricule||""})\n`+
-      `${dl("Classe","القسم")} : ${cl?.nom||"—"}\n`+
-      `${dl("Type","النوع")} : ${p.type}${p.mois?" — "+p.mois:""}\n`+
-      (p.moyen?`${dl("Moyen","وسيلة الدفع")} : ${p.moyen}\n`:"")+
-      `${dl("Montant versé","المبلغ المدفوع")} : ${fmtMoney(p.montant,devise)}\n`+
-      (annuel>0?`${dl("Reste annuel","المتبقي السنوي")} : ${fmtMoney(resteAn,devise)}\n`:"")+
-      `${dl("Date","التاريخ")} : ${p.date}\n${dl("Merci.","شكرًا.")}`;
+    const ar=etab.langue==="ar";
+    const L=(fr,arb)=>ar?arb:fr;
+    const sep="\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501";
+    const li=[
+      `*${etab.nom||"MonEcole"}*`,
+      `\uD83E\uDDFE ${L("RE\u00c7U DE PAIEMENT","\u0648\u0635\u0644 \u062f\u0641\u0639")}  \u2022  N\u00b0 ${p.recu}`,
+      sep,
+      `\uD83D\uDC64 ${L("\u00c9l\u00e8ve","\u0627\u0644\u062a\u0644\u0645\u064a\u0630")} : ${el?.prenom||""} ${el?.nom||""}`,
+      `\uD83C\uDD94 ${L("Matricule","\u0631\u0642\u0645 \u0627\u0644\u062a\u0633\u062c\u064a\u0644")} : ${el?.matricule||"\u2014"}`,
+      `\uD83C\uDFEB ${L("Classe","\u0627\u0644\u0642\u0633\u0645")} : ${cl?.nom||"\u2014"}`,
+      `\uD83D\uDCCB ${L("Type","\u0627\u0644\u0646\u0648\u0639")} : ${p.type}${p.mois?" \u2014 "+p.mois:""}`,
+      p.moyen?`\uD83D\uDCB3 ${L("Moyen","\u0648\u0633\u064a\u0644\u0629 \u0627\u0644\u062f\u0641\u0639")} : ${p.moyen}`:null,
+      sep,
+      `\uD83D\uDCB0 ${L("Montant vers\u00e9","\u0627\u0644\u0645\u0628\u0644\u063a \u0627\u0644\u0645\u062f\u0641\u0648\u0639")} : *${fmtMoney(p.montant,devise)}*`,
+      annuel>0?`\uD83D\uDCCC ${L("Reste annuel","\u0627\u0644\u0645\u062a\u0628\u0642\u064a \u0627\u0644\u0633\u0646\u0648\u064a")} : ${fmtMoney(resteAn,devise)}`:null,
+      `\uD83D\uDCC5 ${L("Date","\u0627\u0644\u062a\u0627\u0631\u064a\u062e")} : ${p.date}`,
+      sep,
+      `_${L("Merci de votre confiance","\u0634\u0643\u0631\u064b\u0627 \u0644\u062b\u0642\u062a\u0643\u0645")} \uD83D\uDE4F_`,
+    ].filter(Boolean);
+    return li.join("\n");
   };
   // Télécharger le reçu en PDF (via la fenêtre d'impression -> Enregistrer en PDF)
   const pdfRecu=(p)=>printHTML(recuHTML(p),`Recu_${p.recu}`,{compact:true,etab});
-  const waRecu=async(p)=>{
-    try{
-      const blob=await recuToBlob(recuHTML(p));
-      if(blob){
-        const nom=`recu_${(p.recu||"paiement")}`.replace(/[^a-zA-Z0-9_-]/g,"_")+".png";
-        const file=new File([blob],nom,{type:"image/png"});
-        if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-          try{ await navigator.share({files:[file],title:`${etab.langue==="ar"?"وصل":"Reçu"} ${p.recu||""}`}); return; }catch(err){ if(err&&err.name==="AbortError") return; }
-        }
-        const url=URL.createObjectURL(blob);
-        const a=document.createElement("a");a.href=url;a.download=nom;document.body.appendChild(a);a.click();a.remove();
-        setTimeout(()=>URL.revokeObjectURL(url),5000);
-        try{ alert(t("pa_img_ok")); }catch(_){}
-        return;
-      }
-    }catch(e){}
+  const waRecu=(p)=>{
     const txt=encodeURIComponent(recuTexte(p));
     window.open(`https://wa.me/?text=${txt}`,"_blank");
   };
@@ -3060,7 +3055,7 @@ function Paiements({data,ops,etab}) {
           )}
         </Card>
         {modal&&<PaiementModal {...{form,setForm,echeances,isTranche,devise,loading,save,setModal,moyens:etab.moyens_paiement||[]}}/>}
-        {recuPret&&<RecuApercu html={recuHTML(recuPret)} onClose={()=>setRecuPret(null)} onPrint={()=>printRecu(recuPret)} onPdf={()=>pdfRecu(recuPret)} onMail={()=>mailRecu(recuPret)} waTitle={`${etab.langue==="ar"?"وصل":"Reçu"} ${recuPret.recu||""}`} fileBase={`recu_${recuPret.recu||"paiement"}`.replace(/[^a-zA-Z0-9_-]/g,"_")}/>}
+        {recuPret&&<RecuApercu html={recuHTML(recuPret)} onClose={()=>setRecuPret(null)} onPrint={()=>printRecu(recuPret)} onPdf={()=>pdfRecu(recuPret)} onMail={()=>mailRecu(recuPret)} onWhats={()=>waRecu(recuPret)}/>}
       </div>
     );
   }
@@ -3129,37 +3124,13 @@ function Paiements({data,ops,etab}) {
         )}
       </>)}
       {modal&&<PaiementModal {...{form,setForm,echeances,isTranche,devise,loading,save,setModal,moyens:etab.moyens_paiement||[]}}/>}
-        {recuPret&&<RecuApercu html={recuHTML(recuPret)} onClose={()=>setRecuPret(null)} onPrint={()=>printRecu(recuPret)} onPdf={()=>pdfRecu(recuPret)} onMail={()=>mailRecu(recuPret)} waTitle={`${etab.langue==="ar"?"وصل":"Reçu"} ${recuPret.recu||""}`} fileBase={`recu_${recuPret.recu||"paiement"}`.replace(/[^a-zA-Z0-9_-]/g,"_")}/>}
+        {recuPret&&<RecuApercu html={recuHTML(recuPret)} onClose={()=>setRecuPret(null)} onPrint={()=>printRecu(recuPret)} onPdf={()=>pdfRecu(recuPret)} onMail={()=>mailRecu(recuPret)} onWhats={()=>waRecu(recuPret)}/>}
     </div>
   );
 }
 
 // Aperçu du reçu après paiement, avec actions Imprimer / PDF / WhatsApp / Mail
-function RecuApercu({html,onClose,onPrint,onPdf,onMail,waTitle,fileBase}) {
-  const [imgFile,setImgFile]=useState(null);
-  const [busy,setBusy]=useState(false);
-  useEffect(()=>{ let alive=true; setImgFile(null);
-    (async()=>{ try{ const blob=await recuToBlob(html); if(alive&&blob){ setImgFile(new File([blob],(fileBase||"recu")+".png",{type:"image/png"})); } }catch(_){ } })();
-    return ()=>{ alive=false; };
-  },[html]);
-  const dlImg=(file)=>{ try{ const url=URL.createObjectURL(file); const a=document.createElement("a"); a.href=url; a.download=file.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000); try{ alert(t("pa_img_ok")); }catch(_){ } }catch(_){ } };
-  const onWhats=async()=>{
-    // Fichier déjà prêt -> partage immédiat (préserve le "geste" iOS)
-    if(imgFile && navigator.share && navigator.canShare && navigator.canShare({files:[imgFile]})){
-      try{ await navigator.share({files:[imgFile],title:waTitle}); }catch(err){ if(!(err&&err.name==="AbortError")) dlImg(imgFile); }
-      return;
-    }
-    // Pas encore prêt : on génère puis on tente (le partage peut échouer faute de geste -> repli téléchargement)
-    setBusy(true);
-    let file=imgFile;
-    if(!file){ try{ const blob=await recuToBlob(html); if(blob) file=new File([blob],(fileBase||"recu")+".png",{type:"image/png"}); }catch(_){ } }
-    setBusy(false);
-    if(file && navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file],title:waTitle}); return; }catch(err){ if(err&&err.name==="AbortError") return; }
-    }
-    // Ordinateur (pas de partage de fichier) : on télécharge l'image ET on ouvre WhatsApp Web
-    if(file){ dlImg(file); try{ window.open("https://web.whatsapp.com/","_blank"); }catch(_){ } }
-  };
+function RecuApercu({html,onClose,onPrint,onPdf,onMail,onWhats}) {
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.55)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <div onClick={e=>e.stopPropagation()} style={{background:"var(--me-surface,#fff)",borderRadius:16,maxWidth:520,width:"100%",maxHeight:"90vh",overflow:"auto",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
@@ -3172,7 +3143,7 @@ function RecuApercu({html,onClose,onPrint,onPdf,onMail,waTitle,fileBase}) {
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:9,marginTop:18}}>
             <Btn ch={t("pa_imprimer")} v="primary" onClick={onPrint}/>
             <Btn ch={t("pa_pdf")} v="ghost" onClick={onPdf}/>
-            <Btn ch={busy?t("pa_img_prep"):t("pa_whatsapp")} v="success" disabled={busy} onClick={onWhats}/>
+            <Btn ch={t("pa_whatsapp")} v="success" onClick={onWhats}/>
             <Btn ch={t("pa_email")} v="ghost" onClick={onMail}/>
           </div>
           <div style={{fontSize:10,color:"var(--me-text-3)",textAlign:"center",marginTop:10}}>{t("pa_wa_note")}</div>
