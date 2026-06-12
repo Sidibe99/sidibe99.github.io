@@ -352,7 +352,7 @@ const I18N = {
     us_new_titre:"Nouvel utilisateur", us_edit_titre:"Modifier", us_prenom:"Prénom", us_ident:"Identifiant *",
     us_mdp:"Mot de passe *", us_mdp_new:"Nouveau mot de passe", us_role:"Rôle",
     us_matieres:"Matières enseignées (accès en saisie de notes)", us_aucune_mat:"Aucune matière créée.", us_note_prof:"Le professeur ne pourra saisir que les notes des matières cochées.",
-    us_pages:"Pages accessibles", us_pages_note:"Cochez les pages que cet utilisateur pourra ouvrir. Le Tableau de bord est toujours accessible ; l'Administrateur a accès à tout.", us_sections:"Sections de l'onglet Établissement", us_sections_note:"Choisissez les sections d'Établissement que cet utilisateur peut voir et modifier. L'onglet « Compte » (ses appareils) reste toujours disponible.",
+    us_pages:"Pages accessibles", us_pages_note:"Cochez les pages que cet utilisateur pourra ouvrir. Le Tableau de bord est toujours accessible ; l'Administrateur a accès à tout.", us_sections:"Sections de l'onglet Établissement", us_sections_note:"Pour chaque section : Aucun (cachée), Voir (lecture seule) ou Modifier. L'onglet « Compte » (ses appareils) reste toujours disponible.", us_niv_aucun:"Aucun", us_niv_voir:"Voir", us_niv_modifier:"Modifier", st_lecture_seule:"Lecture seule — vous pouvez consulter cette section mais pas la modifier.",
     us_classes:"Classes autorisées", us_classes_note:"L'enseignant ne verra que ces classes (élèves, présences, bulletins…). Vide = toutes les classes.",
     st_sub:"Infos officielles, en-tête des documents et réglages — modifiables à tout moment",
     st_logos:"🖼️ Logos", st_logo_app:"📱 Logo de l'application (interface)", st_logo_app_d:"Affiché dans le menu de l'app — peut être différent des logos imprimés. Si vide, le logo de l'école ci-dessous est utilisé.",
@@ -535,7 +535,7 @@ const I18N = {
     us_new_titre:"مستخدم جديد", us_edit_titre:"تعديل", us_prenom:"الاسم", us_ident:"المعرّف *",
     us_mdp:"كلمة المرور *", us_mdp_new:"كلمة مرور جديدة", us_role:"الدور",
     us_matieres:"المواد المُدرّسة (صلاحية إدخال النقاط)", us_aucune_mat:"لا توجد مواد.", us_note_prof:"لن يتمكن الأستاذ إلا من إدخال نقاط المواد المحددة.",
-    us_pages:"الصفحات المتاحة", us_pages_note:"حدّد الصفحات التي يمكن لهذا المستخدم فتحها. لوحة التحكم متاحة دائمًا؛ والمدير لديه وصول كامل.", us_sections:"أقسام تبويب المؤسسة", us_sections_note:"اختر أقسام المؤسسة التي يمكن لهذا المستخدم رؤيتها وتعديلها. يبقى تبويب «الحساب» (أجهزته) متاحًا دائمًا.",
+    us_pages:"الصفحات المتاحة", us_pages_note:"حدّد الصفحات التي يمكن لهذا المستخدم فتحها. لوحة التحكم متاحة دائمًا؛ والمدير لديه وصول كامل.", us_sections:"أقسام تبويب المؤسسة", us_sections_note:"لكل قسم: لا شيء (مخفي)، عرض (قراءة فقط)، أو تعديل. يبقى تبويب «الحساب» (أجهزته) متاحًا دائمًا.", us_niv_aucun:"لا شيء", us_niv_voir:"عرض", us_niv_modifier:"تعديل", st_lecture_seule:"قراءة فقط — يمكنك الاطلاع على هذا القسم دون تعديله.",
     us_classes:"الأقسام المتاحة", us_classes_note:"لن يرى الأستاذ إلا هذه الأقسام (التلاميذ، الحضور، الكشوف…). فارغ = كل الأقسام.",
     st_sub:"معلومات رسمية، ترويسة الوثائق والإعدادات — قابلة للتعديل في أي وقت",
     st_logos:"🖼️ الشعارات", st_logo_app:"📱 شعار التطبيق (الواجهة)", st_logo_app_d:"يظهر في قائمة التطبيق — قد يختلف عن الشعارات المطبوعة. إذا كان فارغًا، يُستخدم شعار المدرسة أدناه.",
@@ -1264,11 +1264,11 @@ function useSupabaseData(etablissementId) {
         const { data, error } = await sb.functions.invoke("create-user", { body: {
           nom: form.nom, prenom: form.prenom||"", genre: form.genre||"", identifiant: form.identifiant,
           password: form.password, role: form.role,
-          matieres_autorisees: form.matieres_autorisees||[], classes_autorisees: form.classes_autorisees||[], pages_autorisees: form.pages_autorisees||[], sections_etab: form.sections_etab||[]
+          matieres_autorisees: form.matieres_autorisees||[], classes_autorisees: form.classes_autorisees||[], pages_autorisees: form.pages_autorisees||[], sections_etab: form.sections_etab||[], sections_etab_modif: form.sections_etab_modif||[]
         }});
         if (error){ let msg=error.message||"Création impossible"; try{const b=await error.context.json(); if(b&&b.error)msg=b.error;}catch(_){} showToast(msg,"error"); return; }
         if (data && data.error){ showToast(data.error,"error"); return; }
-        try{ if(Array.isArray(form.sections_etab)){ const {data:row}=await sb.from("utilisateurs").select("id").eq("identifiant",form.identifiant).eq("etablissement_id",etablissementId).order("id",{ascending:false}).limit(1).maybeSingle(); if(row&&row.id) await sb.from("utilisateurs").update({sections_etab:form.sections_etab}).eq("id",row.id); } }catch(_){}
+        try{ if(Array.isArray(form.sections_etab)){ const {data:row}=await sb.from("utilisateurs").select("id").eq("identifiant",form.identifiant).eq("etablissement_id",etablissementId).order("id",{ascending:false}).limit(1).maybeSingle(); if(row&&row.id) await sb.from("utilisateurs").update({sections_etab:form.sections_etab,sections_etab_modif:Array.isArray(form.sections_etab_modif)?form.sections_etab_modif:[]}).eq("id",row.id); } }catch(_){}
         load(); showToast("Utilisateur créé");
       }catch(e){ showToast(e.message||"Erreur de création","error"); }
     },
@@ -3409,19 +3409,20 @@ function Messagerie({data,ops,currentUser}) {
 // ── UTILISATEURS ──────────────────────────────────────────────────────────────
 function Utilisateurs({data,ops,currentUser,etab={}}) {
   const roleBase=(role)=>navForRole(role).map(n=>n.id).filter(id=>id!=="dashboard");
-  const [modal,setModal]=useState(null);const [form,setForm]=useState({nom:"",prenom:"",genre:"",identifiant:"",password:"",role:"Professeur",matieres_autorisees:[],classes_autorisees:[],pages_autorisees:roleBase("Professeur"),sections_etab:["apparence","documents"]});const [loading,setLoading]=useState(false);const [err,setErr]=useState("");
+  const [modal,setModal]=useState(null);const [form,setForm]=useState({nom:"",prenom:"",genre:"",identifiant:"",password:"",role:"Professeur",matieres_autorisees:[],classes_autorisees:[],pages_autorisees:roleBase("Professeur"),sections_etab:["apparence","documents"],sections_etab_modif:["apparence","documents"]});const [loading,setLoading]=useState(false);const [err,setErr]=useState("");
   const toggleMat=id=>setForm(f=>({...f,matieres_autorisees:(f.matieres_autorisees||[]).includes(id)?f.matieres_autorisees.filter(x=>x!==id):[...(f.matieres_autorisees||[]),id]}));
   const toggleClasse=id=>setForm(f=>({...f,classes_autorisees:(f.classes_autorisees||[]).includes(id)?f.classes_autorisees.filter(x=>x!==id):[...(f.classes_autorisees||[]),id]}));
   const togglePage=id=>setForm(f=>({...f,pages_autorisees:(f.pages_autorisees||[]).includes(id)?f.pages_autorisees.filter(x=>x!==id):[...(f.pages_autorisees||[]),id]}));
-  const toggleSect=id=>setForm(f=>({...f,sections_etab:(f.sections_etab||[]).includes(id)?f.sections_etab.filter(x=>x!==id):[...(f.sections_etab||[]),id]}));
+  const sectLevel=id=>((form.sections_etab_modif||[]).includes(id)?"modifier":((form.sections_etab||[]).includes(id)?"voir":"none"));
+  const setSectLevel=(id,lvl)=>setForm(f=>{const se=(f.sections_etab||[]).filter(x=>x!==id);const sm=(f.sections_etab_modif||[]).filter(x=>x!==id);if(lvl==="voir")se.push(id);if(lvl==="modifier"){se.push(id);sm.push(id);}return{...f,sections_etab:se,sections_etab_modif:sm};});
   // Pages accessibles d'un utilisateur (pour l'aperçu dans la liste)
   const accessOf=(u)=>{const ids=u.role==="Administrateur"?NAV.map(n=>n.id):((Array.isArray(u.pages_autorisees)&&u.pages_autorisees.length)?["dashboard",...u.pages_autorisees]:navForRole(u.role).map(n=>n.id));return NAV.filter(n=>ids.includes(n.id));};
   const save=async()=>{if(!form.nom||!form.identifiant)return;setErr("");
     if(form.role==="Administrateur"){const adminMax=adminLimitOf(etab);const autres=(data.utilisateurs||[]).filter(u=>u.role==="Administrateur"&&u.id!==modal).length;if(autres>=adminMax){setErr(t("us_admin_limit").replace("{f}",formuleLabel(etab)||"—").replace("{n}",adminMax===Infinity?"∞":adminMax));return;}}
-    setLoading(true);const payload={nom:form.nom,prenom:form.prenom,genre:form.genre,identifiant:form.identifiant,role:form.role,matieres_autorisees:form.role==="Professeur"?(form.matieres_autorisees||[]):[],classes_autorisees:form.role==="Professeur"?(form.classes_autorisees||[]):[],pages_autorisees:form.role==="Administrateur"?[]:(form.pages_autorisees||[]),sections_etab:form.role==="Administrateur"?[]:(form.sections_etab||[])};if(modal==="add")await ops.addUser({...payload,password:form.password});else await ops.updateUser(modal,{...payload,...(form.password?{password:form.password}:{})});setLoading(false);setModal(null);};
+    setLoading(true);const payload={nom:form.nom,prenom:form.prenom,genre:form.genre,identifiant:form.identifiant,role:form.role,matieres_autorisees:form.role==="Professeur"?(form.matieres_autorisees||[]):[],classes_autorisees:form.role==="Professeur"?(form.classes_autorisees||[]):[],pages_autorisees:form.role==="Administrateur"?[]:(form.pages_autorisees||[]),sections_etab:form.role==="Administrateur"?[]:(form.sections_etab||[]),sections_etab_modif:form.role==="Administrateur"?[]:(form.sections_etab_modif||[])};if(modal==="add")await ops.addUser({...payload,password:form.password});else await ops.updateUser(modal,{...payload,...(form.password?{password:form.password}:{})});setLoading(false);setModal(null);};
   return(
     <div>
-      <SHdr title={t("nav_utilisateurs")+" 👤"} sub={t("us_sub")} action={currentUser.role==="Administrateur"?<Btn ch={t("btn_new_user")} v="primary" onClick={()=>{setForm({nom:"",prenom:"",genre:"",identifiant:"",password:"",role:"Professeur",matieres_autorisees:[],classes_autorisees:[],pages_autorisees:roleBase("Professeur"),sections_etab:["apparence","documents"]});setModal("add");}}/>:null}/>
+      <SHdr title={t("nav_utilisateurs")+" 👤"} sub={t("us_sub")} action={currentUser.role==="Administrateur"?<Btn ch={t("btn_new_user")} v="primary" onClick={()=>{setForm({nom:"",prenom:"",genre:"",identifiant:"",password:"",role:"Professeur",matieres_autorisees:[],classes_autorisees:[],pages_autorisees:roleBase("Professeur"),sections_etab:["apparence","documents"],sections_etab_modif:["apparence","documents"]});setModal("add");}}/>:null}/>
       <Tbl cols={[t("us_th_user"),t("us_th_ident"),t("us_th_role"),t("us_th_actions")]} empty={<Empty icon="👤" text={t("us_empty")}/>}
         rows={data.utilisateurs.map(u=>(
           <TR key={u.id}>
@@ -3429,7 +3430,7 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
             <TD mono>{u.identifiant}</TD>
             <TD><Badge role={u.role}/></TD>
             <TD>{currentUser.role==="Administrateur"&&((u.fondateur&&u.id!==currentUser.id)?<span style={{fontSize:11,fontWeight:700,color:"var(--me-text-3)",display:"inline-flex",alignItems:"center",gap:5}}>🔒 {t("us_fondateur")}</span>:<div style={{display:"flex",gap:6}}>
-              <button onClick={()=>{setForm({nom:u.nom,prenom:u.prenom||"",genre:u.genre||"",identifiant:u.identifiant,password:"",role:u.role,matieres_autorisees:Array.isArray(u.matieres_autorisees)?u.matieres_autorisees:[],classes_autorisees:Array.isArray(u.classes_autorisees)?u.classes_autorisees:[],pages_autorisees:(Array.isArray(u.pages_autorisees)&&u.pages_autorisees.length)?u.pages_autorisees:roleBase(u.role),sections_etab:Array.isArray(u.sections_etab)?u.sections_etab:["apparence","documents"]});setModal(u.id);}} style={{background:"var(--me-surface-2,#f1f5f9)",color:"var(--me-text-2)",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
+              <button onClick={()=>{setForm({nom:u.nom,prenom:u.prenom||"",genre:u.genre||"",identifiant:u.identifiant,password:"",role:u.role,matieres_autorisees:Array.isArray(u.matieres_autorisees)?u.matieres_autorisees:[],classes_autorisees:Array.isArray(u.classes_autorisees)?u.classes_autorisees:[],pages_autorisees:(Array.isArray(u.pages_autorisees)&&u.pages_autorisees.length)?u.pages_autorisees:roleBase(u.role),sections_etab:Array.isArray(u.sections_etab)?u.sections_etab:["apparence","documents"],sections_etab_modif:Array.isArray(u.sections_etab_modif)?u.sections_etab_modif:(Array.isArray(u.sections_etab)?u.sections_etab:["apparence","documents"])});setModal(u.id);}} style={{background:"var(--me-surface-2,#f1f5f9)",color:"var(--me-text-2)",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
               {u.id!==currentUser.id&&!u.fondateur&&<button onClick={()=>ops.deleteUser(u.id)} style={{background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:7,padding:"6px 12px",cursor:"pointer",fontSize:11.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_supprimer")}</button>}
             </div>)}</TD>
           </TR>
@@ -3454,9 +3455,16 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
           <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:6}}>{t("us_pages_note")}</div>
         </Lbl>}
         {form.role!=="Administrateur"&&(form.pages_autorisees||[]).includes("parametres")&&<Lbl t={t("us_sections")}>
-          <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
-            {[["ecole",t("st_tab_ecole")],["apparence",t("st_tab_apparence")],["documents",t("st_tab_documents")],["paiement",t("st_tab_paiement")]].map(([id,lbl])=>{const on=(form.sections_etab||[]).includes(id);return(
-              <button key={id} type="button" onClick={()=>toggleSect(id)} style={{padding:"6px 12px",borderRadius:20,border:on?"2px solid var(--me-brand)":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",color:on?"#1a56db":"#64748b",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{on?"✓ ":""}{lbl}</button>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {[["ecole",t("st_tab_ecole")],["apparence",t("st_tab_apparence")],["documents",t("st_tab_documents")],["paiement",t("st_tab_paiement")]].map(([id,lbl])=>{const lvl=sectLevel(id);return(
+              <div key={id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8,background:"var(--me-surface-2,#f8fafc)",border:"1px solid var(--me-border,#e2e8f0)",borderRadius:10,padding:"8px 11px"}}>
+                <span style={{fontSize:12.5,fontWeight:700,color:"var(--me-text)"}}>{lbl}</span>
+                <div style={{display:"inline-flex",gap:4}}>
+                  {[["none",t("us_niv_aucun")],["voir",t("us_niv_voir")],["modifier",t("us_niv_modifier")]].map(([v,vl])=>{const a=lvl===v;const col=v==="modifier"?"#0e9f6e":(v==="voir"?"#1a56db":"#94a3b8");return(
+                    <button key={v} type="button" onClick={()=>setSectLevel(id,v)} style={{padding:"5px 11px",borderRadius:8,border:a?`2px solid ${col}`:"1.5px solid #e2e8f0",background:a?col:"#fff",color:a?"#fff":"#64748b",fontSize:11.5,fontWeight:800,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{vl}</button>
+                  );})}
+                </div>
+              </div>
             );})}
           </div>
           <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:6}}>{t("us_sections_note")}</div>
@@ -3632,6 +3640,8 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
   const isAdminP = currentUser?.role==="Administrateur";
   const sectionsDispo = isAdminP ? ["ecole","apparence","documents","paiement","compte"] : [...(Array.isArray(currentUser?.sections_etab)?currentUser.sections_etab:["apparence","documents"]),"compte"];
   const [section,setSection]=useState(isAdminP?"ecole":(sectionsDispo[0]||"compte"));
+  const myModif=Array.isArray(currentUser?.sections_etab_modif)?currentUser.sections_etab_modif:null;
+  const roSection=!isAdminP && section!=="compte" && myModif!==null && !myModif.includes(section);
   // Frais par classe (édition groupée)
   const [fraisClasses,setFraisClasses]=useState(()=>{
     const o={};(data?.classes||[]).forEach(c=>{o[c.id]={mensuel:c.mensualite_classe??"",annuel:c.frais_annuel_classe??"",insc:c.frais_inscription_classe??""};});return o;
@@ -3698,6 +3708,8 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
           <button key={id} onClick={()=>setSection(id)} style={{padding:"11px 18px",borderRadius:12,border:on?`2px solid ${c}`:`1.5px solid ${c}33`,background:on?c:"#fff",color:on?"#fff":c,fontSize:14.5,fontWeight:800,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",boxShadow:on?`0 4px 12px -4px ${c}99`:"none",transition:"all .15s"}}>{lbl}</button>
         );})}
       </div>
+      {roSection&&<div style={{display:"flex",alignItems:"center",gap:8,background:"#fffbeb",border:"1px solid #fde68a",color:"#92400e",borderRadius:10,padding:"9px 13px",fontSize:12.5,fontWeight:700,marginBottom:14}}>👁 {t("st_lecture_seule")}</div>}
+      <fieldset disabled={roSection} style={{border:"none",margin:0,padding:0,minInlineSize:"auto"}}>
       {section==="apparence"&&<Card s={{marginBottom:14}}>
         <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:12}}>{t("st_logos")}</div>
         <div style={{fontWeight:700,fontSize:12,color:"var(--me-text)",marginBottom:6}}>{t("st_logos_doc")}</div>
@@ -4024,6 +4036,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
           <Btn ch={"🚪 "+t("logout")} v="danger" onClick={onLogout}/>
         </div>
       </Card>}
+      </fieldset>
     </div>
   );
 }
