@@ -1,5 +1,5 @@
 /* MonEcole Service Worker — coquille hors-ligne + démarrage instantané */
-const CACHE = 'monecole-v2';
+const CACHE = 'monecole-v3';
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'];
 const CDN = ['cdnjs.cloudflare.com','unpkg.com','cdn.jsdelivr.net','fonts.googleapis.com','fonts.gstatic.com'];
 
@@ -23,7 +23,7 @@ self.addEventListener('fetch', e => {
   // Navigation : réseau d'abord (pour avoir les mises à jour), repli sur le cache hors-ligne
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put('/index.html', cp)).catch(() => {}); return r; })
+      fetch(req).then(r => { if (r && r.ok) { const cp = r.clone(); caches.open(CACHE).then(c => c.put('/index.html', cp)).catch(() => {}); } return r; })
                 .catch(() => caches.match('/index.html').then(r => r || caches.match('/')))
     );
     return;
