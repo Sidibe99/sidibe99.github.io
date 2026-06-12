@@ -308,7 +308,7 @@ const I18N = {
     pa_total_encaisse:"Total encaissé", pa_mode:"Mode", pa_tranches:"Tranches", pa_mensualites:"Mensualités",
     pa_inscrivez:"Inscrivez des élèves d'abord.", pa_scolarite:"Scolarité", pa_non_definie:"non définie", pa_inscription:"Inscription", pa_encaisse:"Encaissé",
     pa_th_total_du:"Total dû", pa_th_statut:"Statut",
-    pa_paiement_ok:"✅ Paiement enregistré", pa_imprimer:"🖨️ Imprimer", pa_pdf:"📄 Télécharger PDF", pa_whatsapp:"🟢 WhatsApp", pa_email:"✉️ E-mail", pa_img_ok:"✅ Image du reçu enregistrée. Ouvrez WhatsApp et joignez-la à votre message.", pa_img_prep:"⏳ Préparation…",
+    pa_paiement_ok:"✅ Paiement enregistré", pa_imprimer:"🖨️ Imprimer", pa_pdf:"📄 Télécharger PDF", pa_whatsapp:"🟢 WhatsApp", pa_email:"✉️ E-mail", pa_img_ok:"✅ Image du reçu enregistrée. Glissez-la dans la conversation WhatsApp.", pa_img_prep:"⏳ Préparation…",
     pa_wa_note:"Pour WhatsApp/Mail : le message s'ouvre pré-rempli. Téléchargez le PDF puis joignez-le si besoin.",
     pa_modal_titre:"Encaisser un versement", pa_tranche_conc:"Tranche concernée", pa_mois_conc:"Mois concerné",
     pa_montant:"Montant versé", pa_moyen:"Moyen de paiement", pa_note:"Note (facultatif)", pa_note_ph:"Versement partiel, etc.",
@@ -491,7 +491,7 @@ const I18N = {
     pa_total_encaisse:"إجمالي المحصّل", pa_mode:"النمط", pa_tranches:"أقساط", pa_mensualites:"أقساط شهرية",
     pa_inscrivez:"سجّل التلاميذ أولًا.", pa_scolarite:"الدراسة", pa_non_definie:"غير محددة", pa_inscription:"التسجيل", pa_encaisse:"المحصّل",
     pa_th_total_du:"المستحق", pa_th_statut:"الحالة",
-    pa_paiement_ok:"✅ تم تسجيل الدفع", pa_imprimer:"🖨️ طباعة", pa_pdf:"📄 تنزيل PDF", pa_whatsapp:"🟢 واتساب", pa_email:"✉️ بريد", pa_img_ok:"✅ تم حفظ صورة الوصل. افتح واتساب وأرفقها برسالتك.", pa_img_prep:"⏳ جارٍ التحضير…",
+    pa_paiement_ok:"✅ تم تسجيل الدفع", pa_imprimer:"🖨️ طباعة", pa_pdf:"📄 تنزيل PDF", pa_whatsapp:"🟢 واتساب", pa_email:"✉️ بريد", pa_img_ok:"✅ تم حفظ صورة الوصل. اسحبها إلى محادثة واتساب.", pa_img_prep:"⏳ جارٍ التحضير…",
     pa_wa_note:"لواتساب/البريد: تُفتح الرسالة جاهزة. نزّل PDF وأرفقه إذا لزم.",
     pa_modal_titre:"تسجيل دفعة", pa_tranche_conc:"القسط المعني", pa_mois_conc:"الشهر المعني",
     pa_montant:"المبلغ المدفوع", pa_moyen:"وسيلة الدفع", pa_note:"ملاحظة (اختياري)", pa_note_ph:"دفعة جزئية، إلخ.",
@@ -3157,7 +3157,8 @@ function RecuApercu({html,onClose,onPrint,onPdf,onMail,waTitle,fileBase}) {
     if(file && navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
       try{ await navigator.share({files:[file],title:waTitle}); return; }catch(err){ if(err&&err.name==="AbortError") return; }
     }
-    if(file) dlImg(file);
+    // Ordinateur (pas de partage de fichier) : on télécharge l'image ET on ouvre WhatsApp Web
+    if(file){ dlImg(file); try{ window.open("https://web.whatsapp.com/","_blank"); }catch(_){ } }
   };
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.55)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
