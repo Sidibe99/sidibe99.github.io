@@ -266,6 +266,7 @@ const I18N = {
     el_tuteur:"Tuteur/Parent", el_tel_tuteur:"Téléphone parent/tuteur",
     fe_titre:"Fiche élève", fe_infos:"Informations", fe_filiation:"Filiation", fe_parcours:"Parcours scolaire", fe_moyenne:"Moyenne", fe_moy_gen:"Moyenne générale", fe_periode:"Période", fe_matiere:"Matière", fe_note:"Note", fe_aucune_note:"Aucune note enregistrée", fe_matricule:"Matricule", fe_telephone:"Téléphone", fe_voir:"Voir la fiche",
     fe_rang:"Rang", fe_sur:"sur", fe_paiements:"Paiements", fe_total_paye:"Total payé (scolarité)", fe_reste:"Reste annuel", fe_aucun_paiement:"Aucun paiement enregistré", fe_imprimer:"Imprimer", fe_date:"Date", fe_type:"Type", fe_montant:"Montant",
+    fe_releve:"Relevé de notes", fe_coef:"Coef", fe_moy_an:"Moy. annuelle", fe_moy_generale:"MOYENNE GÉNÉRALE", fe_mention:"Mention", fe_annee:"Année", fe_signature:"Signature & Cachet", fe_fait_le:"Fait le",
     el_nom_pere_ph:"Nom du père", el_nom_mere_ph:"Nom de la mère",
     el_frais_annuel:"Frais annuels scolarité", el_frais_insc:"Frais d'inscription", el_defaut_ecole:"vide = défaut école",
     el_insc_payee:"✓ Frais d'inscription déjà réglés (créer le reçu automatiquement)",
@@ -451,6 +452,7 @@ const I18N = {
     el_tuteur:"الولي", el_tel_tuteur:"هاتف الولي",
     fe_titre:"بطاقة التلميذ", fe_infos:"معلومات", fe_filiation:"النسب", fe_parcours:"المسار الدراسي", fe_moyenne:"المعدل", fe_moy_gen:"المعدل العام", fe_periode:"الفترة", fe_matiere:"المادة", fe_note:"النقطة", fe_aucune_note:"لا توجد نقاط مسجلة", fe_matricule:"رقم التسجيل", fe_telephone:"الهاتف", fe_voir:"عرض البطاقة",
     fe_rang:"الترتيب", fe_sur:"من", fe_paiements:"المدفوعات", fe_total_paye:"المجموع المدفوع (الدراسة)", fe_reste:"المتبقي السنوي", fe_aucun_paiement:"لا توجد مدفوعات", fe_imprimer:"طباعة", fe_date:"التاريخ", fe_type:"النوع", fe_montant:"المبلغ",
+    fe_releve:"كشف النقاط", fe_coef:"المعامل", fe_moy_an:"المعدل السنوي", fe_moy_generale:"المعدل العام", fe_mention:"الملاحظة", fe_annee:"السنة", fe_signature:"التوقيع والختم", fe_fait_le:"حرر في",
     el_nom_pere_ph:"اسم الأب", el_nom_mere_ph:"اسم الأم",
     el_frais_annuel:"الرسوم السنوية", el_frais_insc:"رسوم التسجيل", el_defaut_ecole:"فارغ = افتراضي المدرسة",
     el_insc_payee:"✓ رسوم التسجيل مدفوعة (إنشاء الإيصال تلقائيًا)",
@@ -2424,6 +2426,38 @@ function FicheEleve({eleve,data,etab,onClose}){
     </div>`;
     printHTML(html,`${eleve.prenom||""} ${eleve.nom||""}`,{etab});
   };
+  const releveNotes=()=>{
+    const bareme=baremeOf(cl?.niveau);
+    const fmt=v=>v==null?"—":(Math.round(v*100)/100).toFixed(2);
+    const subj=mats.map(m=>{
+      const cells=periodes.map(per=>{const nv=eleve.notes?.[per]?.[m.id];return (nv!=null&&nv!=="")?parseFloat(nv):null;});
+      const got=cells.filter(v=>v!=null);
+      const annual=got.length?(got.reduce((a,b)=>a+b,0)/got.length):null;
+      return {m,cells,annual,has:got.length>0};
+    }).filter(r=>r.has);
+    const ment=myMoy!=null?MENTION(myMoy,bareme):null;
+    const th='style="padding:6px 8px;border:1px solid #cbd5e1;text-align:center"';
+    const thL='style="padding:6px 8px;border:1px solid #cbd5e1;text-align:left"';
+    const td='style="padding:5px 8px;border:1px solid #e2e8f0;text-align:center"';
+    const tdL='style="padding:5px 8px;border:1px solid #e2e8f0;text-align:left"';
+    const head=`<tr style="background:#1a56db;color:#fff"><th ${thL}>${esc(t("fe_matiere"))}</th><th ${th}>${esc(t("fe_coef"))}</th>${periodes.map(p=>`<th ${th}>${esc(periodeLabel(etab,p))}</th>`).join("")}<th ${th}>${esc(t("fe_moy_an"))}</th></tr>`;
+    const body=subj.map(r=>`<tr><td ${tdL}>${esc(txt(r.m.nom,r.m.nom_ar))}</td><td ${td}>${r.m.coefficient||1}</td>${r.cells.map(v=>`<td ${td}>${v==null?"—":fmt(v)}</td>`).join("")}<td ${td}><b>${fmt(r.annual)}</b></td></tr>`).join("");
+    const footMoy=`<tr style="background:#eff6ff;font-weight:800"><td ${tdL}>${esc(t("fe_moy_generale"))}</td><td ${td}></td>${periodes.map(per=>`<td ${td}>${esc(calcMoy(eleve.notes||{},mats,per))}</td>`).join("")}<td ${td}>${moyGen}</td></tr>`;
+    const idLine=(a,b)=>`<tr><td style="padding:2px 0">${a}</td><td style="padding:2px 0">${b}</td></tr>`;
+    const html=`<div style="font-family:Arial,sans-serif;max-width:740px;margin:0 auto;color:#0f172a">
+      <div style="text-align:center;margin-bottom:8px"><div style="font-size:18px;font-weight:800">${esc(etab.nom||"MonEcole")}</div>${etab.adresse?`<div style="font-size:11px;color:#64748b">${esc(etab.adresse)}</div>`:""}</div>
+      <div style="text-align:center;background:#1a56db;color:#fff;font-weight:800;letter-spacing:2px;padding:7px;border-radius:8px;margin-bottom:14px">${esc(t("fe_releve")).toUpperCase()}</div>
+      <table style="width:100%;font-size:12.5px;margin-bottom:12px"><tbody>
+        ${idLine(`${esc(eleve.prenom)} <b>${esc(eleve.nom)}</b>`, `${esc(t("fe_matricule"))} : <b>${esc(eleve.matricule||"—")}</b>`)}
+        ${idLine(`${esc(t("el_classe"))} : <b>${cl?esc(txt(cl.nom,cl.nom_ar)):"—"}</b>`, `${esc(t("fe_annee"))} : <b>${esc(etab.annee||"")}</b>`)}
+        ${rang?idLine(`${esc(t("fe_rang"))} : <b>${rang}/${totalClasse}</b>`, ""):""}
+      </tbody></table>
+      ${subj.length===0?`<div style="text-align:center;color:#94a3b8;padding:16px">${esc(t("fe_aucune_note"))}</div>`:`<table style="width:100%;border-collapse:collapse;font-size:12.5px"><thead>${head}</thead><tbody>${body}${footMoy}</tbody></table>
+      <div style="margin-top:12px;font-size:13.5px">${esc(t("fe_moy_gen"))} : <b>${moyGen} / ${bareme}</b>${ment?` &nbsp;—&nbsp; ${esc(t("fe_mention"))} : <b style="color:${ment.c}">${esc(ment.t)}</b>`:""}</div>`}
+      <div style="margin-top:36px;display:flex;justify-content:space-between;font-size:12px;color:#475569"><div>${esc(t("fe_fait_le"))} ${new Date().toLocaleDateString("fr-FR")}</div><div>${esc(t("fe_signature"))}</div></div>
+    </div>`;
+    printHTML(html,`${t("fe_releve")} ${eleve.prenom||""} ${eleve.nom||""}`,{etab});
+  };
   const Row=({l,v})=> (v!=null&&v!=="")?(
     <div style={{display:"flex",justifyContent:"space-between",gap:12,padding:"7px 0",borderBottom:"1px solid var(--me-border-2,#eef2f7)",fontSize:13}}>
       <span style={{color:"var(--me-text-3)",fontWeight:600}}>{l}</span>
@@ -2439,7 +2473,10 @@ function FicheEleve({eleve,data,etab,onClose}){
           <div style={{fontWeight:800,fontSize:18,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>{eleve.prenom} {eleve.nom}</div>
           <div style={{fontSize:12,color:"var(--me-text-3)"}}>{t("fe_matricule")} : <span style={{fontFamily:"monospace"}}>{eleve.matricule||"—"}</span> · {cl?txt(cl.nom,cl.nom_ar):"—"}{rang?<> · {t("fe_rang")} : <b style={{color:"var(--me-brand)"}}>{rang}/{totalClasse}</b></>:null}</div>
         </div>
-        <button onClick={printFiche} style={{background:"var(--me-surface-2,#f1f5f9)",color:"var(--me-brand)",border:"1.5px solid var(--me-brand)",borderRadius:10,padding:"8px 13px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",whiteSpace:"nowrap"}}>{t("fe_imprimer")}</button>
+        <div style={{display:"flex",flexDirection:"column",gap:6}}>
+          <button onClick={releveNotes} style={{background:"linear-gradient(135deg,var(--me-brand),var(--me-brand2))",color:"#fff",border:"none",borderRadius:10,padding:"8px 13px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",whiteSpace:"nowrap"}}>{t("fe_releve")}</button>
+          <button onClick={printFiche} style={{background:"var(--me-surface-2,#f1f5f9)",color:"var(--me-brand)",border:"1.5px solid var(--me-brand)",borderRadius:10,padding:"8px 13px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",whiteSpace:"nowrap"}}>{t("fe_imprimer")}</button>
+        </div>
       </div>
       {sect(t("fe_infos"))}
       <Row l={t("el_genre")} v={eleve.genre}/>
