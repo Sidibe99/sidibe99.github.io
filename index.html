@@ -2907,14 +2907,15 @@ function Paiements({data,ops,etab}) {
   const recuTexte=(p)=>{
     const el=data.eleves.find(e=>e.id===p.eleve_id);const cl=data.classes.find(c=>c.id===el?.classe_id);
     const annuel=fraisAnnuelEleve(el,etab,cl);const resteAn=Math.max(0,annuel-totalPayeEleve(p.eleve_id));
-    return `*${etab.nom||"MonEcole"}* — Reçu ${p.recu}\n`+
-      `Élève : ${el?.prenom||""} ${el?.nom||""} (${el?.matricule||""})\n`+
-      `Classe : ${cl?.nom||"—"}\n`+
-      `Type : ${p.type}${p.mois?" — "+p.mois:""}\n`+
-      (p.moyen?`Moyen : ${p.moyen}\n`:"")+
-      `Montant versé : ${fmtMoney(p.montant,devise)}\n`+
-      (annuel>0?`Reste annuel : ${fmtMoney(resteAn,devise)}\n`:"")+
-      `Date : ${p.date}\nMerci.`;
+    const arD=etab.langue==="ar";const bilD=etab.langue==="fr_ar";const dl=(fr,ar)=>arD&&ar?ar:(bilD&&ar?`${fr} / ${ar}`:fr);
+    return `*${etab.nom||"MonEcole"}* — ${dl("Reçu","وصل")} ${p.recu}\n`+
+      `${dl("Élève","التلميذ")} : ${el?.prenom||""} ${el?.nom||""} (${el?.matricule||""})\n`+
+      `${dl("Classe","القسم")} : ${cl?.nom||"—"}\n`+
+      `${dl("Type","النوع")} : ${p.type}${p.mois?" — "+p.mois:""}\n`+
+      (p.moyen?`${dl("Moyen","وسيلة الدفع")} : ${p.moyen}\n`:"")+
+      `${dl("Montant versé","المبلغ المدفوع")} : ${fmtMoney(p.montant,devise)}\n`+
+      (annuel>0?`${dl("Reste annuel","المتبقي السنوي")} : ${fmtMoney(resteAn,devise)}\n`:"")+
+      `${dl("Date","التاريخ")} : ${p.date}\n${dl("Merci.","شكرًا.")}`;
   };
   // Télécharger le reçu en PDF (via la fenêtre d'impression -> Enregistrer en PDF)
   const pdfRecu=(p)=>printHTML(recuHTML(p),`Recu_${p.recu}`,{compact:true,etab});
@@ -2926,7 +2927,7 @@ function Paiements({data,ops,etab}) {
   };
   const mailRecu=(p)=>{
     const el=data.eleves.find(e=>e.id===p.eleve_id);
-    const sujet=encodeURIComponent(`Reçu ${p.recu} — ${etab.nom||"MonEcole"}`);
+    const sujet=encodeURIComponent(`${etab.langue==="ar"?"وصل":"Reçu"} ${p.recu} — ${etab.nom||"MonEcole"}`);
     const corps=encodeURIComponent(recuTexte(p).replace(/\*/g,""));
     window.open(`mailto:${el?.email||""}?subject=${sujet}&body=${corps}`,"_blank");
   };
