@@ -355,7 +355,7 @@ const I18N = {
     us_new_titre:"Nouvel utilisateur", us_edit_titre:"Modifier", us_prenom:"Prénom", us_ident:"Identifiant *",
     us_mdp:"Mot de passe *", us_mdp_new:"Nouveau mot de passe", us_role:"Rôle",
     us_matieres:"Matières enseignées (accès en saisie de notes)", us_aucune_mat:"Aucune matière créée.", us_note_prof:"Le professeur ne pourra saisir que les notes des matières cochées.",
-    us_pages:"Pages accessibles", us_pages_note:"Cochez les pages que cet utilisateur pourra ouvrir. Le Tableau de bord est toujours accessible ; l'Administrateur a accès à tout.", us_sections:"Sections de l'onglet Établissement", us_sections_note:"Pour chaque section : Aucun (cachée), Voir (lecture seule) ou Modifier. L'onglet « Compte » (ses appareils) reste toujours disponible.", us_niv_aucun:"Aucun", us_niv_voir:"Voir", us_niv_modifier:"Modifier", st_lecture_seule:"Lecture seule — vous pouvez consulter cette section mais pas la modifier.",
+    us_pages:"Pages accessibles", us_pages_note:"Cochez les pages que cet utilisateur pourra ouvrir. Le Tableau de bord est toujours accessible ; l'Administrateur a accès à tout.", us_perm_fiche:"Fiche élève & Relevé de notes", us_perm_fiche_note:"Autorise cet utilisateur à ouvrir la fiche d'un élève (filiation, notes, paiements) et à imprimer son relevé de notes. Décoché = interdit. L'Administrateur y a toujours accès.", us_sections:"Sections de l'onglet Établissement", us_sections_note:"Pour chaque section : Aucun (cachée), Voir (lecture seule) ou Modifier. L'onglet « Compte » (ses appareils) reste toujours disponible.", us_niv_aucun:"Aucun", us_niv_voir:"Voir", us_niv_modifier:"Modifier", st_lecture_seule:"Lecture seule — vous pouvez consulter cette section mais pas la modifier.",
     us_classes:"Classes autorisées", us_classes_note:"L'enseignant ne verra que ces classes (élèves, présences, bulletins…). Vide = toutes les classes.",
     st_sub:"Infos officielles, en-tête des documents et réglages — modifiables à tout moment",
     st_logos:"🖼️ Logos", st_logo_app:"📱 Logo de l'application (interface)", st_logo_app_d:"Affiché dans le menu de l'app — peut être différent des logos imprimés. Si vide, le logo de l'école ci-dessous est utilisé.",
@@ -541,7 +541,7 @@ const I18N = {
     us_new_titre:"مستخدم جديد", us_edit_titre:"تعديل", us_prenom:"الاسم", us_ident:"المعرّف *",
     us_mdp:"كلمة المرور *", us_mdp_new:"كلمة مرور جديدة", us_role:"الدور",
     us_matieres:"المواد المُدرّسة (صلاحية إدخال النقاط)", us_aucune_mat:"لا توجد مواد.", us_note_prof:"لن يتمكن الأستاذ إلا من إدخال نقاط المواد المحددة.",
-    us_pages:"الصفحات المتاحة", us_pages_note:"حدّد الصفحات التي يمكن لهذا المستخدم فتحها. لوحة التحكم متاحة دائمًا؛ والمدير لديه وصول كامل.", us_sections:"أقسام تبويب المؤسسة", us_sections_note:"لكل قسم: لا شيء (مخفي)، عرض (قراءة فقط)، أو تعديل. يبقى تبويب «الحساب» (أجهزته) متاحًا دائمًا.", us_niv_aucun:"لا شيء", us_niv_voir:"عرض", us_niv_modifier:"تعديل", st_lecture_seule:"قراءة فقط — يمكنك الاطلاع على هذا القسم دون تعديله.",
+    us_pages:"الصفحات المتاحة", us_pages_note:"حدّد الصفحات التي يمكن لهذا المستخدم فتحها. لوحة التحكم متاحة دائمًا؛ والمدير لديه وصول كامل.", us_perm_fiche:"بطاقة التلميذ وكشف النقاط", us_perm_fiche_note:"يسمح لهذا المستخدم بفتح بطاقة التلميذ (النسب، النقاط، المدفوعات) وطباعة كشف نقاطه. غير محدد = ممنوع. المدير لديه وصول دائم.", us_sections:"أقسام تبويب المؤسسة", us_sections_note:"لكل قسم: لا شيء (مخفي)، عرض (قراءة فقط)، أو تعديل. يبقى تبويب «الحساب» (أجهزته) متاحًا دائمًا.", us_niv_aucun:"لا شيء", us_niv_voir:"عرض", us_niv_modifier:"تعديل", st_lecture_seule:"قراءة فقط — يمكنك الاطلاع على هذا القسم دون تعديله.",
     us_classes:"الأقسام المتاحة", us_classes_note:"لن يرى الأستاذ إلا هذه الأقسام (التلاميذ، الحضور، الكشوف…). فارغ = كل الأقسام.",
     st_sub:"معلومات رسمية، ترويسة الوثائق والإعدادات — قابلة للتعديل في أي وقت",
     st_logos:"🖼️ الشعارات", st_logo_app:"📱 شعار التطبيق (الواجهة)", st_logo_app_d:"يظهر في قائمة التطبيق — قد يختلف عن الشعارات المطبوعة. إذا كان فارغًا، يُستخدم شعار المدرسة أدناه.",
@@ -2416,8 +2416,8 @@ function FicheEleve({eleve,data,etab,onClose}){
     const moyTable=`<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px"><thead><tr style="color:#64748b"><th style="text-align:left;padding:5px 8px">${esc(t("fe_matiere"))}</th>${periodes.map(p=>`<th style="padding:5px 8px;text-align:center">${esc(periodeLabel(etab,p))}</th>`).join("")}</tr></thead><tbody>${mats.map(m=>`<tr style="border-top:1px solid #eef2f7"><td style="padding:4px 8px">${esc(txt(m.nom,m.nom_ar))}</td>${periodes.map(per=>{const nv=eleve.notes?.[per]?.[m.id];return `<td style="padding:4px 8px;text-align:center;font-weight:700">${nv!=null&&nv!==""?esc(nv):"—"}</td>`;}).join("")}</tr>`).join("")}<tr style="border-top:2px solid #1a56db;font-weight:800"><td style="padding:5px 8px">${esc(t("fe_moyenne"))}</td>${moys.map(mm=>`<td style="padding:5px 8px;text-align:center;color:#1a56db">${esc(mm)}</td>`).join("")}</tr></tbody></table>`;
     const payTable=paies.length?`<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px"><thead><tr style="color:#64748b"><th style="text-align:left;padding:5px 8px">${esc(t("fe_date"))}</th><th style="text-align:left;padding:5px 8px">${esc(t("fe_type"))}</th><th style="text-align:right;padding:5px 8px">${esc(t("fe_montant"))}</th></tr></thead><tbody>${paies.map(p=>`<tr style="border-top:1px solid #eef2f7"><td style="padding:4px 8px">${esc(p.date)}</td><td style="padding:4px 8px">${esc(p.type)}${p.mois?" — "+esc(p.mois):""}</td><td style="padding:4px 8px;text-align:right;font-weight:700">${esc(fmtMoney(p.montant,devise))}</td></tr>`).join("")}</tbody></table>`:`<div style="font-size:12px;color:#94a3b8;padding:6px 8px">${esc(t("fe_aucun_paiement"))}</div>`;
     const html=`<div style="font-family:Arial,sans-serif;max-width:680px;margin:0 auto;color:#0f172a">
-      <div style="text-align:center;border-bottom:2px solid #1a56db;padding-bottom:8px;margin-bottom:12px"><div style="font-size:17px;font-weight:800">${esc(etab.nom||"MonEcole")}</div><div style="font-size:12px;color:#64748b">${esc(t("fe_titre"))}</div></div>
-      <div style="font-size:20px;font-weight:800">${esc(eleve.prenom)} ${esc(eleve.nom)}</div>
+      ${officialHeader(etab,{docTitle:t("fe_titre"),docTitleAr:"بطاقة التلميذ"})}
+      <div style="font-size:20px;font-weight:800;margin-top:8px">${esc(eleve.prenom)} ${esc(eleve.nom)}</div>
       <div style="font-size:12px;color:#64748b;margin-bottom:10px">${esc(t("fe_matricule"))} : ${esc(eleve.matricule||"—")} · ${cl?esc(txt(cl.nom,cl.nom_ar)):"—"}${rang?` · ${esc(t("fe_rang"))} : ${rang}/${totalClasse}`:""}</div>
       <div style="font-weight:800;color:#1a56db;font-size:13px;margin:10px 0 2px">${esc(t("fe_infos"))}</div><table style="width:100%;border-collapse:collapse;font-size:12px">${rows(info)}</table>
       <div style="font-weight:800;color:#1a56db;font-size:13px;margin:12px 0 2px">${esc(t("fe_filiation"))}</div><table style="width:100%;border-collapse:collapse;font-size:12px">${rows(fil)}</table>
@@ -2445,11 +2445,9 @@ function FicheEleve({eleve,data,etab,onClose}){
     const footMoy=`<tr style="background:#eff6ff;font-weight:800"><td ${tdL}>${esc(t("fe_moy_generale"))}</td><td ${td}></td>${periodes.map(per=>`<td ${td}>${esc(calcMoy(eleve.notes||{},mats,per))}</td>`).join("")}<td ${td}>${moyGen}</td></tr>`;
     const idLine=(a,b)=>`<tr><td style="padding:2px 0">${a}</td><td style="padding:2px 0">${b}</td></tr>`;
     const html=`<div style="font-family:Arial,sans-serif;max-width:740px;margin:0 auto;color:#0f172a">
-      <div style="text-align:center;margin-bottom:8px"><div style="font-size:18px;font-weight:800">${esc(etab.nom||"MonEcole")}</div>${etab.adresse?`<div style="font-size:11px;color:#64748b">${esc(etab.adresse)}</div>`:""}</div>
-      <div style="text-align:center;background:#1a56db;color:#fff;font-weight:800;letter-spacing:2px;padding:7px;border-radius:8px;margin-bottom:14px">${esc(t("fe_releve")).toUpperCase()}</div>
-      <table style="width:100%;font-size:12.5px;margin-bottom:12px"><tbody>
-        ${idLine(`${esc(eleve.prenom)} <b>${esc(eleve.nom)}</b>`, `${esc(t("fe_matricule"))} : <b>${esc(eleve.matricule||"—")}</b>`)}
-        ${idLine(`${esc(t("el_classe"))} : <b>${cl?esc(txt(cl.nom,cl.nom_ar)):"—"}</b>`, `${esc(t("fe_annee"))} : <b>${esc(etab.annee||"")}</b>`)}
+      ${officialHeader(etab,{docTitle:t("fe_releve"),docTitleAr:"كشف النقاط"})}
+      <table style="width:100%;font-size:12.5px;margin:10px 0 12px"><tbody>
+        ${idLine(`<b style="font-size:14px">${esc(eleve.prenom)} ${esc(eleve.nom)}</b>`, `${esc(t("fe_matricule"))} : <b>${esc(eleve.matricule||"—")}</b>`)}
         ${rang?idLine(`${esc(t("fe_rang"))} : <b>${rang}/${totalClasse}</b>`, ""):""}
       </tbody></table>
       ${subj.length===0?`<div style="text-align:center;color:#94a3b8;padding:16px">${esc(t("fe_aucune_note"))}</div>`:`<table style="width:100%;border-collapse:collapse;font-size:12.5px"><thead>${head}</thead><tbody>${body}${footMoy}</tbody></table>
@@ -2557,6 +2555,7 @@ function FicheEleve({eleve,data,etab,onClose}){
 }
 function Eleves({data,ops,etab,currentUser}) {
   const isProf=currentUser?.role==="Professeur";
+  const canFiche=currentUser?.role==="Administrateur"||(Array.isArray(currentUser?.pages_autorisees)&&currentUser.pages_autorisees.includes("fiche_eleve"));
   const [modal,setModal]=useState(null);const [search,setSearch]=useState("");const [filterCl,setFilterCl]=useState("");
   const [fiche,setFiche]=useState(null);
   const [form,setForm]=useState({nom:"",prenom:"",genre:"",classe_id:"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",inscPayee:false});
@@ -2659,7 +2658,7 @@ function Eleves({data,ops,etab,currentUser}) {
                         <td style={{padding:"10px 18px",width:36,color:"#cbd5e1",fontSize:12}}>{i+1}</td>
                         <td style={{padding:"10px 6px"}}><div style={{display:"flex",alignItems:"center",gap:9}}>
                           <div style={{width:31,height:31,borderRadius:9,background:"rgba(26,86,219,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:"var(--me-brand)",fontSize:11}}>{e.prenom?.[0]}{e.nom?.[0]}</div>
-                          <div><div onClick={()=>setFiche(e)} title={t("fe_voir")} style={{fontWeight:700,fontSize:13,color:"var(--me-brand)",cursor:"pointer"}}>{e.prenom} {e.nom}</div>{e.tuteur&&<div style={{fontSize:11,color:"var(--me-text-3)"}}>👤 {e.tuteur}</div>}</div>
+                          <div><div onClick={canFiche?()=>setFiche(e):undefined} title={canFiche?t("fe_voir"):undefined} style={{fontWeight:700,fontSize:13,color:canFiche?"var(--me-brand)":"var(--me-text)",cursor:canFiche?"pointer":"default"}}>{e.prenom} {e.nom}</div>{e.tuteur&&<div style={{fontSize:11,color:"var(--me-text-3)"}}>👤 {e.tuteur}</div>}</div>
                         </div></td>
                         <td style={{padding:"10px 6px",fontFamily:"monospace",fontSize:12,color:"var(--me-text-2)"}}>{e.matricule}</td>
                         <td style={{padding:"10px 18px",textAlign:"right"}}><div style={{display:"inline-flex",gap:6}}>
@@ -2675,7 +2674,7 @@ function Eleves({data,ops,etab,currentUser}) {
           })}
         </div>
       )}
-      {fiche&&<FicheEleve eleve={fiche} data={data} etab={etab} onClose={()=>setFiche(null)}/>}
+      {fiche&&canFiche&&<FicheEleve eleve={fiche} data={data} etab={etab} onClose={()=>setFiche(null)}/>}
       {modal&&<Modal title={modal==="add"?t("el_inscrire_titre"):t("el_modifier")} onClose={()=>setModal(null)} w={540}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
           <Inp label={t("el_nom")} value={form.nom} onChange={e=>setForm(f=>({...f,nom:e.target.value}))}/>
@@ -3705,6 +3704,10 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
             );})}
           </div>
           <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:6}}>{t("us_pages_note")}</div>
+        </Lbl>}
+        {form.role!=="Administrateur"&&<Lbl t={t("us_perm_fiche")}>
+          <button type="button" onClick={()=>togglePage("fiche_eleve")} style={{padding:"7px 13px",borderRadius:20,border:(form.pages_autorisees||[]).includes("fiche_eleve")?"2px solid var(--me-brand)":"1.5px solid #e2e8f0",background:(form.pages_autorisees||[]).includes("fiche_eleve")?"#eff6ff":"#fff",color:(form.pages_autorisees||[]).includes("fiche_eleve")?"#1a56db":"#64748b",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{(form.pages_autorisees||[]).includes("fiche_eleve")?"✓ ":""}📋 {t("us_perm_fiche")}</button>
+          <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:6}}>{t("us_perm_fiche_note")}</div>
         </Lbl>}
         {form.role!=="Administrateur"&&(form.pages_autorisees||[]).includes("parametres")&&<Lbl t={t("us_sections")}>
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
