@@ -264,6 +264,7 @@ const I18N = {
     el_genre:"Genre", el_choisir:"— Choisir —", el_masculin:"Masculin", el_feminin:"Féminin", el_classe:"Classe *",
     el_pere:"Père", el_tel_pere:"Téléphone père", el_mere:"Mère", el_tel_mere:"Téléphone mère",
     el_tuteur:"Tuteur/Parent", el_tel_tuteur:"Téléphone parent/tuteur",
+    el_nationalite:"Nationalité", el_adresse:"Adresse de résidence", el_email:"E-mail", el_prof_pere:"Profession du père", el_prof_mere:"Profession de la mère", el_groupe_sanguin:"Groupe sanguin", el_allergies:"Allergies", el_urgence_nom:"Contact d'urgence", el_urgence_tel:"Téléphone d'urgence", el_acte:"Acte de naissance fourni", el_certificat:"Certificat de transfert", el_dossier:"Dossier complet", el_observations:"Observations", el_sec_coord:"Coordonnées", el_sec_medical:"Médical (facultatif)", el_sec_admin:"Administratif", el_sec_obs:"Observations", el_oui:"Oui", el_non:"Non",
     fe_titre:"Fiche élève", fe_infos:"Informations", fe_filiation:"Filiation", fe_parcours:"Parcours scolaire", fe_moyenne:"Moyenne", fe_moy_gen:"Moyenne générale", fe_periode:"Période", fe_matiere:"Matière", fe_note:"Note", fe_aucune_note:"Aucune note enregistrée", fe_matricule:"Matricule", fe_telephone:"Téléphone", fe_voir:"Voir la fiche",
     fe_rang:"Rang", fe_sur:"sur", fe_paiements:"Paiements", fe_total_paye:"Total payé (scolarité)", fe_reste:"Reste annuel", fe_aucun_paiement:"Aucun paiement enregistré", fe_imprimer:"Imprimer", fe_date:"Date", fe_type:"Type", fe_montant:"Montant",
     fe_releve:"Relevé de notes", fe_coef:"Coef", fe_moy_an:"Moy. annuelle", fe_moy_generale:"MOYENNE GÉNÉRALE", fe_mention:"Mention", fe_annee:"Année", fe_signature:"Signature & Cachet", fe_fait_le:"Fait le",
@@ -450,6 +451,7 @@ const I18N = {
     el_genre:"الجنس", el_choisir:"— اختر —", el_masculin:"ذكر", el_feminin:"أنثى", el_classe:"القسم *",
     el_pere:"الأب", el_tel_pere:"هاتف الأب", el_mere:"الأم", el_tel_mere:"هاتف الأم",
     el_tuteur:"الولي", el_tel_tuteur:"هاتف الولي",
+    el_nationalite:"الجنسية", el_adresse:"عنوان السكن", el_email:"البريد الإلكتروني", el_prof_pere:"مهنة الأب", el_prof_mere:"مهنة الأم", el_groupe_sanguin:"فصيلة الدم", el_allergies:"الحساسية", el_urgence_nom:"جهة الاتصال للطوارئ", el_urgence_tel:"هاتف الطوارئ", el_acte:"شهادة الميلاد مقدّمة", el_certificat:"شهادة النقل", el_dossier:"الملف كامل", el_observations:"ملاحظات", el_sec_coord:"بيانات الاتصال", el_sec_medical:"طبي (اختياري)", el_sec_admin:"إداري", el_sec_obs:"ملاحظات", el_oui:"نعم", el_non:"لا",
     fe_titre:"بطاقة التلميذ", fe_infos:"معلومات", fe_filiation:"النسب", fe_parcours:"المسار الدراسي", fe_moyenne:"المعدل", fe_moy_gen:"المعدل العام", fe_periode:"الفترة", fe_matiere:"المادة", fe_note:"النقطة", fe_aucune_note:"لا توجد نقاط مسجلة", fe_matricule:"رقم التسجيل", fe_telephone:"الهاتف", fe_voir:"عرض البطاقة",
     fe_rang:"الترتيب", fe_sur:"من", fe_paiements:"المدفوعات", fe_total_paye:"المجموع المدفوع (الدراسة)", fe_reste:"المتبقي السنوي", fe_aucun_paiement:"لا توجد مدفوعات", fe_imprimer:"طباعة", fe_date:"التاريخ", fe_type:"النوع", fe_montant:"المبلغ",
     fe_releve:"كشف النقاط", fe_coef:"المعامل", fe_moy_an:"المعدل السنوي", fe_moy_generale:"المعدل العام", fe_mention:"الملاحظة", fe_annee:"السنة", fe_signature:"التوقيع والختم", fe_fait_le:"حرر في",
@@ -2412,8 +2414,11 @@ function FicheEleve({eleve,data,etab,canPaie,onClose}){
   const resteAn=Math.max(0,annuel-payeScol);
   const esc=v=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const printFiche=()=>{
-    const info=[[t("el_genre"),eleve.genre],[t("el_date_naiss"),eleve.date_naissance],[t("el_lieu_naiss"),eleve.lieu_naissance],[t("el_classe"),cl?txt(cl.nom,cl.nom_ar):""]];
-    const fil=[[t("el_pere"),eleve.pere],[t("el_tel_pere"),eleve.tel_pere],[t("el_mere"),eleve.mere],[t("el_tel_mere"),eleve.tel_mere],[t("el_tuteur"),eleve.tuteur],[t("fe_telephone"),eleve.telephone||eleve.tel_tuteur]];
+    const info=[[t("el_genre"),eleve.genre==="M"?t("el_masculin"):eleve.genre==="F"?t("el_feminin"):eleve.genre],[t("el_date_naiss"),eleve.date_naissance],[t("el_lieu_naiss"),eleve.lieu_naissance],[t("el_nationalite"),eleve.nationalite],[t("el_classe"),cl?txt(cl.nom,cl.nom_ar):""],[t("el_adresse"),eleve.adresse],[t("el_email"),eleve.email]];
+    const fil=[[t("el_pere"),eleve.pere],[t("el_prof_pere"),eleve.profession_pere],[t("el_tel_pere"),eleve.tel_pere],[t("el_mere"),eleve.mere],[t("el_prof_mere"),eleve.profession_mere],[t("el_tel_mere"),eleve.tel_mere],[t("el_tuteur"),eleve.tuteur],[t("fe_telephone"),eleve.telephone||eleve.tel_tuteur]];
+    const med=[[t("el_groupe_sanguin"),eleve.groupe_sanguin],[t("el_allergies"),eleve.allergies],[t("el_urgence_nom"),eleve.urgence_nom],[t("el_urgence_tel"),eleve.urgence_tel]];
+    const admin=[[t("el_acte"),eleve.acte_naissance?t("el_oui"):t("el_non")],[t("el_certificat"),eleve.certificat_transfert?t("el_oui"):t("el_non")],[t("el_dossier"),eleve.dossier_complet?t("el_oui"):t("el_non")]];
+    const hasMed=med.some(x=>x[1]!=null&&x[1]!=="");
     const rows=arr=>arr.filter(x=>x[1]!=null&&x[1]!=="").map(x=>`<tr><td style="padding:4px 8px;color:#64748b;width:45%">${esc(x[0])}</td><td style="padding:4px 8px;font-weight:700">${esc(x[1])}</td></tr>`).join("");
     const moyTable=`<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px"><thead><tr style="color:#64748b"><th style="text-align:left;padding:5px 8px">${esc(t("fe_matiere"))}</th>${periodes.map(p=>`<th style="padding:5px 8px;text-align:center">${esc(periodeLabel(etab,p))}</th>`).join("")}</tr></thead><tbody>${mats.map(m=>`<tr style="border-top:1px solid #eef2f7"><td style="padding:4px 8px">${esc(txt(m.nom,m.nom_ar))}</td>${periodes.map(per=>{const nv=eleve.notes?.[per]?.[m.id];return `<td style="padding:4px 8px;text-align:center;font-weight:700">${nv!=null&&nv!==""?esc(nv):"—"}</td>`;}).join("")}</tr>`).join("")}<tr style="border-top:2px solid #1a56db;font-weight:800"><td style="padding:5px 8px">${esc(t("fe_moyenne"))}</td>${moys.map(mm=>`<td style="padding:5px 8px;text-align:center;color:#1a56db">${esc(mm)}</td>`).join("")}</tr></tbody></table>`;
     const payTable=paies.length?`<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px"><thead><tr style="color:#64748b"><th style="text-align:left;padding:5px 8px">${esc(t("fe_date"))}</th><th style="text-align:left;padding:5px 8px">${esc(t("fe_type"))}</th><th style="text-align:right;padding:5px 8px">${esc(t("fe_montant"))}</th></tr></thead><tbody>${paies.map(p=>`<tr style="border-top:1px solid #eef2f7"><td style="padding:4px 8px">${esc(p.date)}</td><td style="padding:4px 8px">${esc(p.type)}${p.mois?" — "+esc(p.mois):""}</td><td style="padding:4px 8px;text-align:right;font-weight:700">${esc(fmtMoney(p.montant,devise))}</td></tr>`).join("")}</tbody></table>`:`<div style="font-size:12px;color:#94a3b8;padding:6px 8px">${esc(t("fe_aucun_paiement"))}</div>`;
@@ -2423,6 +2428,9 @@ function FicheEleve({eleve,data,etab,canPaie,onClose}){
       <div style="font-size:12px;color:#64748b;margin-bottom:10px">${esc(t("fe_matricule"))} : ${esc(eleve.matricule||"—")} · ${cl?esc(txt(cl.nom,cl.nom_ar)):"—"}${rang?` · ${esc(t("fe_rang"))} : ${rang}/${totalClasse}`:""}</div>
       <div style="font-weight:800;color:#1a56db;font-size:13px;margin:10px 0 2px">${esc(t("fe_infos"))}</div><table style="width:100%;border-collapse:collapse;font-size:12px">${rows(info)}</table>
       <div style="font-weight:800;color:#1a56db;font-size:13px;margin:12px 0 2px">${esc(t("fe_filiation"))}</div><table style="width:100%;border-collapse:collapse;font-size:12px">${rows(fil)}</table>
+      ${hasMed?`<div style="font-weight:800;color:#1a56db;font-size:13px;margin:12px 0 2px">${esc(t("el_sec_medical"))}</div><table style="width:100%;border-collapse:collapse;font-size:12px">${rows(med)}</table>`:""}
+      <div style="font-weight:800;color:#1a56db;font-size:13px;margin:12px 0 2px">${esc(t("el_sec_admin"))}</div><table style="width:100%;border-collapse:collapse;font-size:12px">${rows(admin)}</table>
+      ${eleve.observations?`<div style="font-weight:800;color:#1a56db;font-size:13px;margin:12px 0 2px">${esc(t("el_sec_obs"))}</div><div style="font-size:12px;white-space:pre-wrap">${esc(eleve.observations)}</div>`:""}
       <div style="font-weight:800;color:#1a56db;font-size:13px;margin:12px 0 2px">${esc(t("fe_parcours"))} — ${esc(t("fe_moy_gen"))} : <span style="color:#0f172a">${moyGen}</span></div>${moyTable}
       ${canPaie?`<div style="font-weight:800;color:#1a56db;font-size:13px;margin:14px 0 2px">${esc(t("fe_paiements"))} — ${esc(t("fe_total_paye"))} : <span style="color:#0f172a">${esc(fmtMoney(payeScol,devise))}</span> · ${esc(t("fe_reste"))} : <span style="color:#0f172a">${esc(fmtMoney(resteAn,devise))}</span></div>${payTable}`:""}
     </div>`;
@@ -2479,17 +2487,34 @@ function FicheEleve({eleve,data,etab,canPaie,onClose}){
         </div>
       </div>
       {sect(t("fe_infos"))}
-      <Row l={t("el_genre")} v={eleve.genre}/>
+      <Row l={t("el_genre")} v={eleve.genre==="M"?t("el_masculin"):eleve.genre==="F"?t("el_feminin"):eleve.genre}/>
       <Row l={t("el_date_naiss")} v={eleve.date_naissance}/>
       <Row l={t("el_lieu_naiss")} v={eleve.lieu_naissance}/>
+      <Row l={t("el_nationalite")} v={eleve.nationalite}/>
       <Row l={t("el_classe")} v={cl?txt(cl.nom,cl.nom_ar):""}/>
+      {(eleve.adresse||eleve.email)&&<>{sect(t("el_sec_coord"))}
+      <Row l={t("el_adresse")} v={eleve.adresse}/>
+      <Row l={t("el_email")} v={eleve.email}/></>}
       {sect(t("fe_filiation"))}
       <Row l={t("el_pere")} v={eleve.pere}/>
+      <Row l={t("el_prof_pere")} v={eleve.profession_pere}/>
       <Row l={t("el_tel_pere")} v={eleve.tel_pere}/>
       <Row l={t("el_mere")} v={eleve.mere}/>
+      <Row l={t("el_prof_mere")} v={eleve.profession_mere}/>
       <Row l={t("el_tel_mere")} v={eleve.tel_mere}/>
       <Row l={t("el_tuteur")} v={eleve.tuteur}/>
       <Row l={t("fe_telephone")} v={eleve.telephone||eleve.tel_tuteur}/>
+      {(eleve.groupe_sanguin||eleve.allergies||eleve.urgence_nom||eleve.urgence_tel)&&<>{sect(t("el_sec_medical"))}
+      <Row l={t("el_groupe_sanguin")} v={eleve.groupe_sanguin}/>
+      <Row l={t("el_allergies")} v={eleve.allergies}/>
+      <Row l={t("el_urgence_nom")} v={eleve.urgence_nom}/>
+      <Row l={t("el_urgence_tel")} v={eleve.urgence_tel}/></>}
+      {sect(t("el_sec_admin"))}
+      <Row l={t("el_acte")} v={eleve.acte_naissance?t("el_oui"):t("el_non")}/>
+      <Row l={t("el_certificat")} v={eleve.certificat_transfert?t("el_oui"):t("el_non")}/>
+      <Row l={t("el_dossier")} v={eleve.dossier_complet?t("el_oui"):t("el_non")}/>
+      {eleve.observations&&<>{sect(t("el_sec_obs"))}
+      <div style={{fontSize:13,color:"var(--me-text)",padding:"4px 0",whiteSpace:"pre-wrap"}}>{eleve.observations}</div></>}
       {sect(t("fe_parcours"))}
       <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
         {periodes.map((per,i)=>(
@@ -2570,7 +2595,7 @@ function Eleves({data,ops,etab,currentUser}) {
   const canPaie=currentUser?.role==="Administrateur"||(Array.isArray(currentUser?.pages_autorisees)&&currentUser.pages_autorisees.includes("fiche_paiements"));
   const [modal,setModal]=useState(null);const [search,setSearch]=useState("");const [filterCl,setFilterCl]=useState("");
   const [fiche,setFiche]=useState(null);
-  const [form,setForm]=useState({nom:"",prenom:"",genre:"",classe_id:"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",inscPayee:false});
+  const [form,setForm]=useState({nom:"",prenom:"",genre:"",classe_id:"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",nationalite:"",adresse:"",email:"",profession_pere:"",profession_mere:"",groupe_sanguin:"",allergies:"",urgence_nom:"",urgence_tel:"",acte_naissance:false,certificat_transfert:false,dossier_complet:false,observations:"",inscPayee:false});
   const [loading,setLoading]=useState(false);const [err,setErr]=useState("");
   // Import / Export Excel
   const [impOpen,setImpOpen]=useState(false);const [impRows,setImpRows]=useState([]);const [impClasse,setImpClasse]=useState("");const [impLoading,setImpLoading]=useState(false);const [impErr,setImpErr]=useState("");
@@ -2627,7 +2652,7 @@ function Eleves({data,ops,etab,currentUser}) {
   const classesCycle=data.classes.filter(c=>(c.niveau||"Primaire")===cycle);
   const countCycle=cyc=>data.eleves.filter(e=>{const c=data.classes.find(x=>x.id===e.classe_id);return (c?.niveau||"Primaire")===cyc;}).length;
   const matchSearch=e=>`${e.prenom} ${e.nom} ${e.matricule}`.toLowerCase().includes(search.toLowerCase());
-  const openInscrire=()=>{setErr("");setForm({nom:"",prenom:"",genre:"",classe_id:classesCycle[0]?.id||data.classes[0]?.id||"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",inscPayee:false});setModal("add");};
+  const openInscrire=()=>{setErr("");setForm({nom:"",prenom:"",genre:"",classe_id:classesCycle[0]?.id||data.classes[0]?.id||"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",nationalite:"",adresse:"",email:"",profession_pere:"",profession_mere:"",groupe_sanguin:"",allergies:"",urgence_nom:"",urgence_tel:"",acte_naissance:false,certificat_transfert:false,dossier_complet:false,observations:"",inscPayee:false});setModal("add");};
   useEffect(()=>{try{if(localStorage.getItem("monecole_quick")==="inscrire"){localStorage.removeItem("monecole_quick");if(!isProf)openInscrire();}}catch(_){}},[]);
   return(
     <div>
@@ -2674,7 +2699,7 @@ function Eleves({data,ops,etab,currentUser}) {
                         </div></td>
                         <td style={{padding:"10px 6px",fontFamily:"monospace",fontSize:12,color:"var(--me-text-2)"}}>{e.matricule}</td>
                         <td style={{padding:"10px 18px",textAlign:"right"}}><div style={{display:"inline-flex",gap:6}}>
-                          {!isProf&&<><button onClick={()=>{setErr("");setForm({nom:e.nom,prenom:e.prenom,genre:e.genre||"",classe_id:e.classe_id,date_naissance:e.date_naissance||"",lieu_naissance:e.lieu_naissance||"",tuteur:e.tuteur||"",pere:e.pere||"",tel_pere:e.tel_pere||"",mere:e.mere||"",tel_mere:e.tel_mere||"",telephone:e.telephone||"",frais_annuel:e.frais_annuel??"",frais_inscription_eleve:e.frais_inscription_eleve??"",inscPayee:false});setModal(e.id);}} style={{background:"var(--me-surface-2,#f1f5f9)",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_modifier")}</button>
+                          {!isProf&&<><button onClick={()=>{setErr("");setForm({nom:e.nom,prenom:e.prenom,genre:e.genre||"",classe_id:e.classe_id,date_naissance:e.date_naissance||"",lieu_naissance:e.lieu_naissance||"",tuteur:e.tuteur||"",pere:e.pere||"",tel_pere:e.tel_pere||"",mere:e.mere||"",tel_mere:e.tel_mere||"",telephone:e.telephone||"",frais_annuel:e.frais_annuel??"",frais_inscription_eleve:e.frais_inscription_eleve??"",nationalite:e.nationalite||"",adresse:e.adresse||"",email:e.email||"",profession_pere:e.profession_pere||"",profession_mere:e.profession_mere||"",groupe_sanguin:e.groupe_sanguin||"",allergies:e.allergies||"",urgence_nom:e.urgence_nom||"",urgence_tel:e.urgence_tel||"",acte_naissance:!!e.acte_naissance,certificat_transfert:!!e.certificat_transfert,dossier_complet:!!e.dossier_complet,observations:e.observations||"",inscPayee:false});setModal(e.id);}} style={{background:"var(--me-surface-2,#f1f5f9)",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_modifier")}</button>
                           <button onClick={()=>ops.deleteEleve(e.id)} style={{background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>{t("btn_supprimer")}</button></>}
                         </div></td>
                       </tr>
@@ -2694,15 +2719,36 @@ function Eleves({data,ops,etab,currentUser}) {
           <Inp label={t("el_date_naiss")} type="date" value={form.date_naissance} onChange={e=>setForm(f=>({...f,date_naissance:e.target.value}))}/>
           <Inp label={t("el_lieu_naiss")} value={form.lieu_naissance} onChange={e=>setForm(f=>({...f,lieu_naissance:e.target.value}))}/>
           <Slt label={t("el_genre")} value={form.genre} onChange={e=>setForm(f=>({...f,genre:e.target.value}))} opts={[{v:"",l:t("el_choisir")},{v:"M",l:t("el_masculin")},{v:"F",l:t("el_feminin")}]}/>
+          <Inp label={t("el_nationalite")} value={form.nationalite} onChange={e=>setForm(f=>({...f,nationalite:e.target.value}))}/>
           <div style={{gridColumn:"1/-1"}}><Slt label={t("el_classe")} value={form.classe_id} onChange={e=>setForm(f=>({...f,classe_id:e.target.value}))} opts={data.classes.map(c=>({v:c.id,l:txt(c.nom,c.nom_ar)}))}/></div>
           <Inp label={t("el_pere")} value={form.pere} onChange={e=>setForm(f=>({...f,pere:e.target.value}))} placeholder={t("el_nom_pere_ph")}/>
           <Inp label={t("el_tel_pere")} value={form.tel_pere} onChange={e=>setForm(f=>({...f,tel_pere:e.target.value}))}/>
+          <div style={{gridColumn:"1/-1"}}><Inp label={t("el_prof_pere")} value={form.profession_pere} onChange={e=>setForm(f=>({...f,profession_pere:e.target.value}))}/></div>
           <Inp label={t("el_mere")} value={form.mere} onChange={e=>setForm(f=>({...f,mere:e.target.value}))} placeholder={t("el_nom_mere_ph")}/>
           <Inp label={t("el_tel_mere")} value={form.tel_mere} onChange={e=>setForm(f=>({...f,tel_mere:e.target.value}))}/>
+          <div style={{gridColumn:"1/-1"}}><Inp label={t("el_prof_mere")} value={form.profession_mere} onChange={e=>setForm(f=>({...f,profession_mere:e.target.value}))}/></div>
           <Inp label={t("el_tuteur")} value={form.tuteur} onChange={e=>setForm(f=>({...f,tuteur:e.target.value}))}/>
           <Inp label={t("el_tel_tuteur")} value={form.telephone} onChange={e=>setForm(f=>({...f,telephone:e.target.value}))}/>
           <div style={{gridColumn:"1/-1"}}><Inp label={`${t("el_frais_annuel")} (${etab.devise||"GNF"}) — ${t("el_defaut_ecole")}`} type="number" value={form.frais_annuel} onChange={e=>setForm(f=>({...f,frais_annuel:e.target.value}))} placeholder={etab.frais_annuel_defaut?`Défaut : ${etab.frais_annuel_defaut}`:""}/></div>
           <div style={{gridColumn:"1/-1"}}><Inp label={`${t("el_frais_insc")} (${etab.devise||"GNF"}) — ${t("el_defaut_ecole")}`} type="number" value={form.frais_inscription_eleve} onChange={e=>setForm(f=>({...f,frais_inscription_eleve:e.target.value}))} placeholder={etab.fraisInscription?`Défaut : ${etab.fraisInscription}`:""}/></div>
+          <div style={{gridColumn:"1/-1",fontWeight:800,fontSize:12,color:"var(--me-brand)",margin:"10px 0 0"}}>{t("el_sec_coord")}</div>
+          <div style={{gridColumn:"1/-1"}}><Inp label={t("el_adresse")} value={form.adresse} onChange={e=>setForm(f=>({...f,adresse:e.target.value}))}/></div>
+          <Inp label={t("el_email")} value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))}/>
+          <div style={{gridColumn:"1/-1",fontWeight:800,fontSize:12,color:"var(--me-brand)",margin:"10px 0 0"}}>{t("el_sec_medical")}</div>
+          <Slt label={t("el_groupe_sanguin")} value={form.groupe_sanguin} onChange={e=>setForm(f=>({...f,groupe_sanguin:e.target.value}))} opts={[{v:"",l:t("el_choisir")},...["A+","A-","B+","B-","AB+","AB-","O+","O-"].map(g=>({v:g,l:g}))]}/>
+          <Inp label={t("el_allergies")} value={form.allergies} onChange={e=>setForm(f=>({...f,allergies:e.target.value}))}/>
+          <Inp label={t("el_urgence_nom")} value={form.urgence_nom} onChange={e=>setForm(f=>({...f,urgence_nom:e.target.value}))}/>
+          <Inp label={t("el_urgence_tel")} value={form.urgence_tel} onChange={e=>setForm(f=>({...f,urgence_tel:e.target.value}))}/>
+          <div style={{gridColumn:"1/-1",fontWeight:800,fontSize:12,color:"var(--me-brand)",margin:"10px 0 0"}}>{t("el_sec_admin")}</div>
+          <div style={{gridColumn:"1/-1",display:"flex",flexWrap:"wrap",gap:8}}>
+            {[["acte_naissance",t("el_acte")],["certificat_transfert",t("el_certificat")],["dossier_complet",t("el_dossier")]].map(([k,lbl])=>(
+              <label key={k} style={{display:"flex",alignItems:"center",gap:7,padding:"7px 11px",background:form[k]?"rgba(5,150,105,0.12)":"var(--me-surface-2,#f1f5f9)",border:form[k]?"1px solid #bbf7d0":"1px solid #e2e8f0",borderRadius:9,cursor:"pointer",fontSize:12,fontWeight:600,color:form[k]?"#166534":"var(--me-text-2)"}}>
+                <input type="checkbox" checked={!!form[k]} onChange={ev=>setForm(f=>({...f,[k]:ev.target.checked}))} style={{width:16,height:16,cursor:"pointer"}}/>{lbl}
+              </label>
+            ))}
+          </div>
+          <div style={{gridColumn:"1/-1",fontWeight:800,fontSize:12,color:"var(--me-brand)",margin:"10px 0 0"}}>{t("el_sec_obs")}</div>
+          <div style={{gridColumn:"1/-1"}}><textarea value={form.observations} onChange={e=>setForm(f=>({...f,observations:e.target.value}))} rows={2} placeholder={t("el_observations")} style={{width:"100%",padding:"9px 12px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:13,fontFamily:"'Plus Jakarta Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/></div>
         </div>
         {modal==="add"&&<label style={{display:"flex",alignItems:"center",gap:9,padding:"10px 13px",background:"rgba(5,150,105,0.12)",border:"1px solid #bbf7d0",borderRadius:9,cursor:"pointer",marginTop:4}}>
           <input type="checkbox" checked={form.inscPayee} onChange={e=>setForm(f=>({...f,inscPayee:e.target.checked}))} style={{width:17,height:17,cursor:"pointer"}}/>
