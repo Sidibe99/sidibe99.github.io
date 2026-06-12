@@ -1,5 +1,5 @@
 /* MonEcole Service Worker — coquille hors-ligne + démarrage instantané */
-const CACHE = 'monecole-v3';
+const CACHE = 'monecole-v4';
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'];
 const CDN = ['cdnjs.cloudflare.com','unpkg.com','cdn.jsdelivr.net','fonts.googleapis.com','fonts.gstatic.com'];
 
