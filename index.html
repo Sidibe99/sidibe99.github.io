@@ -152,7 +152,7 @@ const MENTION = (v, bareme=20) => {
   if(n>=14*f) return{t:"Bien",c:"#3b82f6",bg:"#dbeafe"};
   if(n>=12*f) return{t:"Assez Bien",c:"#8b5cf6",bg:"#ede9fe"};
   if(n>=10*f) return{t:"Passable",c:"#f59e0b",bg:"#fef3c7"};
-  return{t:"Insuffisant",c:"#ef4444",bg:"#fee2e2"};
+  return{t:"Passable",c:"#f59e0b",bg:"#fef3c7"};
 };
 const fmtMoney = (v,d="GNF") => !v&&v!==0?"—":Number(v).toLocaleString("fr-FR")+" "+(DEVISES[d]?.symbole||d);
 // ── Excel : chargement de SheetJS à la demande (CDN) + export / lecture ─────────
@@ -355,7 +355,7 @@ const I18N = {
     us_new_titre:"Nouvel utilisateur", us_edit_titre:"Modifier", us_prenom:"Prénom", us_ident:"Identifiant *",
     us_mdp:"Mot de passe *", us_mdp_new:"Nouveau mot de passe", us_role:"Rôle",
     us_matieres:"Matières enseignées (accès en saisie de notes)", us_aucune_mat:"Aucune matière créée.", us_note_prof:"Le professeur ne pourra saisir que les notes des matières cochées.",
-    us_pages:"Pages accessibles", us_pages_note:"Cochez les pages que cet utilisateur pourra ouvrir. Le Tableau de bord est toujours accessible ; l'Administrateur a accès à tout.", us_perm_fiche:"Fiche élève & Relevé de notes", us_perm_fiche_note:"Autorise cet utilisateur à ouvrir la fiche d'un élève (filiation, notes, paiements) et à imprimer son relevé de notes. Décoché = interdit. L'Administrateur y a toujours accès.", us_sections:"Sections de l'onglet Établissement", us_sections_note:"Pour chaque section : Aucun (cachée), Voir (lecture seule) ou Modifier. L'onglet « Compte » (ses appareils) reste toujours disponible.", us_niv_aucun:"Aucun", us_niv_voir:"Voir", us_niv_modifier:"Modifier", st_lecture_seule:"Lecture seule — vous pouvez consulter cette section mais pas la modifier.",
+    us_pages:"Pages accessibles", us_pages_note:"Cochez les pages que cet utilisateur pourra ouvrir. Le Tableau de bord est toujours accessible ; l'Administrateur a accès à tout.", us_perm_fiche:"Fiche élève & Relevé de notes", us_perm_fiche_note:"Autorise cet utilisateur à ouvrir la fiche d'un élève (filiation, notes) et à imprimer son relevé de notes. Décoché = interdit. L'Administrateur y a toujours accès.", us_perm_paie:"Paiements dans la fiche", us_perm_paie_note:"En plus, affiche l'historique des paiements et le reste à payer dans la fiche. Décoché = la fiche et le relevé restent visibles, mais sans les paiements.", us_sections:"Sections de l'onglet Établissement", us_sections_note:"Pour chaque section : Aucun (cachée), Voir (lecture seule) ou Modifier. L'onglet « Compte » (ses appareils) reste toujours disponible.", us_niv_aucun:"Aucun", us_niv_voir:"Voir", us_niv_modifier:"Modifier", st_lecture_seule:"Lecture seule — vous pouvez consulter cette section mais pas la modifier.",
     us_classes:"Classes autorisées", us_classes_note:"L'enseignant ne verra que ces classes (élèves, présences, bulletins…). Vide = toutes les classes.",
     st_sub:"Infos officielles, en-tête des documents et réglages — modifiables à tout moment",
     st_logos:"🖼️ Logos", st_logo_app:"📱 Logo de l'application (interface)", st_logo_app_d:"Affiché dans le menu de l'app — peut être différent des logos imprimés. Si vide, le logo de l'école ci-dessous est utilisé.",
@@ -541,7 +541,7 @@ const I18N = {
     us_new_titre:"مستخدم جديد", us_edit_titre:"تعديل", us_prenom:"الاسم", us_ident:"المعرّف *",
     us_mdp:"كلمة المرور *", us_mdp_new:"كلمة مرور جديدة", us_role:"الدور",
     us_matieres:"المواد المُدرّسة (صلاحية إدخال النقاط)", us_aucune_mat:"لا توجد مواد.", us_note_prof:"لن يتمكن الأستاذ إلا من إدخال نقاط المواد المحددة.",
-    us_pages:"الصفحات المتاحة", us_pages_note:"حدّد الصفحات التي يمكن لهذا المستخدم فتحها. لوحة التحكم متاحة دائمًا؛ والمدير لديه وصول كامل.", us_perm_fiche:"بطاقة التلميذ وكشف النقاط", us_perm_fiche_note:"يسمح لهذا المستخدم بفتح بطاقة التلميذ (النسب، النقاط، المدفوعات) وطباعة كشف نقاطه. غير محدد = ممنوع. المدير لديه وصول دائم.", us_sections:"أقسام تبويب المؤسسة", us_sections_note:"لكل قسم: لا شيء (مخفي)، عرض (قراءة فقط)، أو تعديل. يبقى تبويب «الحساب» (أجهزته) متاحًا دائمًا.", us_niv_aucun:"لا شيء", us_niv_voir:"عرض", us_niv_modifier:"تعديل", st_lecture_seule:"قراءة فقط — يمكنك الاطلاع على هذا القسم دون تعديله.",
+    us_pages:"الصفحات المتاحة", us_pages_note:"حدّد الصفحات التي يمكن لهذا المستخدم فتحها. لوحة التحكم متاحة دائمًا؛ والمدير لديه وصول كامل.", us_perm_fiche:"بطاقة التلميذ وكشف النقاط", us_perm_fiche_note:"يسمح لهذا المستخدم بفتح بطاقة التلميذ (النسب، النقاط) وطباعة كشف نقاطه. غير محدد = ممنوع. المدير لديه وصول دائم.", us_perm_paie:"المدفوعات في البطاقة", us_perm_paie_note:"بالإضافة، يعرض سجل المدفوعات والمتبقي في البطاقة. غير محدد = تبقى البطاقة والكشف ظاهرين دون المدفوعات.", us_sections:"أقسام تبويب المؤسسة", us_sections_note:"لكل قسم: لا شيء (مخفي)، عرض (قراءة فقط)، أو تعديل. يبقى تبويب «الحساب» (أجهزته) متاحًا دائمًا.", us_niv_aucun:"لا شيء", us_niv_voir:"عرض", us_niv_modifier:"تعديل", st_lecture_seule:"قراءة فقط — يمكنك الاطلاع على هذا القسم دون تعديله.",
     us_classes:"الأقسام المتاحة", us_classes_note:"لن يرى الأستاذ إلا هذه الأقسام (التلاميذ، الحضور، الكشوف…). فارغ = كل الأقسام.",
     st_sub:"معلومات رسمية، ترويسة الوثائق والإعدادات — قابلة للتعديل في أي وقت",
     st_logos:"🖼️ الشعارات", st_logo_app:"📱 شعار التطبيق (الواجهة)", st_logo_app_d:"يظهر في قائمة التطبيق — قد يختلف عن الشعارات المطبوعة. إذا كان فارغًا، يُستخدم شعار المدرسة أدناه.",
@@ -2391,7 +2391,7 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
   );
 }
 
-function FicheEleve({eleve,data,etab,onClose}){
+function FicheEleve({eleve,data,etab,canPaie,onClose}){
   const cl=data.classes.find(c=>c.id===eleve.classe_id);
   const periodes=periodesList(etab);
   const mats=data.matieres||[];
@@ -2422,7 +2422,7 @@ function FicheEleve({eleve,data,etab,onClose}){
       <div style="font-weight:800;color:#1a56db;font-size:13px;margin:10px 0 2px">${esc(t("fe_infos"))}</div><table style="width:100%;border-collapse:collapse;font-size:12px">${rows(info)}</table>
       <div style="font-weight:800;color:#1a56db;font-size:13px;margin:12px 0 2px">${esc(t("fe_filiation"))}</div><table style="width:100%;border-collapse:collapse;font-size:12px">${rows(fil)}</table>
       <div style="font-weight:800;color:#1a56db;font-size:13px;margin:12px 0 2px">${esc(t("fe_parcours"))} — ${esc(t("fe_moy_gen"))} : <span style="color:#0f172a">${moyGen}</span></div>${moyTable}
-      <div style="font-weight:800;color:#1a56db;font-size:13px;margin:14px 0 2px">${esc(t("fe_paiements"))} — ${esc(t("fe_total_paye"))} : <span style="color:#0f172a">${esc(fmtMoney(payeScol,devise))}</span> · ${esc(t("fe_reste"))} : <span style="color:#0f172a">${esc(fmtMoney(resteAn,devise))}</span></div>${payTable}
+      ${canPaie?`<div style="font-weight:800;color:#1a56db;font-size:13px;margin:14px 0 2px">${esc(t("fe_paiements"))} — ${esc(t("fe_total_paye"))} : <span style="color:#0f172a">${esc(fmtMoney(payeScol,devise))}</span> · ${esc(t("fe_reste"))} : <span style="color:#0f172a">${esc(fmtMoney(resteAn,devise))}</span></div>${payTable}`:""}
     </div>`;
     printHTML(html,`${eleve.prenom||""} ${eleve.nom||""}`,{etab});
   };
@@ -2519,7 +2519,7 @@ function FicheEleve({eleve,data,etab,onClose}){
           </table>
         </div>
       )}
-      {sect(t("fe_paiements"))}
+      {canPaie&&<>{sect(t("fe_paiements"))}
       <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
         <div style={{flex:"1 1 140px",background:"var(--me-surface-2,#f1f5f9)",borderRadius:11,padding:"9px 13px"}}>
           <div style={{fontSize:10.5,color:"var(--me-text-3)",fontWeight:700}}>{t("fe_total_paye")}</div>
@@ -2549,13 +2549,14 @@ function FicheEleve({eleve,data,etab,onClose}){
             </tbody>
           </table>
         </div>
-      )}
+      )}</>}
     </Modal>
   );
 }
 function Eleves({data,ops,etab,currentUser}) {
   const isProf=currentUser?.role==="Professeur";
   const canFiche=currentUser?.role==="Administrateur"||(Array.isArray(currentUser?.pages_autorisees)&&currentUser.pages_autorisees.includes("fiche_eleve"));
+  const canPaie=currentUser?.role==="Administrateur"||(Array.isArray(currentUser?.pages_autorisees)&&currentUser.pages_autorisees.includes("fiche_paiements"));
   const [modal,setModal]=useState(null);const [search,setSearch]=useState("");const [filterCl,setFilterCl]=useState("");
   const [fiche,setFiche]=useState(null);
   const [form,setForm]=useState({nom:"",prenom:"",genre:"",classe_id:"",date_naissance:"",lieu_naissance:"",tuteur:"",pere:"",tel_pere:"",mere:"",tel_mere:"",telephone:"",frais_annuel:"",frais_inscription_eleve:"",inscPayee:false});
@@ -2674,7 +2675,7 @@ function Eleves({data,ops,etab,currentUser}) {
           })}
         </div>
       )}
-      {fiche&&canFiche&&<FicheEleve eleve={fiche} data={data} etab={etab} onClose={()=>setFiche(null)}/>}
+      {fiche&&canFiche&&<FicheEleve eleve={fiche} data={data} etab={etab} canPaie={canPaie} onClose={()=>setFiche(null)}/>}
       {modal&&<Modal title={modal==="add"?t("el_inscrire_titre"):t("el_modifier")} onClose={()=>setModal(null)} w={540}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
           <Inp label={t("el_nom")} value={form.nom} onChange={e=>setForm(f=>({...f,nom:e.target.value}))}/>
@@ -2958,6 +2959,17 @@ function Bulletins({data,etab}) {
     const rangAnn=classmates.map(x=>{const mp=pers.map(p=>parseFloat(calcMoy(x.notes||{},data.matieres,p))).filter(v=>!isNaN(v));return{id:x.id,moy:mp.length?mp.reduce((a,b)=>a+b,0)/mp.length:0};}).sort((a,b)=>b.moy-a.moy).findIndex(x=>x.id===e.id)+1;
     const estAnnuel = pers.length===periodes.length;
     const single = pers.length===1; // une seule période : pas de colonne Moy. redondante
+    const appr=(v)=>{const f=bareme/20; if(v==null) return {fr:"—",ar:"—"};
+      if(v>=16*f) return {fr:"Excellent",ar:"ممتاز"};
+      if(v>=14*f) return {fr:"Très bon travail",ar:"عمل جيد جدًا"};
+      if(v>=12*f) return {fr:"Bon travail",ar:"عمل جيد"};
+      if(v>=10*f) return {fr:"Assez bien",ar:"لا بأس"};
+      if(v>=8*f) return {fr:"Doit fournir des efforts",ar:"عليه بذل جهد"};
+      return {fr:"Insuffisant",ar:"ضعيف"};};
+    const absCount=(data.presences||[]).filter(p=>p.eleve_id===e.id&&p.present===false).length;
+    const joursTot=(data.presences||[]).filter(p=>p.eleve_id===e.id).length;
+    const tauxPres=joursTot?Math.round((joursTot-absCount)/joursTot*100):null;
+    const apprGen=appr(moyAnnuelle);
     // Décision de passage (bulletin annuel) : moyenne ≥ bareme/2 → admis, sinon redouble
     const admis = moyAnnuelle!=null && moyAnnuelle>=bareme/2;
     const gF = e.genre==="F";
@@ -2976,16 +2988,23 @@ function Bulletins({data,etab}) {
       const cells=pers.map(p=>{const note=e.notes?.[p]?.[mat.id];return`<td style="text-align:center;font-weight:700;color:${note!=null&&note!==""?"#0f172a":"#cbd5e1"}">${note!=null&&note!==""?note:"—"}</td>`;}).join("");
       const vals=pers.map(p=>e.notes?.[p]?.[mat.id]).filter(n=>n!=null&&n!=="").map(parseFloat);
       const moyMat=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2):"—";
-      return`<tr style="background:${i%2===0?"#f8fafc":"#fff"}"><td>${nm(mat.nom,mat.nom_ar)}</td><td style="text-align:center">×${mat.coefficient}</td>${cells}${single?"":`<td style="text-align:center;font-weight:900;color:${etab.theme_couleur||"#1a56db"}">${moyMat}</td>`}</tr>`;
+      const moyMatNum=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length):null;const aMat=appr(moyMatNum);
+      return`<tr style="background:${i%2===0?"#f8fafc":"#fff"}"><td>${nm(mat.nom,mat.nom_ar)}</td><td style="text-align:center">×${mat.coefficient}</td>${cells}${single?"":`<td style="text-align:center;font-weight:900;color:${etab.theme_couleur||"#1a56db"}">${moyMat}</td>`}<td style="font-size:10px;color:#475569">${moyMatNum!=null?dl(aMat.fr,aMat.ar):"—"}</td></tr>`;
     }).join("");
-    const moyRow=`<tr style="background:#eff6ff;font-weight:800"><td colspan="2">${dl("Moyenne","المعدل")}</td>${moyP.map(v=>`<td style="text-align:center;color:${v!=null&&v>=bareme/2?"#059669":v!=null?"#dc2626":"#cbd5e1"}">${v!=null?v.toFixed(2):"—"}</td>`).join("")}${single?"":`<td style="text-align:center;color:${etab.theme_couleur||"#1a56db"}">${moyAnnuelle!=null?moyAnnuelle.toFixed(2):"—"}</td>`}</tr>`;
+    const moyRow=`<tr style="background:#eff6ff;font-weight:800"><td colspan="2">${dl("Moyenne","المعدل")}</td>${moyP.map(v=>`<td style="text-align:center;color:${v!=null&&v>=bareme/2?"#059669":v!=null?"#dc2626":"#cbd5e1"}">${v!=null?v.toFixed(2):"—"}</td>`).join("")}${single?"":`<td style="text-align:center;color:${etab.theme_couleur||"#1a56db"}">${moyAnnuelle!=null?moyAnnuelle.toFixed(2):"—"}</td>`}<td style="text-align:center;color:${apprGen.fr?(etab.theme_couleur||"#1a56db"):"#1a56db"}">${moyAnnuelle!=null?dl(apprGen.fr,apprGen.ar):"—"}</td></tr>`;
     const labelMoyGen = single ? dl("Moyenne","المعدل") : (estAnnuel ? dl("Moyenne annuelle","المعدل السنوي") : dl("Moyenne cumulée","المعدل التراكمي"));
     return`${officialHeader(etab,{classe:nm(cl?.nom,cl?.nom_ar),docTitle:titreDoc,docTitleAr:titreDocAr})}
     <div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr"><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Élève","التلميذ")}</div><b>${e.prenom} ${e.nom}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Matricule","رقم التسجيل")}</div><b style="font-family:monospace">${e.matricule}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Classe","القسم")}</div><b>${nm(cl?.nom,cl?.nom_ar)}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Année","السنة")}</div><b>${etab.annee||""}</b></div></div>
     ${(e.pere||e.mere||e.tuteur)?`<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:-6px">${e.pere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Père","الأب")}</div><b>${e.pere}</b>${e.tel_pere?` <span style="color:#64748b;font-weight:400">(${e.tel_pere})</span>`:""}</div>`:""}${e.mere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Mère","الأم")}</div><b>${e.mere}</b>${e.tel_mere?` <span style="color:#64748b;font-weight:400">(${e.tel_mere})</span>`:""}</div>`:""}</div>`:""}
-    <table><tr><th>${dl("Matière","المادة")}</th><th>${dl("Coeff.","المعامل")}</th>${entetesP}${single?"":`<th style="text-align:center">${dl("Moy.","المعدل")}</th>`}</tr>${lignes}${moyRow}</table>
+    <table><tr><th>${dl("Matière","المادة")}</th><th>${dl("Coeff.","المعامل")}</th>${entetesP}${single?"":`<th style="text-align:center">${dl("Moy.","المعدل")}</th>`}<th>${dl("Appréciation","الملاحظة")}</th></tr>${lignes}${moyRow}</table>
     <div class="result" style="background:${mAnn.bg};border:2px solid ${mAnn.c}40"><div class="stat"><div class="stat-val" style="color:${mAnn.c}">${moyAnnuelle!=null?moyAnnuelle.toFixed(2):"—"}</div><div class="stat-lbl">${labelMoyGen} /${bareme}</div></div><div class="stat"><div class="stat-val" style="color:${mAnn.c};font-size:18px">${mAnn.t}</div><div class="stat-lbl">${dl("Mention","التقدير")}</div></div><div class="stat"><div class="stat-val">${rangAnn}/${classmates.length}</div><div class="stat-lbl">${dl("Rang","الرتبة")}</div></div></div>
     ${estAnnuel&&moyAnnuelle!=null?`<div style="margin-top:12px;text-align:center;padding:10px;border-radius:9px;font-weight:800;font-size:13px;background:${admis?"#ecfdf5":"#fef2f2"};color:${admis?"#047857":"#dc2626"};border:1.5px solid ${admis?"#10b981":"#fca5a5"}">${dl("Décision du conseil","قرار المجلس")} : ${dl(decFr,decAr)}</div>`:""}
+    <div class="grid" style="grid-template-columns:1fr;margin-top:12px;gap:5px">
+      <div style="font-weight:800;font-size:12px;color:${etab.theme_couleur||"#1a56db"}">${dl("Suivi scolaire","المتابعة المدرسية")}</div>
+      <div style="font-size:11px"><b>${dl("Assiduité","المواظبة")} :</b> ${absCount} ${dl("absence(s)","غياب")}${tauxPres!=null?` &nbsp;·&nbsp; ${dl("Présence","نسبة الحضور")} : ${tauxPres}%`:""}</div>
+      <div style="font-size:11px"><b>${dl("Appréciation générale","الملاحظة العامة")} :</b> ${moyAnnuelle!=null?dl(apprGen.fr,apprGen.ar):"—"}</div>
+      <div style="font-size:11px"><b>${dl("Conduite / Observations","السلوك / ملاحظات")} :</b> <span style="color:#cbd5e1">................................................................</span></div>
+    </div>
     <div class="sign" style="margin-top:40px"><span style="text-align:center">${dl(etab.signataire_grade||"Le Directeur","المدير")}<br/>${etab.signataire_nom?`<b>${etab.signataire_nom}</b><br/>`:""}</span><span style="text-align:center">${dl("L'Enseignant(e)","المعلم(ة)")}<br/><br/></span></div>
     <p style="text-align:center;font-size:10px;color:#cbd5e1;margin-top:16px">Généré par MonEcole · ${etab.email||""}</p>`;
   };
@@ -3708,6 +3727,10 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
         {form.role!=="Administrateur"&&<Lbl t={t("us_perm_fiche")}>
           <button type="button" onClick={()=>togglePage("fiche_eleve")} style={{padding:"7px 13px",borderRadius:20,border:(form.pages_autorisees||[]).includes("fiche_eleve")?"2px solid var(--me-brand)":"1.5px solid #e2e8f0",background:(form.pages_autorisees||[]).includes("fiche_eleve")?"#eff6ff":"#fff",color:(form.pages_autorisees||[]).includes("fiche_eleve")?"#1a56db":"#64748b",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{(form.pages_autorisees||[]).includes("fiche_eleve")?"✓ ":""}📋 {t("us_perm_fiche")}</button>
           <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:6}}>{t("us_perm_fiche_note")}</div>
+          {(form.pages_autorisees||[]).includes("fiche_eleve")&&<div style={{marginTop:11,paddingTop:11,borderTop:"1px solid var(--me-border-2,#eef2f7)"}}>
+            <button type="button" onClick={()=>togglePage("fiche_paiements")} style={{padding:"7px 13px",borderRadius:20,border:(form.pages_autorisees||[]).includes("fiche_paiements")?"2px solid #0e9f6e":"1.5px solid #e2e8f0",background:(form.pages_autorisees||[]).includes("fiche_paiements")?"#ecfdf5":"#fff",color:(form.pages_autorisees||[]).includes("fiche_paiements")?"#0e9f6e":"#64748b",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{(form.pages_autorisees||[]).includes("fiche_paiements")?"✓ ":""}💰 {t("us_perm_paie")}</button>
+            <div style={{fontSize:11,color:"var(--me-text-3)",marginTop:6}}>{t("us_perm_paie_note")}</div>
+          </div>}
         </Lbl>}
         {form.role!=="Administrateur"&&(form.pages_autorisees||[]).includes("parametres")&&<Lbl t={t("us_sections")}>
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
