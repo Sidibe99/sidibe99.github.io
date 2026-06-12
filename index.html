@@ -855,6 +855,7 @@ const officialHeader = (etab={}, opts={}) => {
 };
 
 // ── PRINT HELPER ──────────────────────────────────────────────────────────────
+const OH_CSS = ".oh{margin-bottom:18px}.oh-top{text-align:center;margin-bottom:10px}.oh-pays{font-size:15px;font-weight:800;letter-spacing:.3px;text-transform:uppercase}.oh-devise{font-size:11px;font-style:italic;color:#475569;margin-top:1px}.oh-body{display:flex;justify-content:space-between;align-items:center;gap:14px;font-size:11px;color:#334155;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:9px 0}.oh-left,.oh-right{flex:1}.oh-left>div,.oh-right>div{margin:1px 0}.oh-right{text-align:right}.oh-mid{flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:0 6px}.oh-title{text-align:center;margin-top:12px;font-size:16px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#0f172a;border:2px solid #1a56db;border-radius:8px;padding:7px 0;background:#eff6ff}";
 const printHTML = (html, title="MonEcole", opts={}) => {
   const w=window.open("","_blank");
   const bodyPad = opts.compact ? "0" : "28px";
@@ -2392,6 +2393,7 @@ function FicheNotes({data,ops,etab,onEtabUpdate}) {
 }
 
 function FicheEleve({eleve,data,etab,canPaie,onClose}){
+  const [apercu,setApercu]=useState(null);
   const cl=data.classes.find(c=>c.id===eleve.classe_id);
   const periodes=periodesList(etab);
   const mats=data.matieres||[];
@@ -2454,7 +2456,7 @@ function FicheEleve({eleve,data,etab,canPaie,onClose}){
       <div style="margin-top:12px;font-size:13.5px">${esc(t("fe_moy_gen"))} : <b>${moyGen} / ${bareme}</b>${ment?` &nbsp;—&nbsp; ${esc(t("fe_mention"))} : <b style="color:${ment.c}">${esc(ment.t)}</b>`:""}</div>`}
       <div style="margin-top:36px;display:flex;justify-content:space-between;font-size:12px;color:#475569"><div>${esc(t("fe_fait_le"))} ${new Date().toLocaleDateString("fr-FR")}</div><div>${esc(t("fe_signature"))}</div></div>
     </div>`;
-    printHTML(html,`${t("fe_releve")} ${eleve.prenom||""} ${eleve.nom||""}`,{etab});
+    setApercu(html);
   };
   const Row=({l,v})=> (v!=null&&v!=="")?(
     <div style={{display:"flex",justifyContent:"space-between",gap:12,padding:"7px 0",borderBottom:"1px solid var(--me-border-2,#eef2f7)",fontSize:13}}>
@@ -2463,7 +2465,7 @@ function FicheEleve({eleve,data,etab,canPaie,onClose}){
     </div>
   ):null;
   const sect=(titre)=> <div style={{fontWeight:800,fontSize:13,color:"var(--me-brand)",margin:"16px 0 6px",fontFamily:"'Sora',sans-serif"}}>{titre}</div>;
-  return (
+  return (<>
     <Modal title={t("fe_titre")} onClose={onClose} w={580}>
       <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:6}}>
         <div style={{width:54,height:54,borderRadius:14,background:"linear-gradient(135deg,var(--me-brand),var(--me-brand2))",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:800,fontSize:18,fontFamily:"'Sora',sans-serif"}}>{eleve.prenom?.[0]}{eleve.nom?.[0]}</div>
@@ -2551,7 +2553,16 @@ function FicheEleve({eleve,data,etab,canPaie,onClose}){
         </div>
       )}</>}
     </Modal>
-  );
+    {apercu&&<Modal title={t("fe_releve")} onClose={()=>setApercu(null)} w={800}>
+      <div style={{maxHeight:"66vh",overflowY:"auto",border:"1px solid var(--me-border-2,#e2e8f0)",borderRadius:10,padding:16,background:"#fff"}}>
+        <div dangerouslySetInnerHTML={{__html:`<style>${OH_CSS}</style>`+apercu}}/>
+      </div>
+      <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:12}}>
+        <Btn ch={t("btn_annuler")} v="ghost" onClick={()=>setApercu(null)}/>
+        <Btn ch={t("fe_imprimer")} v="primary" onClick={()=>printHTML(apercu,`${t("fe_releve")} ${eleve.prenom||""} ${eleve.nom||""}`,{etab})}/>
+      </div>
+    </Modal>}
+  </>);
 }
 function Eleves({data,ops,etab,currentUser}) {
   const isProf=currentUser?.role==="Professeur";
