@@ -308,7 +308,7 @@ const I18N = {
     pa_total_encaisse:"Total encaissé", pa_mode:"Mode", pa_tranches:"Tranches", pa_mensualites:"Mensualités",
     pa_inscrivez:"Inscrivez des élèves d'abord.", pa_scolarite:"Scolarité", pa_non_definie:"non définie", pa_inscription:"Inscription", pa_encaisse:"Encaissé",
     pa_th_total_du:"Total dû", pa_th_statut:"Statut",
-    pa_paiement_ok:"✅ Paiement enregistré", pa_imprimer:"🖨️ Imprimer", pa_pdf:"📄 Télécharger PDF", pa_whatsapp:"🟢 WhatsApp", pa_email:"✉️ E-mail",
+    pa_paiement_ok:"✅ Paiement enregistré", pa_imprimer:"🖨️ Imprimer", pa_pdf:"📄 Télécharger PDF", pa_whatsapp:"🟢 WhatsApp", pa_email:"✉️ E-mail", pa_partager:"📤 Partager (choisir le contact)",
     pa_wa_note:"Pour WhatsApp/Mail : le message s'ouvre pré-rempli. Téléchargez le PDF puis joignez-le si besoin.",
     pa_modal_titre:"Encaisser un versement", pa_tranche_conc:"Tranche concernée", pa_mois_conc:"Mois concerné",
     pa_montant:"Montant versé", pa_moyen:"Moyen de paiement", pa_note:"Note (facultatif)", pa_note_ph:"Versement partiel, etc.",
@@ -491,7 +491,7 @@ const I18N = {
     pa_total_encaisse:"إجمالي المحصّل", pa_mode:"النمط", pa_tranches:"أقساط", pa_mensualites:"أقساط شهرية",
     pa_inscrivez:"سجّل التلاميذ أولًا.", pa_scolarite:"الدراسة", pa_non_definie:"غير محددة", pa_inscription:"التسجيل", pa_encaisse:"المحصّل",
     pa_th_total_du:"المستحق", pa_th_statut:"الحالة",
-    pa_paiement_ok:"✅ تم تسجيل الدفع", pa_imprimer:"🖨️ طباعة", pa_pdf:"📄 تنزيل PDF", pa_whatsapp:"🟢 واتساب", pa_email:"✉️ بريد",
+    pa_paiement_ok:"✅ تم تسجيل الدفع", pa_imprimer:"🖨️ طباعة", pa_pdf:"📄 تنزيل PDF", pa_whatsapp:"🟢 واتساب", pa_email:"✉️ بريد", pa_partager:"📤 مشاركة (اختيار جهة الاتصال)",
     pa_wa_note:"لواتساب/البريد: تُفتح الرسالة جاهزة. نزّل PDF وأرفقه إذا لزم.",
     pa_modal_titre:"تسجيل دفعة", pa_tranche_conc:"القسط المعني", pa_mois_conc:"الشهر المعني",
     pa_montant:"المبلغ المدفوع", pa_moyen:"وسيلة الدفع", pa_note:"ملاحظة (اختياري)", pa_note_ph:"دفعة جزئية، إلخ.",
@@ -612,6 +612,16 @@ const t = (k)=> (I18N[CURRENT_LANG] && I18N[CURRENT_LANG][k]!=null) ? I18N[CURRE
 // Nom bilingue saisi par l'école : renvoie l'arabe si la langue est l'arabe ET qu'une version arabe existe, sinon le français.
 const txt = (fr, ar)=> (CURRENT_LANG==="ar" && ar!=null && String(ar).trim()!=="") ? ar : (fr||"");
 const confirmSuppr = (msg)=>{ try{ return window.confirm(msg || t("confirm_suppr")); }catch(_){ return true; } };
+// Normalise un numéro pour WhatsApp : ajoute l'indicatif pays (défaut Guinée 224)
+const waNumber = (raw, etab) => {
+  let d = String(raw||"").replace(/[^0-9]/g,"");
+  if(!d) return "";
+  const cc = String((etab&&etab.indicatif)||"224").replace(/[^0-9]/g,"") || "224";
+  if(d.startsWith("00")) d = d.slice(2);     // 00224... -> 224...
+  if(d.startsWith(cc)) return d;             // déjà avec indicatif
+  d = d.replace(/^0+/,"");                    // enlève le(s) 0 initial(aux)
+  return cc + d;                             // ajoute l'indicatif
+};
 const deviceLabel = ()=>{ try{
   const ua=navigator.userAgent||"";
   let nav="Navigateur";
@@ -2921,7 +2931,7 @@ function Paiements({data,ops,etab}) {
   const pdfRecu=(p)=>printHTML(recuHTML(p),`Recu_${p.recu}`,{compact:true,etab});
   const waRecu=(p)=>{
     const el=data.eleves.find(e=>e.id===p.eleve_id);
-    const tel=(el?.telephone||"").replace(/[^0-9]/g,"");
+    const tel=waNumber(el?.telephone, etab);
     const txt=encodeURIComponent(recuTexte(p));
     window.open(tel?`https://wa.me/${tel}?text=${txt}`:`https://wa.me/?text=${txt}`,"_blank");
   };
@@ -2930,6 +2940,11 @@ function Paiements({data,ops,etab}) {
     const sujet=encodeURIComponent(`${etab.langue==="ar"?"وصل":"Reçu"} ${p.recu} — ${etab.nom||"MonEcole"}`);
     const corps=encodeURIComponent(recuTexte(p).replace(/\*/g,""));
     window.open(`mailto:${el?.email||""}?subject=${sujet}&body=${corps}`,"_blank");
+  };
+  const shareRecu=async(p)=>{
+    const texte=recuTexte(p);
+    if(typeof navigator!=="undefined"&&navigator.share){ try{ await navigator.share({title:`${etab.langue==="ar"?"وصل":"Reçu"} ${p.recu}`,text:texte}); }catch(_){ } return; }
+    window.open(`https://wa.me/?text=${encodeURIComponent(texte)}`,"_blank");
   };
 
   const totalEncaisse=data.paiements.reduce((s,p)=>s+(p.montant||0),0);
@@ -3008,7 +3023,7 @@ function Paiements({data,ops,etab}) {
           )}
         </Card>
         {modal&&<PaiementModal {...{form,setForm,echeances,isTranche,devise,loading,save,setModal,moyens:etab.moyens_paiement||[]}}/>}
-        {recuPret&&<RecuApercu html={recuHTML(recuPret)} onClose={()=>setRecuPret(null)} onPrint={()=>printRecu(recuPret)} onPdf={()=>pdfRecu(recuPret)} onWa={()=>waRecu(recuPret)} onMail={()=>mailRecu(recuPret)}/>}
+        {recuPret&&<RecuApercu html={recuHTML(recuPret)} onClose={()=>setRecuPret(null)} onPrint={()=>printRecu(recuPret)} onPdf={()=>pdfRecu(recuPret)} onWa={()=>waRecu(recuPret)} onMail={()=>mailRecu(recuPret)} onShare={()=>shareRecu(recuPret)}/>}
       </div>
     );
   }
@@ -3077,13 +3092,13 @@ function Paiements({data,ops,etab}) {
         )}
       </>)}
       {modal&&<PaiementModal {...{form,setForm,echeances,isTranche,devise,loading,save,setModal,moyens:etab.moyens_paiement||[]}}/>}
-        {recuPret&&<RecuApercu html={recuHTML(recuPret)} onClose={()=>setRecuPret(null)} onPrint={()=>printRecu(recuPret)} onPdf={()=>pdfRecu(recuPret)} onWa={()=>waRecu(recuPret)} onMail={()=>mailRecu(recuPret)}/>}
+        {recuPret&&<RecuApercu html={recuHTML(recuPret)} onClose={()=>setRecuPret(null)} onPrint={()=>printRecu(recuPret)} onPdf={()=>pdfRecu(recuPret)} onWa={()=>waRecu(recuPret)} onMail={()=>mailRecu(recuPret)} onShare={()=>shareRecu(recuPret)}/>}
     </div>
   );
 }
 
 // Aperçu du reçu après paiement, avec actions Imprimer / PDF / WhatsApp / Mail
-function RecuApercu({html,onClose,onPrint,onPdf,onWa,onMail}) {
+function RecuApercu({html,onClose,onPrint,onPdf,onWa,onMail,onShare}) {
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.55)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <div onClick={e=>e.stopPropagation()} style={{background:"var(--me-surface,#fff)",borderRadius:16,maxWidth:520,width:"100%",maxHeight:"90vh",overflow:"auto",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
@@ -3093,8 +3108,9 @@ function RecuApercu({html,onClose,onPrint,onPdf,onWa,onMail}) {
         </div>
         <div style={{padding:18}}>
           <div style={{transform:"scale(0.92)",transformOrigin:"top center"}} dangerouslySetInnerHTML={{__html:`<style>.recu{box-shadow:none!important;border:1px solid #e2e8f0!important}.recu-officiel{text-align:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #e2e8f0}.recu-pays{font-size:12px;font-weight:800;text-transform:uppercase}.recu-devise{font-size:9px;font-style:italic;color:#475569}.recu-minist{font-size:9px;color:#334155;margin-top:3px}.recu-iredpe{font-size:9px;color:#64748b}.recu-head{display:flex;align-items:center;gap:11px;padding-bottom:11px;border-bottom:2px solid #1a56db}.recu-logo{width:42px;height:42px;border-radius:9px;object-fit:contain}.recu-logo-ph{display:flex;align-items:center;justify-content:center;background:#eff6ff;font-size:22px}.recu-badge{background:#1a56db;color:#fff;font-weight:800;font-size:11px;letter-spacing:1px;padding:5px 12px;border-radius:7px}.recu-num{display:flex;justify-content:space-between;font-size:11px;color:#64748b;margin:10px 0 6px}.recu-grid{background:#f8fafc;border-radius:10px;padding:9px 13px;margin-bottom:11px}.recu-montant{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1.5px solid #10b981;border-radius:11px;padding:12px 16px}.recu-montant span{font-size:11px;color:#047857;text-transform:uppercase;font-weight:700}.recu-montant b{font-size:20px;color:#047857;font-weight:900}.recu-solde{margin-top:9px;background:#fff7ed;border-radius:9px;padding:7px 13px}.recu-foot{margin-top:16px;display:flex;justify-content:space-between;font-size:10px;color:#94a3b8}</style>`+html}}/>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:9,marginTop:18}}>
-            <Btn ch={t("pa_imprimer")} v="primary" onClick={onPrint}/>
+          <Btn ch={t("pa_partager")} v="primary" full s={{marginTop:18}} onClick={onShare}/>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:9,marginTop:9}}>
+            <Btn ch={t("pa_imprimer")} v="ghost" onClick={onPrint}/>
             <Btn ch={t("pa_pdf")} v="ghost" onClick={onPdf}/>
             <Btn ch={t("pa_whatsapp")} v="success" onClick={onWa}/>
             <Btn ch={t("pa_email")} v="ghost" onClick={onMail}/>
