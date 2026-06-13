@@ -1856,7 +1856,7 @@ function Professeurs({data,ops,etab}) {
   return(
     <div>
       <SHdr title={t("nav_professeurs")+" 👨‍🏫"} sub={`${(data.professeurs||[]).length} ${t("pf_count")}`} action={<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><ExportBar name="professeurs" title={t("nav_professeurs")} getRows={()=>(data.professeurs||[]).map(p=>({Nom:p.nom,"Prénom":p.prenom||"","Téléphone":p.telephone||"",Email:p.email||"","Matières":p.matieres_txt||"",Genre:p.genre||"","Rémunération":p.type_salaire==="horaire"?`${p.taux_horaire||""}/h`:`${p.salaire||""}/mois`,"Date embauche":p.date_embauche||""}))}/><Btn ch={t("btn_new_prof")} v="primary" onClick={openNew}/></div>}/>
-      {(data.salaires||[]).length>0&&<Card s={{marginBottom:14}}>
+      {((data.salaires||[]).length>0||masseMensuelle>0)&&<Card s={{marginBottom:14}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:14}}>
           <div style={{display:"flex",flexDirection:"column",gap:11,minWidth:240}}>
             <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
