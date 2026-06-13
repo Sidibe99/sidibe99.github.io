@@ -225,17 +225,17 @@ const I18N = {
     nav_dashboard:"Tableau de bord", nav_classes:"Classes", nav_matieres:"Matières", nav_eleves:"Élèves",
     grp_scolarite:"Scolarité", grp_finances:"Finances", grp_admin:"Administration",
     calc_titre:"Calculatrice",
-    nav_professeurs:"Professeurs", nav_emploi:"Emploi du temps", nav_notes:"Saisie des notes", nav_bulletins:"Bulletins",
+    nav_professeurs:"Personnel", nav_emploi:"Emploi du temps", nav_notes:"Saisie des notes", nav_bulletins:"Bulletins",
     nav_fiche_notes:"Fiche vierge", nav_paiements:"Paiements", nav_presences:"Présences", nav_messagerie:"Messagerie",
     nav_depenses:"Dépenses",
     dp_sub:"Achats, charges et sorties d'argent", dp_new:"+ Nouvelle dépense", dp_new_titre:"Nouvelle dépense", dp_edit_titre:"Modifier la dépense",
     dp_total:"Total dépenses", dp_encaisse:"Total encaissé", dp_solde:"Solde (encaissé − dépenses)",
     dp_mois:"Mois", dp_tous_mois:"Tous les mois", dp_categorie:"Catégorie", dp_toutes_cats:"Toutes les catégories",
     dp_repartition:"Répartition par catégorie", dp_empty:"Aucune dépense enregistrée.",
-    dp_date:"Date", dp_libelle:"Libellé", dp_libelle_ph:"Ex: Achat de craies, ramettes A4…", dp_montant:"Montant", dp_fournisseur:"Fournisseur", dp_moyen:"Moyen de paiement", dp_note:"Note",
+    dp_date:"Date", dp_par:"par", dp_modifie:"Modifié par", dp_historique:"Historique", dp_libelle:"Libellé", dp_libelle_ph:"Ex: Achat de craies, ramettes A4…", dp_montant:"Montant", dp_fournisseur:"Fournisseur", dp_moyen:"Moyen de paiement", dp_note:"Note",
     nav_utilisateurs:"Utilisateurs", nav_parametres:"Établissement",
     sh_bienvenue:"Bienvenue", sh_fiche:"Fiche vierge",
-    btn_new_classe:"+ Nouvelle classe", btn_new_matiere:"+ Nouvelle matière", btn_new_prof:"+ Nouveau professeur",
+    btn_new_classe:"+ Nouvelle classe", btn_new_matiere:"+ Nouvelle matière", btn_new_prof:"+ Nouveau membre",
     btn_new_user:"+ Nouvel utilisateur", btn_new_groupe:"+ Nouveau groupe",
     btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.", sess_new_login:"Nouvelle connexion détectée", sess_new_desc:"Quelqu'un vient de se connecter à votre compte depuis :", sess_deconnecter:"Déconnecter", sess_cetait_moi:"C'était moi", sess_revoked:"Cette session a été déconnectée à distance.", sess_inconnu:"Appareil inconnu", sess_appareils:"Appareils connectés", sess_appareils_aide:"Voici les appareils connectés à votre compte. Vous pouvez déconnecter ceux que vous ne reconnaissez pas.", sess_aucun:"Aucun appareil connecté pour le moment.", sess_cet_appareil:"Cet appareil", sess_deco_confirm:"Déconnecter cet appareil ?",
     imp_export:"⬇ Exporter Excel", imp_import:"⬆ Importer Excel", imp_titre:"Importer des élèves (Excel / CSV)", imp_word:"⬇ Exporter Word",
@@ -333,7 +333,7 @@ const I18N = {
     fn_apercu:"👁️ Aperçu", fn_autres_b:"autre(s) élève(s)",
     fn_modeles:"💾 Modèles enregistrés", fn_modele_ph:"Nom du modèle (ex: Fiche trimestre)", fn_save_modele:"Enregistrer ce modèle",
     fn_aucun_modele:"Aucun modèle enregistré. Composez votre fiche puis enregistrez-la pour la réutiliser.",
-    pf_nom_oblig:"Nom et prénom obligatoires.", pf_doublon_a:"Le professeur", pf_count:"enseignant(s)", pf_empty:"Aucun professeur. Ajoutez-en un.",
+    pf_nom_oblig:"Nom et prénom obligatoires.", pf_fonction:"Fonction", pf_doublon_a:"Le professeur", pf_count:"membre(s) du personnel", pf_empty:"Aucun membre du personnel. Ajoutez-en un.",
     pf_h:"/h", pf_mois:"/mois", pf_gerer:"Gérer", pf_new_titre:"Nouveau professeur", pf_edit_titre:"Modifier le professeur",
     pf_tel:"Téléphone", pf_email:"Email", pf_matieres:"Matière(s) enseignée(s)", pf_matieres_ph:"Ex: Mathématiques, Physique",
     pf_embauche:"Date d'embauche", pf_type_remu:"Type de rémunération", pf_remu_mensuel:"Salaire mensuel fixe", pf_remu_horaire:"Paiement à l'heure / séance",
@@ -412,17 +412,17 @@ const I18N = {
     nav_dashboard:"لوحة التحكم", nav_classes:"الفصول", nav_matieres:"المواد", nav_eleves:"التلاميذ",
     grp_scolarite:"الدراسة", grp_finances:"المالية", grp_admin:"الإدارة",
     calc_titre:"آلة حاسبة",
-    nav_professeurs:"المعلمون", nav_emploi:"الجدول الزمني", nav_notes:"إدخال الدرجات", nav_bulletins:"كشوف الدرجات",
+    nav_professeurs:"الطاقم", nav_emploi:"الجدول الزمني", nav_notes:"إدخال الدرجات", nav_bulletins:"كشوف الدرجات",
     nav_fiche_notes:"ورقة فارغة", nav_paiements:"المدفوعات", nav_presences:"الحضور", nav_messagerie:"الرسائل",
     nav_depenses:"المصاريف",
     dp_sub:"المشتريات والأعباء والمصاريف", dp_new:"+ مصروف جديد", dp_new_titre:"مصروف جديد", dp_edit_titre:"تعديل المصروف",
     dp_total:"إجمالي المصاريف", dp_encaisse:"إجمالي المقبوضات", dp_solde:"الرصيد (المقبوضات − المصاريف)",
     dp_mois:"الشهر", dp_tous_mois:"كل الأشهر", dp_categorie:"الفئة", dp_toutes_cats:"كل الفئات",
     dp_repartition:"التوزيع حسب الفئة", dp_empty:"لا مصاريف مسجلة.",
-    dp_date:"التاريخ", dp_libelle:"البيان", dp_libelle_ph:"مثال: شراء طباشير، رزم A4…", dp_montant:"المبلغ", dp_fournisseur:"المورّد", dp_moyen:"وسيلة الدفع", dp_note:"ملاحظة",
+    dp_date:"التاريخ", dp_par:"بواسطة", dp_modifie:"عُدّلت بواسطة", dp_historique:"السجل", dp_libelle:"البيان", dp_libelle_ph:"مثال: شراء طباشير، رزم A4…", dp_montant:"المبلغ", dp_fournisseur:"المورّد", dp_moyen:"وسيلة الدفع", dp_note:"ملاحظة",
     nav_utilisateurs:"المستخدمون", nav_parametres:"المؤسسة",
     sh_bienvenue:"مرحبًا", sh_fiche:"ورقة فارغة",
-    btn_new_classe:"+ فصل جديد", btn_new_matiere:"+ مادة جديدة", btn_new_prof:"+ أستاذ جديد",
+    btn_new_classe:"+ فصل جديد", btn_new_matiere:"+ مادة جديدة", btn_new_prof:"+ عضو جديد",
     btn_new_user:"+ مستخدم جديد", btn_new_groupe:"+ مجموعة جديدة",
     btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.", sess_new_login:"تم اكتشاف تسجيل دخول جديد", sess_new_desc:"قام شخص ما بتسجيل الدخول إلى حسابك من:", sess_deconnecter:"قطع الاتصال", sess_cetait_moi:"كان أنا", sess_revoked:"تم قطع هذه الجلسة عن بُعد.", sess_inconnu:"جهاز غير معروف", sess_appareils:"الأجهزة المتصلة", sess_appareils_aide:"هذه هي الأجهزة المتصلة بحسابك. يمكنك قطع اتصال ما لا تعرفه.", sess_aucun:"لا يوجد جهاز متصل حاليًا.", sess_cet_appareil:"هذا الجهاز", sess_deco_confirm:"قطع اتصال هذا الجهاز؟",
     imp_export:"⬇ تصدير إكسل", imp_import:"⬆ استيراد إكسل", imp_titre:"استيراد التلاميذ (إكسل / CSV)", imp_word:"⬇ تصدير وورد",
@@ -520,7 +520,7 @@ const I18N = {
     fn_apercu:"👁️ معاينة", fn_autres_b:"تلميذ آخر",
     fn_modeles:"💾 النماذج المحفوظة", fn_modele_ph:"اسم النموذج (مثال: ورقة الفصل)", fn_save_modele:"حفظ هذا النموذج",
     fn_aucun_modele:"لا نماذج محفوظة. صمّم ورقتك ثم احفظها لإعادة استخدامها.",
-    pf_nom_oblig:"اللقب والاسم إلزاميان.", pf_doublon_a:"الأستاذ", pf_count:"معلم", pf_empty:"لا يوجد معلم. أضف واحدًا.",
+    pf_nom_oblig:"اللقب والاسم إلزاميان.", pf_fonction:"الوظيفة", pf_doublon_a:"الأستاذ", pf_count:"من أفراد الطاقم", pf_empty:"لا يوجد أفراد طاقم. أضف واحدًا.",
     pf_h:"/س", pf_mois:"/شهر", pf_gerer:"إدارة", pf_new_titre:"أستاذ جديد", pf_edit_titre:"تعديل الأستاذ",
     pf_tel:"الهاتف", pf_email:"البريد الإلكتروني", pf_matieres:"المواد المُدرّسة", pf_matieres_ph:"مثال: رياضيات، فيزياء",
     pf_embauche:"تاريخ التوظيف", pf_type_remu:"نوع الأجر", pf_remu_mensuel:"راتب شهري ثابت", pf_remu_horaire:"الدفع بالساعة / الحصة",
@@ -1797,13 +1797,15 @@ function Matieres({data,ops,currentUser}) {
 }
 
 // ── ÉLÈVES ────────────────────────────────────────────────────────────────────
+const FONCTIONS=[{v:"Enseignant",fr:"Enseignant",ar:"مدرّس"},{v:"Directeur",fr:"Directeur",ar:"مدير"},{v:"Directeur adjoint",fr:"Directeur adjoint",ar:"نائب المدير"},{v:"Censeur",fr:"Censeur",ar:"ناظر"},{v:"Surveillant",fr:"Surveillant",ar:"مراقب"},{v:"Secrétaire",fr:"Secrétaire",ar:"سكرتير"},{v:"Comptable",fr:"Comptable",ar:"محاسب"},{v:"Gardien",fr:"Gardien",ar:"حارس"},{v:"Magasinier",fr:"Magasinier",ar:"أمين مخزن"},{v:"Autre",fr:"Autre",ar:"أخرى"}];
+const fonctionLabel=(v)=>{const f=FONCTIONS.find(x=>x.v===v);return f?(CURRENT_LANG==="ar"?f.ar:f.fr):(v||"");};
 function Professeurs({data,ops,etab}) {
   const devise=etab?.devise||"GNF";
   const [modal,setModal]=useState(null);
   const [sel,setSel]=useState(null);
   const [err,setErr]=useState("");
   const [loading,setLoading]=useState(false);
-  const blank={nom:"",prenom:"",genre:"",telephone:"",email:"",matieres_txt:"",date_embauche:"",type_salaire:"mensuel",salaire:"",taux_horaire:""};
+  const blank={nom:"",prenom:"",genre:"",fonction:"Enseignant",telephone:"",email:"",matieres_txt:"",date_embauche:"",type_salaire:"mensuel",salaire:"",taux_horaire:""};
   const [form,setForm]=useState(blank);
   const norm=s=>(s||"").trim().toLowerCase().replace(/\s+/g," ");
   const [invalides,setInvalides]=useState({});const clrInv=k=>setInvalides(v=>v[k]?{...v,[k]:false}:v);
@@ -1816,7 +1818,7 @@ function Professeurs({data,ops,etab}) {
     setLoading(false);setModal(null);
   };
   const openNew=()=>{setErr("");setForm(blank);setModal("add");};
-  const openEdit=p=>{setErr("");setForm({nom:p.nom,prenom:p.prenom,genre:p.genre||"",telephone:p.telephone||"",email:p.email||"",matieres_txt:p.matieres_txt||"",date_embauche:p.date_embauche||"",type_salaire:p.type_salaire||"mensuel",salaire:p.salaire??"",taux_horaire:p.taux_horaire??""});setModal(p.id);};
+  const openEdit=p=>{setErr("");setForm({nom:p.nom,prenom:p.prenom,genre:p.genre||"",fonction:p.fonction||"Enseignant",telephone:p.telephone||"",email:p.email||"",matieres_txt:p.matieres_txt||"",date_embauche:p.date_embauche||"",type_salaire:p.type_salaire||"mensuel",salaire:p.salaire??"",taux_horaire:p.taux_horaire??""});setModal(p.id);};
 
   // Vue détail d'un professeur (salaires + absences)
   if(sel){
@@ -1839,7 +1841,7 @@ function Professeurs({data,ops,etab}) {
                   <div style={{width:42,height:42,borderRadius:11,background:"rgba(26,86,219,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:"var(--me-brand)",fontSize:15}}>{p.prenom?.[0]}{p.nom?.[0]}</div>
                   <div style={{flex:1}}>
                     <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)"}}>{p.prenom} {p.nom}</div>
-                    <div style={{fontSize:11,color:"var(--me-text-3)"}}>{p.matieres_txt||"—"}</div>
+                    <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:3}}><span style={{fontSize:9.5,fontWeight:700,padding:"1px 8px",borderRadius:20,background:(p.fonction&&p.fonction!=="Enseignant")?"rgba(139,92,246,0.14)":"rgba(26,86,219,0.12)",color:(p.fonction&&p.fonction!=="Enseignant")?"#7c3aed":"var(--me-brand)"}}>{fonctionLabel(p.fonction||"Enseignant")}</span>{p.matieres_txt?<span style={{fontSize:11,color:"var(--me-text-3)"}}>{p.matieres_txt}</span>:null}</div>
                   </div>
                 </div>
                 <div style={{fontSize:12,color:"var(--me-text-2)",lineHeight:1.7}}>
@@ -1861,6 +1863,7 @@ function Professeurs({data,ops,etab}) {
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
           <Inp label={t("el_prenom")} invalid={invalides.prenom} value={form.prenom} onChange={e=>{clrInv("prenom");setForm(f=>({...f,prenom:e.target.value}));}}/>
           <Inp label={t("el_nom")} invalid={invalides.nom} value={form.nom} onChange={e=>{clrInv("nom");setForm(f=>({...f,nom:e.target.value}));}}/>
+          <Slt label={t("pf_fonction")} value={form.fonction} onChange={e=>setForm(f=>({...f,fonction:e.target.value}))} opts={FONCTIONS.map(x=>({v:x.v,l:CURRENT_LANG==="ar"?x.ar:x.fr}))}/>
           <Inp label={t("pf_tel")} value={form.telephone} onChange={e=>setForm(f=>({...f,telephone:e.target.value}))}/>
           <Inp label={t("pf_email")} value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))}/>
         </div>
@@ -3084,6 +3087,8 @@ function Bulletins({data,etab}) {
     const arS = s => `<span style="font-family:'Traditional Arabic','Amiri',serif;direction:rtl">${s}</span>`;
     const dl = (fr,ar) => arD ? (ar?arS(ar):fr) : (bilD && ar ? `${fr} <span style="color:#cbd5e1;font-weight:400">/</span> ${arS(ar)}` : fr);
     const nm = (fr,ar) => arD ? (ar?arS(ar):(fr||"")) : (bilD && ar ? `${fr} <span style="color:#94a3b8;font-weight:400">/</span> ${arS(ar)}` : (fr||""));
+    const moyClasse=(()=>{const arr=classmates.map(x=>{const mp=pers.map(p=>parseFloat(calcMoy(x.notes||{},data.matieres,p))).filter(v=>!isNaN(v));return mp.length?mp.reduce((a,b)=>a+b,0)/mp.length:null;}).filter(v=>v!=null);return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:null;})();
+    const faibles=data.matieres.map(mat=>{const vals=pers.map(p=>e.notes?.[p]?.[mat.id]).filter(nn=>nn!=null&&nn!=="").map(parseFloat);const mm=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;return {nom:nm(mat.nom,mat.nom_ar),m:mm};}).filter(x=>x.m!=null&&x.m<bareme/2);
     const perAr = p => { const it=periodeItems(etab).find(x=>x.n===p); return it&&it.ar; };
     const titreDoc = estAnnuel ? `Bulletin annuel — ${etab.annee||""}` : `Bulletin de notes — ${pers[pers.length-1]}`;
     const titreDocAr = (bilD||arD) ? (estAnnuel ? `الكشف السنوي — ${etab.annee||""}` : `كشف الدرجات — ${perAr(pers[pers.length-1])||""}`) : "";
@@ -3101,13 +3106,11 @@ function Bulletins({data,etab}) {
     <div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr"><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Élève","التلميذ")}</div><b>${e.prenom} ${e.nom}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Matricule","رقم التسجيل")}</div><b style="font-family:monospace">${e.matricule}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Classe","القسم")}</div><b>${nm(cl?.nom,cl?.nom_ar)}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Année","السنة")}</div><b>${etab.annee||""}</b></div></div>
     ${(e.pere||e.mere||e.tuteur)?`<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:-6px">${e.pere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Père","الأب")}</div><b>${e.pere}</b>${e.tel_pere?` <span style="color:#64748b;font-weight:400">(${e.tel_pere})</span>`:""}</div>`:""}${e.mere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Mère","الأم")}</div><b>${e.mere}</b>${e.tel_mere?` <span style="color:#64748b;font-weight:400">(${e.tel_mere})</span>`:""}</div>`:""}</div>`:""}
     <table><tr><th>${dl("Matière","المادة")}</th><th>${dl("Coeff.","المعامل")}</th>${entetesP}${single?"":`<th style="text-align:center">${dl("Moy.","المعدل")}</th>`}<th>${dl("Appréciation","الملاحظة")}</th></tr>${lignes}${moyRow}</table>
-    <div class="result" style="background:${mAnn.bg};border:2px solid ${mAnn.c}40"><div class="stat"><div class="stat-val" style="color:${mAnn.c}">${moyAnnuelle!=null?moyAnnuelle.toFixed(2):"—"}</div><div class="stat-lbl">${labelMoyGen} /${bareme}</div></div><div class="stat"><div class="stat-val" style="color:${mAnn.c};font-size:18px">${mAnn.t}</div><div class="stat-lbl">${dl("Mention","التقدير")}</div></div><div class="stat"><div class="stat-val">${rangAnn}/${classmates.length}</div><div class="stat-lbl">${dl("Rang","الرتبة")}</div></div></div>
+    <div class="result" style="grid-template-columns:repeat(4,1fr);background:${mAnn.bg};border:2px solid ${mAnn.c}40"><div class="stat"><div class="stat-val" style="color:${mAnn.c}">${moyAnnuelle!=null?moyAnnuelle.toFixed(2):"—"}</div><div class="stat-lbl">${labelMoyGen} /${bareme}</div></div><div class="stat"><div class="stat-val" style="color:${mAnn.c};font-size:18px">${mAnn.t}</div><div class="stat-lbl">${dl("Mention","التقدير")}</div></div><div class="stat"><div class="stat-val">${rangAnn}/${classmates.length}</div><div class="stat-lbl">${dl("Rang","الرتبة")}</div></div><div class="stat"><div class="stat-val" style="font-size:20px">${moyClasse!=null?moyClasse.toFixed(2):"—"}</div><div class="stat-lbl">${dl("Moyenne classe","معدل القسم")}</div></div></div>
     ${estAnnuel&&moyAnnuelle!=null?`<div style="margin-top:12px;text-align:center;padding:10px;border-radius:9px;font-weight:800;font-size:13px;background:${admis?"#ecfdf5":"#fef2f2"};color:${admis?"#047857":"#dc2626"};border:1.5px solid ${admis?"#10b981":"#fca5a5"}">${dl("Décision du conseil","قرار المجلس")} : ${dl(decFr,decAr)}</div>`:""}
     <div class="grid" style="grid-template-columns:1fr;margin-top:12px;gap:5px">
-      <div style="font-weight:800;font-size:12px;color:${etab.theme_couleur||"#1a56db"}">${dl("Suivi scolaire","المتابعة المدرسية")}</div>
-      <div style="font-size:11px"><b>${dl("Assiduité","المواظبة")} :</b> ${absCount} ${dl("absence(s)","غياب")}${tauxPres!=null?` &nbsp;·&nbsp; ${dl("Présence","نسبة الحضور")} : ${tauxPres}%`:""}</div>
-      <div style="font-size:11px"><b>${dl("Appréciation générale","الملاحظة العامة")} :</b> ${moyAnnuelle!=null?dl(apprGen.fr,apprGen.ar):"—"}</div>
-      <div style="font-size:11px"><b>${dl("Conduite / Observations","السلوك / ملاحظات")} :</b> <span style="color:#cbd5e1">................................................................</span></div>
+      <div style="font-weight:800;font-size:12px;color:${etab.theme_couleur||"#1a56db"}">${dl("Points à améliorer","نقاط للتحسين")}</div>
+      <div style="font-size:11px">${faibles.length?`<b>${dl("Matières à renforcer","مواد تحتاج إلى تعزيز")} :</b> ${faibles.map(x=>x.nom).join(", ")}`:dl("Résultats satisfaisants dans l'ensemble des matières.","نتائج مرضية في مجمل المواد.")}</div>
     </div>
     <div class="sign" style="margin-top:40px"><span style="text-align:center">${dl(etab.signataire_grade||"Le Directeur","المدير")}<br/>${etab.signataire_nom?`<b>${etab.signataire_nom}</b><br/>`:""}</span><span style="text-align:center">${dl("L'Enseignant(e)","المعلم(ة)")}<br/><br/></span></div>
     <p style="text-align:center;font-size:10px;color:#cbd5e1;margin-top:16px">Généré par MonEcole · ${etab.email||""}</p>`;
@@ -3879,7 +3882,7 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
 }
 
 // ── DÉPENSES ──────────────────────────────────────────────────────────────────
-function Depenses({data,ops,etab}) {
+function Depenses({data,ops,etab,currentUser}) {
   const devise=etab.devise||"GNF";
   const CATS=["Matériel","Fournitures","Salaires","Loyer","Électricité/Eau","Maintenance","Transport","Communication","Taxes","Autre"];
   const CAT_AR={"Matériel":"معدات","Fournitures":"لوازم","Salaires":"رواتب","Loyer":"إيجار","Électricité/Eau":"كهرباء/ماء","Maintenance":"صيانة","Transport":"نقل","Communication":"اتصالات","Taxes":"ضرائب","Autre":"أخرى"};
@@ -3891,6 +3894,7 @@ function Depenses({data,ops,etab}) {
   const [loading,setLoading]=useState(false);
   const [mois,setMois]=useState("");
   const [cat,setCat]=useState("");
+  const [histOpen,setHistOpen]=useState(null);
   const deps=data.depenses||[];
   const filtered=deps.filter(d=>(!mois||(d.date||"").slice(0,7)===mois)&&(!cat||d.categorie===cat));
   const total=filtered.reduce((s,d)=>s+(Number(d.montant)||0),0);
@@ -3902,6 +3906,9 @@ function Depenses({data,ops,etab}) {
     if(!form.libelle||!form.montant)return;
     setLoading(true);
     const payload={date:form.date||TODAY,categorie:form.categorie,libelle:form.libelle,montant:parseFloat(form.montant)||0,fournisseur:form.fournisseur,mode_paiement:form.mode_paiement,note:form.note};
+    const _a=`${currentUser?.prenom||""} ${currentUser?.nom||""}`.trim()||currentUser?.identifiant||"";
+    if(modal==="add"){if(_a)payload.auteur=_a;}
+    else{const _cur=(data.depenses||[]).find(d=>d.id===modal);const _h=Array.isArray(_cur?.historique)?_cur.historique:[];payload.historique=[..._h,{par:_a,date:TODAY}];}
     if(modal==="add")await ops.addDepense(payload);else await ops.updateDepense(modal,payload);
     setLoading(false);setModal(null);
   };
@@ -3910,7 +3917,7 @@ function Depenses({data,ops,etab}) {
   return(
     <div>
       <SHdr title={t("nav_depenses")+" 💸"} sub={t("dp_sub")} action={<div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"flex-end"}}>
-        <ExportBar name="depenses" title={t("nav_depenses")} getRows={()=>filtered.map(d=>({Date:d.date||"","Catégorie":catLabel(d.categorie),"Libellé":d.libelle||"",Montant:d.montant||0,Fournisseur:d.fournisseur||"",Moyen:d.mode_paiement||"",Note:d.note||""}))}/>
+        <ExportBar name="depenses" title={t("nav_depenses")} getRows={()=>filtered.map(d=>({Date:d.date||"","Catégorie":catLabel(d.categorie),"Libellé":d.libelle||"",Montant:d.montant||0,Fournisseur:d.fournisseur||"",Moyen:d.mode_paiement||"",Note:d.note||"","Enregistré par":d.auteur||""}))}/>
         <Btn ch={t("dp_new")} v="primary" onClick={openNew}/>
       </div>}/>
       <div style={{display:"flex",gap:13,marginBottom:16,flexWrap:"wrap"}}>
@@ -3945,7 +3952,7 @@ function Depenses({data,ops,etab}) {
                 <tr key={d.id} style={{borderTop:i>0?"1px solid #f8fafc":"none"}}>
                   <td style={{padding:"10px 13px",fontSize:12,color:"var(--me-text-2)",whiteSpace:"nowrap"}}>{fmtDate(d.date)}</td>
                   <td style={{padding:"10px 13px"}}><span style={{background:"rgba(26,86,219,0.12)",color:"var(--me-brand)",borderRadius:6,padding:"2px 9px",fontSize:11,fontWeight:700}}>{catLabel(d.categorie)}</span></td>
-                  <td style={{padding:"10px 13px",fontSize:13,fontWeight:600,color:"var(--me-text)"}}>{d.libelle}{d.note?<div style={{fontSize:11,color:"var(--me-text-3)",fontWeight:400}}>{d.note}</div>:null}</td>
+                  <td style={{padding:"10px 13px",fontSize:13,fontWeight:600,color:"var(--me-text)"}}>{d.libelle}{d.note?<div style={{fontSize:11,color:"var(--me-text-3)",fontWeight:400}}>{d.note}</div>:null}{d.auteur?<div style={{fontSize:10.5,color:"var(--me-text-3)",fontWeight:600,marginTop:2}}>👤 {t("dp_par")} {d.auteur}</div>:null}{Array.isArray(d.historique)&&d.historique.length>0?(()=>{const last=d.historique[d.historique.length-1];return <div style={{fontSize:10.5,color:"var(--me-text-3)",marginTop:2}}>✏️ {t("dp_modifie")} {last.par} · {fmtDate(last.date)} <button onClick={()=>setHistOpen(histOpen===d.id?null:d.id)} style={{background:"none",border:"none",color:"var(--me-brand)",cursor:"pointer",fontSize:10.5,fontWeight:700,padding:0,textDecoration:"underline"}}>{t("dp_historique")} ({d.historique.length})</button>{histOpen===d.id?<div style={{marginTop:3,paddingLeft:7,borderLeft:"2px solid var(--me-border-2,#e2e8f0)"}}>{d.historique.map((h,i)=><div key={i} style={{fontSize:10,color:"var(--me-text-3)"}}>• {fmtDate(h.date)} — {h.par}</div>)}</div>:null}</div>;})():null}</td>
                   <td style={{padding:"10px 13px",fontSize:12,color:"var(--me-text-2)"}}>{d.fournisseur||"—"}</td>
                   <td style={{padding:"10px 13px",fontSize:13,fontWeight:800,color:"#dc2626",textAlign:"right",whiteSpace:"nowrap"}}>{fmtMoney(d.montant,devise)}</td>
                   <td style={{padding:"10px 13px",textAlign:"right",whiteSpace:"nowrap"}}><div style={{display:"inline-flex",gap:6}}>
@@ -4906,7 +4913,7 @@ function App() {
     bulletins:<Bulletins data={scopedData} etab={etab||{}}/>,
     fiche_notes:<FicheNotes data={scopedData} ops={ops} etab={etab||{}} onEtabUpdate={setEtab}/>,
     paiements:<Paiements data={scopedData} ops={ops} etab={etab||{}}/>,
-    depenses:<Depenses data={data} ops={ops} etab={etab||{}}/>,
+    depenses:<Depenses data={data} ops={ops} etab={etab||{}} currentUser={currentUser}/>,
     presences:<Presences data={scopedData} ops={ops} etab={etab||{}}/>,
     messagerie:<Messagerie data={data} ops={ops} currentUser={currentUser}/>,
     utilisateurs:<Utilisateurs data={data} ops={ops} currentUser={currentUser} etab={etab||{}}/>,
