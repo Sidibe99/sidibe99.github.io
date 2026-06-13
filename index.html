@@ -232,7 +232,7 @@ const I18N = {
     dp_total:"Total dépenses", dp_encaisse:"Total encaissé", dp_solde:"Solde (encaissé − dépenses)",
     dp_mois:"Mois", dp_tous_mois:"Tous les mois", dp_categorie:"Catégorie", dp_toutes_cats:"Toutes les catégories",
     dp_repartition:"Répartition par catégorie", dp_empty:"Aucune dépense enregistrée.",
-    dp_date:"Date", dp_par:"par", dp_modifie:"Modifié par", dp_historique:"Historique", dp_libelle:"Libellé", dp_libelle_ph:"Ex: Achat de craies, ramettes A4…", dp_montant:"Montant", dp_fournisseur:"Fournisseur", dp_moyen:"Moyen de paiement", dp_note:"Note",
+    dp_date:"Date", dp_par:"par", dp_salaire_de:"Salaire de", dp_auto_salaire:"Auto · Personnel", dp_modifie:"Modifié par", dp_historique:"Historique", dp_libelle:"Libellé", dp_libelle_ph:"Ex: Achat de craies, ramettes A4…", dp_montant:"Montant", dp_fournisseur:"Fournisseur", dp_moyen:"Moyen de paiement", dp_note:"Note",
     nav_utilisateurs:"Utilisateurs", nav_parametres:"Établissement",
     sh_bienvenue:"Bienvenue", sh_fiche:"Fiche vierge",
     btn_new_classe:"+ Nouvelle classe", btn_new_matiere:"+ Nouvelle matière", btn_new_prof:"+ Nouveau membre",
@@ -339,7 +339,7 @@ const I18N = {
     pf_embauche:"Date d'embauche", pf_type_remu:"Type de rémunération", pf_remu_mensuel:"Salaire mensuel fixe", pf_remu_horaire:"Paiement à l'heure / séance",
     pf_taux:"Taux horaire", pf_salaire_m:"Salaire mensuel", pf_retour:"← Retour aux professeurs",
     pf_taux_label:"Taux :", pf_salaire_label:"Salaire :", pf_embauche_le:"Embauché le",
-    pf_salaires:"💰 Salaires versés", pf_verser:"+ Verser", pf_total_verse:"Total versé",
+    pf_salaires:"💰 Salaires versés", pf_verser:"+ Verser", pf_total_verse:"Total versé", pf_total_annee:"Total versé", pf_salaires_titre:"Salaires du personnel", pf_a_payer:"À payer (estimé)", pf_mois_an:"mois/an", pf_reste:"Reste estimé", pf_historique_annees:"Historique par année", pf_versements:"versement(s)",
     pf_absences:"🚫 Absences", pf_marquer_abs:"Marquer une absence", pf_motif_ph:"Motif (maladie, congé...)", pf_marquer_absent:"Marquer absent", pf_aucune_abs:"Aucune absence enregistrée.",
     pf_verser_titre:"Verser un salaire", pf_mois_conc:"Mois concerné", pf_nb_heures:"Nombre d'heures", pf_montant:"Montant",
     edt_lundi:"Lundi", edt_mardi:"Mardi", edt_mercredi:"Mercredi", edt_jeudi:"Jeudi", edt_vendredi:"Vendredi", edt_samedi:"Samedi",
@@ -419,7 +419,7 @@ const I18N = {
     dp_total:"إجمالي المصاريف", dp_encaisse:"إجمالي المقبوضات", dp_solde:"الرصيد (المقبوضات − المصاريف)",
     dp_mois:"الشهر", dp_tous_mois:"كل الأشهر", dp_categorie:"الفئة", dp_toutes_cats:"كل الفئات",
     dp_repartition:"التوزيع حسب الفئة", dp_empty:"لا مصاريف مسجلة.",
-    dp_date:"التاريخ", dp_par:"بواسطة", dp_modifie:"عُدّلت بواسطة", dp_historique:"السجل", dp_libelle:"البيان", dp_libelle_ph:"مثال: شراء طباشير، رزم A4…", dp_montant:"المبلغ", dp_fournisseur:"المورّد", dp_moyen:"وسيلة الدفع", dp_note:"ملاحظة",
+    dp_date:"التاريخ", dp_par:"بواسطة", dp_salaire_de:"راتب", dp_auto_salaire:"تلقائي · الطاقم", dp_modifie:"عُدّلت بواسطة", dp_historique:"السجل", dp_libelle:"البيان", dp_libelle_ph:"مثال: شراء طباشير، رزم A4…", dp_montant:"المبلغ", dp_fournisseur:"المورّد", dp_moyen:"وسيلة الدفع", dp_note:"ملاحظة",
     nav_utilisateurs:"المستخدمون", nav_parametres:"المؤسسة",
     sh_bienvenue:"مرحبًا", sh_fiche:"ورقة فارغة",
     btn_new_classe:"+ فصل جديد", btn_new_matiere:"+ مادة جديدة", btn_new_prof:"+ عضو جديد",
@@ -526,7 +526,7 @@ const I18N = {
     pf_embauche:"تاريخ التوظيف", pf_type_remu:"نوع الأجر", pf_remu_mensuel:"راتب شهري ثابت", pf_remu_horaire:"الدفع بالساعة / الحصة",
     pf_taux:"الأجر بالساعة", pf_salaire_m:"الراتب الشهري", pf_retour:"← العودة إلى المعلمين",
     pf_taux_label:"الأجر:", pf_salaire_label:"الراتب:", pf_embauche_le:"وُظّف في",
-    pf_salaires:"💰 الرواتب المدفوعة", pf_verser:"+ دفع", pf_total_verse:"إجمالي المدفوع",
+    pf_salaires:"💰 الرواتب المدفوعة", pf_verser:"+ دفع", pf_total_verse:"إجمالي المدفوع", pf_total_annee:"إجمالي المدفوع", pf_salaires_titre:"رواتب الطاقم", pf_a_payer:"للدفع (تقديري)", pf_mois_an:"شهر/سنة", pf_reste:"المتبقي تقديري", pf_historique_annees:"السجل حسب السنة", pf_versements:"دفعة/دفعات",
     pf_absences:"🚫 الغيابات", pf_marquer_abs:"تسجيل غياب", pf_motif_ph:"السبب (مرض، عطلة...)", pf_marquer_absent:"تسجيل غائب", pf_aucune_abs:"لا غياب مسجل.",
     pf_verser_titre:"دفع راتب", pf_mois_conc:"الشهر المعني", pf_nb_heures:"عدد الساعات", pf_montant:"المبلغ",
     edt_lundi:"الاثنين", edt_mardi:"الثلاثاء", edt_mercredi:"الأربعاء", edt_jeudi:"الخميس", edt_vendredi:"الجمعة", edt_samedi:"السبت",
@@ -1809,6 +1809,8 @@ const FONCTIONS=[{v:"Enseignant",fr:"Enseignant",frF:"Enseignante",ar:"مدرّ�
 const fonctionLabel=(v,genre)=>{const f=FONCTIONS.find(x=>x.v===v);if(!f)return v||"";const fem=genre==="F";return CURRENT_LANG==="ar"?(fem?f.arF:f.ar):(fem?f.frF:f.fr);};
 function Professeurs({data,ops,etab}) {
   const devise=etab?.devise||"GNF";
+  const [recapAnnee,setRecapAnnee]=useState(etab?.annee||"");
+  const [moisAn,setMoisAn]=useState(12);
   const [modal,setModal]=useState(null);
   const [sel,setSel]=useState(null);
   const [err,setErr]=useState("");
@@ -1830,6 +1832,18 @@ function Professeurs({data,ops,etab}) {
   };
   const openNew=()=>{setErr("");setForm(blank);setModal("add");};
   const groupes=(()=>{const by={};(data.professeurs||[]).forEach(p=>{const k=p.fonction||"Enseignant";(by[k]=by[k]||[]).push(p);});const order=FONCTIONS.map(x=>x.v);return Object.keys(by).sort((a,b)=>{const ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b);}).map(k=>({fonction:k,membres:by[k]}));})();
+  const anneeScolaire=(d)=>{if(!d)return "";const dt=new Date(d);if(isNaN(dt))return "";const y=dt.getFullYear();return (dt.getMonth()+1)>=9?`${y}-${y+1}`:`${y-1}-${y}`;};
+  const salAnnee=sx=>sx.annee||anneeScolaire(sx.date)||(etab?.annee||"");
+  const _anSet=new Set((data.salaires||[]).map(salAnnee).filter(Boolean));if(etab?.annee)_anSet.add(etab.annee);
+  const anneesDispo=[..._anSet].sort().reverse();
+  const salAnSel=(data.salaires||[]).filter(x=>salAnnee(x)===recapAnnee);
+  const verseAnnee=salAnSel.reduce((a,x)=>a+(Number(x.montant)||0),0);
+  const masseMensuelle=(data.professeurs||[]).filter(p=>(p.type_salaire||"mensuel")==="mensuel").reduce((a,p)=>a+(Number(p.salaire)||0),0);
+  const prevuAnnee=masseMensuelle*(Number(moisAn)||0);
+  const restePrevu=prevuAnnee-verseAnnee;
+  const estAnneeCourante=recapAnnee===(etab?.annee||"");
+  const moisAgg=(()=>{const m={};salAnSel.forEach(x=>{const k=x.mois||"—";m[k]=(m[k]||0)+(Number(x.montant)||0);});return Object.entries(m);})();
+  const histoAnnees=anneesDispo.map(an=>({an,total:(data.salaires||[]).filter(x=>salAnnee(x)===an).reduce((a,x)=>a+(Number(x.montant)||0),0)})).filter(x=>x.total>0);
   const openEdit=p=>{setErr("");const _known=FONCTIONS.some(x=>x.v===(p.fonction||"Enseignant"));setForm({nom:p.nom,prenom:p.prenom,genre:p.genre||"",fonction:_known?(p.fonction||"Enseignant"):"Autre",fonctionAutre:_known?"":(p.fonction||""),telephone:p.telephone||"",email:p.email||"",matieres_txt:p.matieres_txt||"",date_embauche:p.date_embauche||"",type_salaire:p.type_salaire||"mensuel",salaire:p.salaire??"",taux_horaire:p.taux_horaire??""});setModal(p.id);};
 
   // Vue détail d'un professeur (salaires + absences)
@@ -1842,6 +1856,39 @@ function Professeurs({data,ops,etab}) {
   return(
     <div>
       <SHdr title={t("nav_professeurs")+" 👨‍🏫"} sub={`${(data.professeurs||[]).length} ${t("pf_count")}`} action={<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><ExportBar name="professeurs" title={t("nav_professeurs")} getRows={()=>(data.professeurs||[]).map(p=>({Nom:p.nom,"Prénom":p.prenom||"","Téléphone":p.telephone||"",Email:p.email||"","Matières":p.matieres_txt||"",Genre:p.genre||"","Rémunération":p.type_salaire==="horaire"?`${p.taux_horaire||""}/h`:`${p.salaire||""}/mois`,"Date embauche":p.date_embauche||""}))}/><Btn ch={t("btn_new_prof")} v="primary" onClick={openNew}/></div>}/>
+      {(data.salaires||[]).length>0&&<Card s={{marginBottom:14}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:14}}>
+          <div style={{display:"flex",flexDirection:"column",gap:11,minWidth:240}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+              <span style={{fontSize:13,fontWeight:800,color:"var(--me-text)"}}>💰 {t("pf_salaires_titre")}</span>
+              {anneesDispo.length>0&&<select value={recapAnnee} onChange={e=>setRecapAnnee(e.target.value)} style={{padding:"4px 9px",borderRadius:7,border:"1.5px solid #e2e8f0",fontSize:12,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",color:"var(--me-text)"}}>{anneesDispo.map(a=><option key={a} value={a}>{a||"—"}</option>)}</select>}
+            </div>
+            <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
+              {estAnneeCourante&&<div>
+                <div style={{fontSize:10.5,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase"}}>{t("pf_a_payer")}</div>
+                <div style={{fontSize:21,fontWeight:900,fontFamily:"'Sora',sans-serif",color:"var(--me-text)"}}>{fmtMoney(prevuAnnee,devise)}</div>
+                <div style={{fontSize:10.5,color:"var(--me-text-3)",display:"flex",alignItems:"center",gap:4,marginTop:2}}><input type="number" min="1" max="12" value={moisAn} onChange={e=>setMoisAn(e.target.value)} style={{width:42,padding:"2px 5px",borderRadius:6,border:"1.5px solid #e2e8f0",fontSize:11,fontWeight:700,textAlign:"center",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/> {t("pf_mois_an")}</div>
+              </div>}
+              <div>
+                <div style={{fontSize:10.5,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase"}}>{t("pf_total_annee")}</div>
+                <div style={{fontSize:21,fontWeight:900,fontFamily:"'Sora',sans-serif",color:"var(--me-brand)"}}>{fmtMoney(verseAnnee,devise)}</div>
+                <div style={{fontSize:10.5,color:"var(--me-text-3)"}}>{salAnSel.length} {t("pf_versements")}</div>
+              </div>
+              {estAnneeCourante&&<div>
+                <div style={{fontSize:10.5,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase"}}>{t("pf_reste")}</div>
+                <div style={{fontSize:21,fontWeight:900,fontFamily:"'Sora',sans-serif",color:restePrevu>0?"#c2410c":"#059669"}}>{fmtMoney(restePrevu,devise)}</div>
+              </div>}
+            </div>
+          </div>
+          {moisAgg.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:6,justifyContent:"flex-end",maxWidth:"55%"}}>
+            {moisAgg.map(([m,v])=><span key={m} style={{background:"var(--me-surface-2,#f1f5f9)",borderRadius:8,padding:"4px 10px",fontSize:11,fontWeight:600,color:"var(--me-text-2)"}}>{m} : <b style={{color:"var(--me-text)"}}>{fmtMoney(v,devise)}</b></span>)}
+          </div>}
+        </div>
+        {histoAnnees.length>1&&<div style={{marginTop:12,paddingTop:11,borderTop:"1px solid var(--me-border-2,#eef2f7)"}}>
+          <div style={{fontSize:10.5,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase",marginBottom:7}}>{t("pf_historique_annees")}</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>{histoAnnees.map(h=><span key={h.an} style={{background:"var(--me-surface-2,#f1f5f9)",borderRadius:8,padding:"4px 10px",fontSize:11,fontWeight:600,color:"var(--me-text-2)"}}>{h.an} : <b style={{color:"var(--me-text)"}}>{fmtMoney(h.total,devise)}</b></span>)}</div>
+        </div>}
+      </Card>}
       {(data.professeurs||[]).length===0?<Card><Empty icon="👨‍🏫" text={t("pf_empty")}/></Card>:(
         <div style={{display:"flex",flexDirection:"column",gap:18}}>
           {groupes.map(g=>(<div key={g.fonction}>
@@ -1914,7 +1961,7 @@ function ProfDetail({prof,data,ops,etab,devise,onBack}) {
   const saveSal=async()=>{
     if(!salForm.montant)return;setLoading(true);
     const montant=salForm.heures&&prof.type_salaire==="horaire"?(parseFloat(salForm.heures)*parseFloat(prof.taux_horaire||0)):parseFloat(salForm.montant);
-    await ops.addSalaire({prof_id:prof.id,prof_nom:`${prof.prenom} ${prof.nom}`,mois:salForm.mois,montant,date:salForm.date,heures:salForm.heures?parseFloat(salForm.heures):null,note:salForm.note});
+    await ops.addSalaire({prof_id:prof.id,prof_nom:`${prof.prenom} ${prof.nom}`,mois:salForm.mois,montant,date:salForm.date,heures:salForm.heures?parseFloat(salForm.heures):null,note:salForm.note,annee:etab?.annee||null});
     setLoading(false);setModalSal(false);setSalForm(blankSal);
   };
   const marquerAbsent=async()=>{if(!absDate)return;await ops.setProfPresence(prof.id,absDate,"absent",absMotif);setAbsMotif("");};
@@ -3939,8 +3986,9 @@ function Depenses({data,ops,etab,currentUser}) {
   const [mois,setMois]=useState("");
   const [cat,setCat]=useState("");
   const [histOpen,setHistOpen]=useState(null);
-  const deps=data.depenses||[];
-  const filtered=deps.filter(d=>(!mois||(d.date||"").slice(0,7)===mois)&&(!cat||d.categorie===cat));
+  const salDeps=(data.salaires||[]).map(sx=>({id:"sal-"+sx.id,_salaire:true,date:sx.date||"",categorie:"Salaires",libelle:`${t("dp_salaire_de")} ${sx.prof_nom||"—"}${sx.mois?` · ${sx.mois}`:""}`,montant:Number(sx.montant)||0,fournisseur:sx.prof_nom||"",mode_paiement:"",note:sx.note||"",auteur:""}));
+  const deps=[...(data.depenses||[]),...salDeps];
+  const filtered=deps.filter(d=>(!mois||(d.date||"").slice(0,7)===mois)&&(!cat||d.categorie===cat)).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
   const total=filtered.reduce((s,d)=>s+(Number(d.montant)||0),0);
   const encaisse=(data.paiements||[]).filter(p=>!mois||(p.date||"").slice(0,7)===mois).reduce((s,p)=>s+(Number(p.montant)||0),0);
   const solde=encaisse-total;
@@ -3999,10 +4047,10 @@ function Depenses({data,ops,etab,currentUser}) {
                   <td style={{padding:"10px 13px",fontSize:13,fontWeight:600,color:"var(--me-text)"}}>{d.libelle}{d.note?<div style={{fontSize:11,color:"var(--me-text-3)",fontWeight:400}}>{d.note}</div>:null}{d.auteur?<div style={{fontSize:10.5,color:"var(--me-text-3)",fontWeight:600,marginTop:2}}>👤 {t("dp_par")} {d.auteur}</div>:null}{Array.isArray(d.historique)&&d.historique.length>0?(()=>{const last=d.historique[d.historique.length-1];return <div style={{fontSize:10.5,color:"var(--me-text-3)",marginTop:2}}>✏️ {t("dp_modifie")} {last.par} · {fmtDate(last.date)} <button onClick={()=>setHistOpen(histOpen===d.id?null:d.id)} style={{background:"none",border:"none",color:"var(--me-brand)",cursor:"pointer",fontSize:10.5,fontWeight:700,padding:0,textDecoration:"underline"}}>{t("dp_historique")} ({d.historique.length})</button>{histOpen===d.id?<div style={{marginTop:3,paddingLeft:7,borderLeft:"2px solid var(--me-border-2,#e2e8f0)"}}>{d.historique.map((h,i)=><div key={i} style={{fontSize:10,color:"var(--me-text-3)"}}>• {fmtDate(h.date)} — {h.par}</div>)}</div>:null}</div>;})():null}</td>
                   <td style={{padding:"10px 13px",fontSize:12,color:"var(--me-text-2)"}}>{d.fournisseur||"—"}</td>
                   <td style={{padding:"10px 13px",fontSize:13,fontWeight:800,color:"#dc2626",textAlign:"right",whiteSpace:"nowrap"}}>{fmtMoney(d.montant,devise)}</td>
-                  <td style={{padding:"10px 13px",textAlign:"right",whiteSpace:"nowrap"}}><div style={{display:"inline-flex",gap:6}}>
+                  <td style={{padding:"10px 13px",textAlign:"right",whiteSpace:"nowrap"}}>{d._salaire?<span style={{background:"var(--me-surface-2,#f1f5f9)",color:"var(--me-text-3)",borderRadius:7,padding:"5px 10px",fontSize:10.5,fontWeight:700}}>{t("dp_auto_salaire")}</span>:<div style={{display:"inline-flex",gap:6}}>
                     <button onClick={()=>openEdit(d)} style={{background:"var(--me-surface-2,#f1f5f9)",color:"var(--me-text-2)",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_modifier")}</button>
                     <button onClick={()=>ops.deleteDepense(d.id)} style={{background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:7,padding:"6px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("btn_supprimer")}</button>
-                  </div></td>
+                  </div>}</td>
                 </tr>
               ))}</tbody>
             </table>
