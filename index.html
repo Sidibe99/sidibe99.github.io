@@ -333,7 +333,7 @@ const I18N = {
     fn_apercu:"👁️ Aperçu", fn_autres_b:"autre(s) élève(s)",
     fn_modeles:"💾 Modèles enregistrés", fn_modele_ph:"Nom du modèle (ex: Fiche trimestre)", fn_save_modele:"Enregistrer ce modèle",
     fn_aucun_modele:"Aucun modèle enregistré. Composez votre fiche puis enregistrez-la pour la réutiliser.",
-    pf_nom_oblig:"Nom et prénom obligatoires.", pf_fonction:"Fonction", pf_doublon_a:"Le professeur", pf_count:"membre(s) du personnel", pf_empty:"Aucun membre du personnel. Ajoutez-en un.",
+    pf_nom_oblig:"Nom et prénom obligatoires.", pf_fonction:"Fonction", pf_fonction_autre:"Préciser la fonction", pf_fonction_autre_ph:"Ex : Cuisinier, Chauffeur…", pf_doublon_a:"Le professeur", pf_count:"membre(s) du personnel", pf_empty:"Aucun membre du personnel. Ajoutez-en un.",
     pf_h:"/h", pf_mois:"/mois", pf_gerer:"Gérer", pf_new_titre:"Nouveau professeur", pf_edit_titre:"Modifier le professeur",
     pf_tel:"Téléphone", pf_email:"Email", pf_matieres:"Matière(s) enseignée(s)", pf_matieres_ph:"Ex: Mathématiques, Physique",
     pf_embauche:"Date d'embauche", pf_type_remu:"Type de rémunération", pf_remu_mensuel:"Salaire mensuel fixe", pf_remu_horaire:"Paiement à l'heure / séance",
@@ -520,7 +520,7 @@ const I18N = {
     fn_apercu:"👁️ معاينة", fn_autres_b:"تلميذ آخر",
     fn_modeles:"💾 النماذج المحفوظة", fn_modele_ph:"اسم النموذج (مثال: ورقة الفصل)", fn_save_modele:"حفظ هذا النموذج",
     fn_aucun_modele:"لا نماذج محفوظة. صمّم ورقتك ثم احفظها لإعادة استخدامها.",
-    pf_nom_oblig:"اللقب والاسم إلزاميان.", pf_fonction:"الوظيفة", pf_doublon_a:"الأستاذ", pf_count:"من أفراد الطاقم", pf_empty:"لا يوجد أفراد طاقم. أضف واحدًا.",
+    pf_nom_oblig:"اللقب والاسم إلزاميان.", pf_fonction:"الوظيفة", pf_fonction_autre:"حدّد الوظيفة", pf_fonction_autre_ph:"مثال: طباخ، سائق…", pf_doublon_a:"الأستاذ", pf_count:"من أفراد الطاقم", pf_empty:"لا يوجد أفراد طاقم. أضف واحدًا.",
     pf_h:"/س", pf_mois:"/شهر", pf_gerer:"إدارة", pf_new_titre:"أستاذ جديد", pf_edit_titre:"تعديل الأستاذ",
     pf_tel:"الهاتف", pf_email:"البريد الإلكتروني", pf_matieres:"المواد المُدرّسة", pf_matieres_ph:"مثال: رياضيات، فيزياء",
     pf_embauche:"تاريخ التوظيف", pf_type_remu:"نوع الأجر", pf_remu_mensuel:"راتب شهري ثابت", pf_remu_horaire:"الدفع بالساعة / الحصة",
@@ -1548,7 +1548,7 @@ function Dashboard({data,etab,setPage,currentUser}) {
       {/* Répartition des effectifs par cycle (uniquement cycles présents) */}
       {cycleInfo.length>0&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:13,marginBottom:14}}>
         {cycleInfo.map(ci=>{const n=countCycle(ci.cyc);const pct=data.eleves.length?Math.round(n/data.eleves.length*100):0;const g=genreCycle(ci.cyc,"M");const f=genreCycle(ci.cyc,"F");return(
-          <div key={ci.cyc} onClick={()=>setPage("eleves")} style={{background:`linear-gradient(135deg,${ci.c}1f,${ci.c}08),var(--me-surface)`,borderRadius:16,padding:"18px 20px",border:`1px solid ${ci.c}33`,cursor:"pointer",position:"relative",overflow:"hidden"}}>
+          <div key={ci.cyc} onClick={()=>{try{localStorage.setItem("monecole_cycle",ci.cyc);}catch(_){}setPage("eleves");}} style={{background:`linear-gradient(135deg,${ci.c}1f,${ci.c}08),var(--me-surface)`,borderRadius:16,padding:"18px 20px",border:`1px solid ${ci.c}33`,cursor:"pointer",position:"relative",overflow:"hidden"}}>
             <div style={{fontSize:12,fontWeight:800,color:ci.c,letterSpacing:.3}}>{ci.emoji} {(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[ci.cyc]||ci.cyc).toUpperCase()}</div>
             <div style={{fontSize:34,fontWeight:900,color:"var(--me-text)",lineHeight:1.1,marginTop:6}}>{n}</div>
             <div style={{fontSize:11,color:"var(--me-text-3)",fontWeight:600}}>{t("db_eleves")} · {pct}%</div>
@@ -1797,15 +1797,15 @@ function Matieres({data,ops,currentUser}) {
 }
 
 // ── ÉLÈVES ────────────────────────────────────────────────────────────────────
-const FONCTIONS=[{v:"Enseignant",fr:"Enseignant",ar:"مدرّس"},{v:"Directeur",fr:"Directeur",ar:"مدير"},{v:"Directeur adjoint",fr:"Directeur adjoint",ar:"نائب المدير"},{v:"Censeur",fr:"Censeur",ar:"ناظر"},{v:"Surveillant",fr:"Surveillant",ar:"مراقب"},{v:"Secrétaire",fr:"Secrétaire",ar:"سكرتير"},{v:"Comptable",fr:"Comptable",ar:"محاسب"},{v:"Gardien",fr:"Gardien",ar:"حارس"},{v:"Magasinier",fr:"Magasinier",ar:"أمين مخزن"},{v:"Autre",fr:"Autre",ar:"أخرى"}];
-const fonctionLabel=(v)=>{const f=FONCTIONS.find(x=>x.v===v);return f?(CURRENT_LANG==="ar"?f.ar:f.fr):(v||"");};
+const FONCTIONS=[{v:"Enseignant",fr:"Enseignant",frF:"Enseignante",ar:"مدرّس",arF:"مدرّسة"},{v:"Directeur",fr:"Directeur",frF:"Directrice",ar:"مدير",arF:"مديرة"},{v:"Directeur adjoint",fr:"Directeur adjoint",frF:"Directrice adjointe",ar:"نائب المدير",arF:"نائبة المدير"},{v:"Censeur",fr:"Censeur",frF:"Censeure",ar:"ناظر",arF:"ناظرة"},{v:"Surveillant",fr:"Surveillant",frF:"Surveillante",ar:"مراقب",arF:"مراقبة"},{v:"Secrétaire",fr:"Secrétaire",frF:"Secrétaire",ar:"سكرتير",arF:"سكرتيرة"},{v:"Comptable",fr:"Comptable",frF:"Comptable",ar:"محاسب",arF:"محاسبة"},{v:"Gardien",fr:"Gardien",frF:"Gardienne",ar:"حارس",arF:"حارسة"},{v:"Magasinier",fr:"Magasinier",frF:"Magasinière",ar:"أمين مخزن",arF:"أمينة مخزن"},{v:"Autre",fr:"Autre",frF:"Autre",ar:"أخرى",arF:"أخرى"}];
+const fonctionLabel=(v,genre)=>{const f=FONCTIONS.find(x=>x.v===v);if(!f)return v||"";const fem=genre==="F";return CURRENT_LANG==="ar"?(fem?f.arF:f.ar):(fem?f.frF:f.fr);};
 function Professeurs({data,ops,etab}) {
   const devise=etab?.devise||"GNF";
   const [modal,setModal]=useState(null);
   const [sel,setSel]=useState(null);
   const [err,setErr]=useState("");
   const [loading,setLoading]=useState(false);
-  const blank={nom:"",prenom:"",genre:"",fonction:"Enseignant",telephone:"",email:"",matieres_txt:"",date_embauche:"",type_salaire:"mensuel",salaire:"",taux_horaire:""};
+  const blank={nom:"",prenom:"",genre:"",fonction:"Enseignant",fonctionAutre:"",telephone:"",email:"",matieres_txt:"",date_embauche:"",type_salaire:"mensuel",salaire:"",taux_horaire:""};
   const [form,setForm]=useState(blank);
   const norm=s=>(s||"").trim().toLowerCase().replace(/\s+/g," ");
   const [invalides,setInvalides]=useState({});const clrInv=k=>setInvalides(v=>v[k]?{...v,[k]:false}:v);
@@ -1814,11 +1814,15 @@ function Professeurs({data,ops,etab}) {
     const doublon=(data.professeurs||[]).find(p=>p.id!==modal&&norm(p.nom)===norm(form.nom)&&norm(p.prenom)===norm(form.prenom));
     if(doublon){setErr(`${t("pf_doublon_a")} "${form.prenom} ${form.nom}" ${t("ma_doublon_b")}`);return;}
     setErr("");setLoading(true);
-    if(modal==="add")await ops.addProf(form);else await ops.updateProf(modal,form);
+    const {fonctionAutre,...rest}=form;
+    const fonctionFinale=form.fonction==="Autre"?(String(fonctionAutre||"").trim()||"Autre"):form.fonction;
+    const payload={...rest,fonction:fonctionFinale};
+    if(modal==="add")await ops.addProf(payload);else await ops.updateProf(modal,payload);
     setLoading(false);setModal(null);
   };
   const openNew=()=>{setErr("");setForm(blank);setModal("add");};
-  const openEdit=p=>{setErr("");setForm({nom:p.nom,prenom:p.prenom,genre:p.genre||"",fonction:p.fonction||"Enseignant",telephone:p.telephone||"",email:p.email||"",matieres_txt:p.matieres_txt||"",date_embauche:p.date_embauche||"",type_salaire:p.type_salaire||"mensuel",salaire:p.salaire??"",taux_horaire:p.taux_horaire??""});setModal(p.id);};
+  const groupes=(()=>{const by={};(data.professeurs||[]).forEach(p=>{const k=p.fonction||"Enseignant";(by[k]=by[k]||[]).push(p);});const order=FONCTIONS.map(x=>x.v);return Object.keys(by).sort((a,b)=>{const ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b);}).map(k=>({fonction:k,membres:by[k]}));})();
+  const openEdit=p=>{setErr("");const _known=FONCTIONS.some(x=>x.v===(p.fonction||"Enseignant"));setForm({nom:p.nom,prenom:p.prenom,genre:p.genre||"",fonction:_known?(p.fonction||"Enseignant"):"Autre",fonctionAutre:_known?"":(p.fonction||""),telephone:p.telephone||"",email:p.email||"",matieres_txt:p.matieres_txt||"",date_embauche:p.date_embauche||"",type_salaire:p.type_salaire||"mensuel",salaire:p.salaire??"",taux_horaire:p.taux_horaire??""});setModal(p.id);};
 
   // Vue détail d'un professeur (salaires + absences)
   if(sel){
@@ -1831,8 +1835,11 @@ function Professeurs({data,ops,etab}) {
     <div>
       <SHdr title={t("nav_professeurs")+" 👨‍🏫"} sub={`${(data.professeurs||[]).length} ${t("pf_count")}`} action={<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><ExportBar name="professeurs" title={t("nav_professeurs")} getRows={()=>(data.professeurs||[]).map(p=>({Nom:p.nom,"Prénom":p.prenom||"","Téléphone":p.telephone||"",Email:p.email||"","Matières":p.matieres_txt||"",Genre:p.genre||"","Rémunération":p.type_salaire==="horaire"?`${p.taux_horaire||""}/h`:`${p.salaire||""}/mois`,"Date embauche":p.date_embauche||""}))}/><Btn ch={t("btn_new_prof")} v="primary" onClick={openNew}/></div>}/>
       {(data.professeurs||[]).length===0?<Card><Empty icon="👨‍🏫" text={t("pf_empty")}/></Card>:(
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:13}}>
-          {(data.professeurs||[]).map(p=>{
+        <div style={{display:"flex",flexDirection:"column",gap:18}}>
+          {groupes.map(g=>(<div key={g.fonction}>
+            <div style={{fontSize:11.5,fontWeight:800,color:"var(--me-text-2)",textTransform:"uppercase",letterSpacing:.5,marginBottom:9,paddingBottom:6,borderBottom:"2px solid var(--me-border-2,#eef2f7)"}}>{fonctionLabel(g.fonction)} · {g.membres.length}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:13}}>
+          {g.membres.map(p=>{
             const abs=(data.absences_prof||[]).filter(a=>a.prof_id===p.id).length;
             return(
             <Card key={p.id} s={{cursor:"pointer"}}>
@@ -1841,7 +1848,7 @@ function Professeurs({data,ops,etab}) {
                   <div style={{width:42,height:42,borderRadius:11,background:"rgba(26,86,219,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,color:"var(--me-brand)",fontSize:15}}>{p.prenom?.[0]}{p.nom?.[0]}</div>
                   <div style={{flex:1}}>
                     <div style={{fontWeight:800,fontSize:14,color:"var(--me-text)"}}>{p.prenom} {p.nom}</div>
-                    <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:3}}><span style={{fontSize:9.5,fontWeight:700,padding:"1px 8px",borderRadius:20,background:(p.fonction&&p.fonction!=="Enseignant")?"rgba(139,92,246,0.14)":"rgba(26,86,219,0.12)",color:(p.fonction&&p.fonction!=="Enseignant")?"#7c3aed":"var(--me-brand)"}}>{fonctionLabel(p.fonction||"Enseignant")}</span>{p.matieres_txt?<span style={{fontSize:11,color:"var(--me-text-3)"}}>{p.matieres_txt}</span>:null}</div>
+                    <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:3}}><span style={{fontSize:9.5,fontWeight:700,padding:"1px 8px",borderRadius:20,background:(p.fonction&&p.fonction!=="Enseignant")?"rgba(139,92,246,0.14)":"rgba(26,86,219,0.12)",color:(p.fonction&&p.fonction!=="Enseignant")?"#7c3aed":"var(--me-brand)"}}>{fonctionLabel(p.fonction||"Enseignant",p.genre)}</span>{p.matieres_txt?<span style={{fontSize:11,color:"var(--me-text-3)"}}>{p.matieres_txt}</span>:null}</div>
                   </div>
                 </div>
                 <div style={{fontSize:12,color:"var(--me-text-2)",lineHeight:1.7}}>
@@ -1857,6 +1864,8 @@ function Professeurs({data,ops,etab}) {
               </div>
             </Card>
           );})}
+            </div>
+          </div>))}
         </div>
       )}
       {modal&&<Modal title={modal==="add"?t("pf_new_titre"):t("pf_edit_titre")} onClose={()=>setModal(null)} w={560}>
@@ -1864,6 +1873,7 @@ function Professeurs({data,ops,etab}) {
           <Inp label={t("el_prenom")} invalid={invalides.prenom} value={form.prenom} onChange={e=>{clrInv("prenom");setForm(f=>({...f,prenom:e.target.value}));}}/>
           <Inp label={t("el_nom")} invalid={invalides.nom} value={form.nom} onChange={e=>{clrInv("nom");setForm(f=>({...f,nom:e.target.value}));}}/>
           <Slt label={t("pf_fonction")} value={form.fonction} onChange={e=>setForm(f=>({...f,fonction:e.target.value}))} opts={FONCTIONS.map(x=>({v:x.v,l:CURRENT_LANG==="ar"?x.ar:x.fr}))}/>
+          {form.fonction==="Autre"&&<Inp label={t("pf_fonction_autre")} value={form.fonctionAutre} onChange={e=>setForm(f=>({...f,fonctionAutre:e.target.value}))} placeholder={t("pf_fonction_autre_ph")}/>}
           <Inp label={t("pf_tel")} value={form.telephone} onChange={e=>setForm(f=>({...f,telephone:e.target.value}))}/>
           <Inp label={t("pf_email")} value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))}/>
         </div>
@@ -2680,7 +2690,8 @@ function Eleves({data,ops,etab,currentUser}) {
     } else await ops.updateEleve(modal,{...data2,classe_id:parseInt(form.classe_id)});
     setLoading(false);setModal(null);
   };
-  const [cycle,setCycle]=useState("Primaire");
+  const [cycle,setCycle]=useState(()=>{try{const cs=[...new Set((data.classes||[]).map(c=>c.niveau||"Primaire"))];return cs.includes("Primaire")?"Primaire":(cs[0]||"Primaire");}catch(_){return "Primaire";}});
+  useEffect(()=>{try{const qc=localStorage.getItem("monecole_cycle");if(qc){localStorage.removeItem("monecole_cycle");setCycle(qc);}}catch(_){}},[]);
   const classesCycle=data.classes.filter(c=>(c.niveau||"Primaire")===cycle);
   const countCycle=cyc=>data.eleves.filter(e=>{const c=data.classes.find(x=>x.id===e.classe_id);return (c?.niveau||"Primaire")===cyc;}).length;
   const matchSearch=e=>`${e.prenom} ${e.nom} ${e.matricule}`.toLowerCase().includes(search.toLowerCase());
