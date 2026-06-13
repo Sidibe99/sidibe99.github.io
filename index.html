@@ -156,6 +156,8 @@ const MENTION = (v, bareme=20) => {
 };
 const fmtMoney = (v,d="GNF") => !v&&v!==0?"—":Number(v).toLocaleString("fr-FR")+" "+(DEVISES[d]?.symbole||d);
 const fmtDate = (d) => { if(!d) return ""; const s=String(d).slice(0,10); const m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/); return m?`${m[3]}/${m[2]}/${m[1]}`:String(d); };
+const joursAvantExpiration = (etab) => { try{ if(!etab||!etab.abonnement_expire_le) return null; const d=new Date(String(etab.abonnement_expire_le).slice(0,10)+"T00:00:00"); if(isNaN(d.getTime())) return null; const now=new Date(); now.setHours(0,0,0,0); return Math.round((d-now)/86400000); }catch(_){ return null; } };
+const isAbonnementExpire = (etab) => { const j=joursAvantExpiration(etab); return j!==null && j<0; };
 // ── Excel : chargement de SheetJS à la demande (CDN) + export / lecture ─────────
 const loadXLSX = () => new Promise((res,rej)=>{
   if(window.XLSX) return res(window.XLSX);
@@ -215,7 +217,7 @@ const exportDocHTML = (innerHtml,filename,etab={}) => {
 const I18N = {
   fr:{
     login_sub:"Connectez-vous pour continuer", login_id:"Identifiant", login_pw:"Mot de passe",
-    login_btn:"Se connecter →", login_btn_loading:"Connexion...", login_err:"Identifiant ou mot de passe incorrect.",
+    login_btn:"Se connecter →", login_activer:"Activer mon école avec un code", login_btn_loading:"Connexion...", login_err:"Identifiant ou mot de passe incorrect.",
     logout:"Déconnexion", reconnect:"Reconnexion…", ui_taille:"Taille du texte", ui_langue:"Langue", ui_apparence:"Affichage", ui_clair:"Clair", ui_sombre:"Sombre", st_theme_aide:"Choisissez l'apparence de l'application. Les thèmes clairs gardent un texte foncé bien lisible.", st_prefs:"Préférences", st_compte:"Compte", st_couleur:"Couleur principale", st_couleur_aide:"Couleur des boutons et menus (le fond reste celui du thème choisi).", st_notif_titre:"Notifications", pref_petit:"Petit", pref_grand:"Grand",
     notif_on:"Notifications activées", notif_off:"Activer les notifications", notif_refus:"Les notifications ont été refusées. Autorisez-les dans les réglages du navigateur pour ce site.",
     notif_actif_titre:"MonEcole", notif_actif_corps:"Notifications activées ✓", notif_msg_titre:"Nouveau message", notif_msg_plus:"nouveaux messages",
@@ -402,7 +404,7 @@ const I18N = {
   },
   ar:{
     login_sub:"سجّل الدخول للمتابعة", login_id:"اسم المستخدم", login_pw:"كلمة المرور",
-    login_btn:"تسجيل الدخول ←", login_btn_loading:"جارٍ الدخول...", login_err:"اسم المستخدم أو كلمة المرور غير صحيحة.",
+    login_btn:"تسجيل الدخول ←", login_activer:"تفعيل مدرستي برمز", login_btn_loading:"جارٍ الدخول...", login_err:"اسم المستخدم أو كلمة المرور غير صحيحة.",
     logout:"تسجيل الخروج", reconnect:"إعادة الاتصال…", ui_taille:"حجم النص", ui_langue:"اللغة", ui_apparence:"العرض", ui_clair:"فاتح", ui_sombre:"داكن", st_theme_aide:"اختر مظهر التطبيق. السمات الفاتحة تحافظ على نص داكن واضح القراءة.", st_prefs:"التفضيلات", st_compte:"الحساب", st_couleur:"اللون الرئيسي", st_couleur_aide:"لون الأزرار والقوائم (تبقى الخلفية حسب السمة المختارة).", st_notif_titre:"الإشعارات", pref_petit:"صغير", pref_grand:"كبير",
     notif_on:"الإشعارات مفعّلة", notif_off:"تفعيل الإشعارات", notif_refus:"تم رفض الإشعارات. فعّلها من إعدادات المتصفح لهذا الموقع.",
     notif_actif_titre:"مدرستي", notif_actif_corps:"تم تفعيل الإشعارات ✓", notif_msg_titre:"رسالة جديدة", notif_msg_plus:"رسائل جديدة",
@@ -997,7 +999,7 @@ const SyncBadge = ({status}) => {
 };
 
 // ── ACTIVATION ────────────────────────────────────────────────────────────────
-function ActivationScreen({onDone}) {
+function ActivationScreen({onDone,onBack}) {
   const [code,setCode]=useState("");const [err,setErr]=useState("");const [loading,setLoading]=useState(false);
   const go=async()=>{
     if(!code||loading)return;
@@ -1027,7 +1029,8 @@ function ActivationScreen({onDone}) {
           <button onClick={go} disabled={!code||loading} style={{width:"100%",marginTop:14,padding:13,borderRadius:11,border:"none",background:code?"#1a56db":"rgba(255,255,255,0.08)",color:"#fff",fontSize:14,fontWeight:800,cursor:code?"pointer":"not-allowed",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
             {loading?"Vérification...":"Activer →"}
           </button>
-          <p style={{color:"rgba(255,255,255,0.3)",fontSize:11,textAlign:"center",margin:"12px 0 0"}}>Espace réservé à l'éditeur MonEcole</p>
+          <p style={{color:"rgba(255,255,255,0.3)",fontSize:11,textAlign:"center",margin:"12px 0 0"}}>Code fourni par MonEcole après votre abonnement</p>
+          {onBack&&<div style={{textAlign:"center",marginTop:10}}><button type="button" onClick={onBack} style={{background:"none",border:"none",color:"rgba(255,255,255,0.55)",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>← Retour à la connexion</button></div>}
         </div>
       </div>
     </div>
@@ -1127,7 +1130,7 @@ function Onboarding({codeActivation,onDone}) {
 }
 
 // ── LOGIN ─────────────────────────────────────────────────────────────────────
-function Login({onLogin,lang,setLang}) {
+function Login({onLogin,lang,setLang,onActivate}) {
   const [id,setId]=useState("");const [pw,setPw]=useState("");const [err,setErr]=useState("");const [loading,setLoading]=useState(false);
   const go=async()=>{
     setLoading(true);setErr("");
@@ -1173,6 +1176,9 @@ function Login({onLogin,lang,setLang}) {
         <Lbl t={t("login_pw")}><input type="password" value={pw} onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()} style={iSt()} placeholder="••••••••"/></Lbl>
         {err&&<div style={{background:"rgba(220,38,38,0.10)",borderRadius:9,padding:"9px 13px",color:"#dc2626",fontSize:12,marginBottom:12}}>{err}</div>}
         <Btn ch={loading?t("login_btn_loading"):t("login_btn")} v="primary" onClick={go} disabled={!id||!pw||loading} full/>
+        {onActivate&&<div style={{textAlign:"center",marginTop:16,paddingTop:14,borderTop:"1px solid var(--me-border-2,#eef2f7)"}}>
+          <button type="button" onClick={onActivate} style={{background:"none",border:"none",color:"var(--me-text-3,#94a3b8)",fontSize:12.5,fontWeight:600,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",textDecoration:"underline",textUnderlineOffset:3}}>{t("login_activer")}</button>
+        </div>}
       </div>
     </div>
   );
@@ -4496,12 +4502,29 @@ function EditorHub({onCreate,masterPw}) {
   const [codes,setCodes]=useState([]);
   const [lastCode,setLastCode]=useState("");
   const [copied,setCopied]=useState("");
+  const [genDuree,setGenDuree]=useState(12);
+  const [ecoles,setEcoles]=useState([]);
+  const [extDuree,setExtDuree]=useState({});
+  const [extBusy,setExtBusy]=useState(0);
+  const [extMsg,setExtMsg]=useState("");
+  const loadEcoles=async()=>{try{const{data,error}=await sb.functions.invoke("renouveler",{body:{motDePasse:masterPw||"",action:"list"}});if(!error&&data&&Array.isArray(data.ecoles))setEcoles(data.ecoles);}catch(_){}};
+  useEffect(()=>{loadEcoles();},[]);
+  const prolonger=async(id)=>{
+    const m=parseInt(extDuree[id]||12,10)||12;setExtBusy(id);setExtMsg("");
+    try{
+      const{data,error}=await sb.functions.invoke("renouveler",{body:{motDePasse:masterPw||"",action:"prolonger",etablissementId:id,dureeMois:m}});
+      if(error){let msg="Échec de la prolongation.";try{const j=await error.context.json();if(j&&j.error)msg=j.error;}catch(_){}setExtMsg(msg);}
+      else if(data&&data.expire_le){setExtMsg("✓ Prolongé jusqu'au "+fmtDate(data.expire_le));loadEcoles();}
+      else setExtMsg("Réponse inattendue.");
+    }catch(e){setExtMsg("Erreur : "+(e.message||e));}
+    setExtBusy(0);
+  };
   const loadCodes=async()=>{try{const{data}=await sb.from("codes_activation").select("*").order("created_at",{ascending:false}).limit(50);setCodes(data||[]);}catch(_){}}
   useEffect(()=>{loadCodes();},[]);
   const genererCode=async()=>{
     if(genLoading)return;setGenLoading(true);setGenErr("");setLastCode("");
     try{
-      const{data,error}=await sb.functions.invoke("generer-code",{body:{motDePasse:masterPw||"",formule:genFormule}});
+      const{data,error}=await sb.functions.invoke("generer-code",{body:{motDePasse:masterPw||"",formule:genFormule,dureeMois:genDuree}});
       if(error){let m="Génération impossible.";try{const j=await error.context.json();if(j&&j.error)m=j.error;}catch(_){}setGenErr(m);}
       else if(data&&data.code){setLastCode(data.code);loadCodes();}
       else setGenErr("Réponse inattendue du serveur.");
@@ -4539,7 +4562,8 @@ function EditorHub({onCreate,masterPw}) {
           <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:4}}>3️⃣ Générer un code d'activation</div>
           <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:12,lineHeight:1.5}}>Choisissez la formule, générez un code, puis transmettez-le à l'école. Un code = une école.</div>
           <div style={{display:"flex",gap:8,alignItems:"flex-end",flexWrap:"wrap"}}>
-            <div style={{flex:1,minWidth:170}}><Slt label="Formule" value={genFormule} onChange={e=>setGenFormule(e.target.value)} opts={[{v:"basique",l:"Basique — 1 administrateur"},{v:"standard",l:"Standard — 3 administrateurs"},{v:"premium",l:"Premium — illimité"}]}/></div>
+            <div style={{flex:1,minWidth:150}}><Slt label="Formule" value={genFormule} onChange={e=>setGenFormule(e.target.value)} opts={[{v:"basique",l:"Basique — 1 administrateur"},{v:"standard",l:"Standard — 3 administrateurs"},{v:"premium",l:"Premium — illimité"}]}/></div>
+            <div style={{minWidth:120}}><Slt label="Durée" value={String(genDuree)} onChange={e=>setGenDuree(parseInt(e.target.value,10)||12)} opts={[{v:"3",l:"3 mois"},{v:"6",l:"6 mois"},{v:"12",l:"1 an"},{v:"24",l:"2 ans"},{v:"36",l:"3 ans"}]}/></div>
             <Btn ch={genLoading?"Génération…":"Générer un code"} v="success" onClick={genererCode} disabled={genLoading}/>
           </div>
           {genErr&&<div style={{background:"rgba(220,38,38,0.10)",border:"1px solid #fecaca",borderRadius:9,padding:"9px 13px",color:"#dc2626",fontSize:12,marginTop:10}}>{genErr}</div>}
@@ -4557,6 +4581,27 @@ function EditorHub({onCreate,masterPw}) {
                 <a href="#" onClick={e=>{e.preventDefault();copier(c.code);}} style={{fontSize:11,color:"var(--me-brand)",textDecoration:"none",fontWeight:700}}>{copied===c.code?"✓":"Copier"}</a>
               </div>))}
             </div>
+          </div>}
+        </div>
+
+        <div style={{background:"var(--me-surface-2,#f8fafc)",borderRadius:13,padding:16,marginBottom:14}}>
+          <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:4}}>4️⃣ Abonnements des écoles</div>
+          <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:12,lineHeight:1.5}}>Prolongez l'abonnement d'une école après paiement.</div>
+          {extMsg&&<div style={{background:extMsg[0]==="✓"?"rgba(5,150,105,0.12)":"rgba(220,38,38,0.10)",border:`1px solid ${extMsg[0]==="✓"?"#a7f3d0":"#fecaca"}`,borderRadius:9,padding:"8px 12px",color:extMsg[0]==="✓"?"#065f46":"#dc2626",fontSize:12,marginBottom:10,fontWeight:700}}>{extMsg}</div>}
+          {ecoles.length===0?<div style={{fontSize:12,color:"var(--me-text-3)",textAlign:"center",padding:"8px 0"}}>Aucune école pour le moment.</div>:
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {ecoles.map(e=>{const j=joursAvantExpiration(e);const exp=j!==null&&j<0;return(
+              <div key={e.id} style={{border:"1px solid #eef2f7",borderRadius:10,padding:"10px 12px"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                  <div><div style={{fontWeight:800,fontSize:13,color:"var(--me-text)"}}>{e.nom}</div>
+                    <div style={{fontSize:11,color:exp?"#dc2626":"var(--me-text-2)",fontWeight:600}}>{e.abonnement_expire_le?`${exp?"Expiré le":"Expire le"} ${fmtDate(e.abonnement_expire_le)}${j!==null&&j>=0?` · ${j} j`:""}`:"Sans échéance"}</div></div>
+                  <span style={{fontSize:10,fontWeight:700,color:"var(--me-text-2)",textTransform:"capitalize"}}>{FORMULES[e.formule]?.l||e.formule}</span>
+                </div>
+                <div style={{display:"flex",gap:8,alignItems:"flex-end",marginTop:8}}>
+                  <div style={{width:120}}><Slt label="Ajouter" value={String(extDuree[e.id]||12)} onChange={ev=>setExtDuree(d=>({...d,[e.id]:parseInt(ev.target.value,10)||12}))} opts={[{v:"3",l:"3 mois"},{v:"6",l:"6 mois"},{v:"12",l:"1 an"},{v:"24",l:"2 ans"}]}/></div>
+                  <Btn ch={extBusy===e.id?"…":"Prolonger"} v="success" onClick={()=>prolonger(e.id)} disabled={extBusy===e.id}/>
+                </div>
+              </div>);})}
           </div>}
         </div>
 
@@ -4602,6 +4647,42 @@ if(typeof navigator!=="undefined" && navigator.serviceWorker){
   try{ window.addEventListener("load",function(){ navigator.serviceWorker.register("/sw.js").catch(function(){}); }); }catch(e){}
 }
 
+// ── ABONNEMENT EXPIRÉ (blocage + renouvellement par code) ──────────────────────
+function AbonnementExpire({etab,currentUser,onRenouvele,onLogout}){
+  const [code,setCode]=useState("");const [loading,setLoading]=useState(false);const [err,setErr]=useState("");const [ok,setOk]=useState("");
+  const go=async()=>{
+    if(!code.trim()||loading)return;setLoading(true);setErr("");setOk("");
+    try{
+      const {data,error}=await sb.functions.invoke("renouveler",{body:{code:code.trim().toUpperCase(),etablissementId:etab.id}});
+      if(error){let m="Échec du renouvellement.";try{const j=await error.context.json();if(j&&j.error)m=j.error;}catch(_){}setErr(m);}
+      else if(data&&data.expire_le){setOk("Abonnement renouvelé jusqu'au "+fmtDate(data.expire_le));setTimeout(()=>onRenouvele&&onRenouvele(data.expire_le),1300);}
+      else setErr("Réponse inattendue du serveur.");
+    }catch(e){setErr("Erreur : "+(e.message||e));}
+    setLoading(false);
+  };
+  return(
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#7f1d1d 100%)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
+      <div style={{width:440,maxWidth:"100%"}}>
+        <div style={{textAlign:"center",marginBottom:22}}>
+          <div style={{width:70,height:70,borderRadius:22,background:"rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:34,margin:"0 auto 14px",border:"1px solid rgba(255,255,255,0.18)"}}>🔒</div>
+          <h1 style={{color:"#fff",fontSize:24,fontWeight:900,margin:"0 0 6px"}}>Abonnement expiré</h1>
+          <p style={{color:"rgba(255,255,255,0.7)",margin:0,fontSize:13.5,lineHeight:1.5}}>{etab?.nom||"Votre école"}{etab?.abonnement_expire_le?` — expiré depuis le ${fmtDate(etab.abonnement_expire_le)}`:""}.<br/>Pour continuer, renouvelez votre abonnement.</p>
+        </div>
+        <div style={{background:"rgba(255,255,255,0.07)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderRadius:20,padding:26,border:"1px solid rgba(255,255,255,0.1)"}}>
+          <p style={{color:"rgba(255,255,255,0.65)",fontSize:12.5,margin:"0 0 14px",textAlign:"center"}}>Contactez MonEcole pour obtenir un code de renouvellement, puis saisissez-le ci-dessous.</p>
+          <input value={code} onChange={e=>setCode(e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()} placeholder="Code de renouvellement"
+            style={{width:"100%",padding:"13px 16px",borderRadius:11,border:`2px solid ${err?"#ef4444":"rgba(255,255,255,0.18)"}`,background:"rgba(255,255,255,0.09)",color:"#fff",fontSize:15,fontWeight:800,letterSpacing:2,textAlign:"center",outline:"none",boxSizing:"border-box",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
+          {err&&<div style={{color:"#fca5a5",fontSize:12,marginTop:8,textAlign:"center"}}>{err}</div>}
+          {ok&&<div style={{color:"#86efac",fontSize:12.5,marginTop:8,textAlign:"center",fontWeight:700}}>{ok}</div>}
+          <button onClick={go} disabled={!code.trim()||loading} style={{width:"100%",marginTop:14,padding:13,borderRadius:11,border:"none",background:code.trim()?"#16a34a":"rgba(255,255,255,0.08)",color:"#fff",fontSize:14,fontWeight:800,cursor:code.trim()?"pointer":"not-allowed",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{loading?"Renouvellement…":"Renouveler →"}</button>
+          <div style={{textAlign:"center",marginTop:14}}><button type="button" onClick={onLogout} style={{background:"none",border:"none",color:"rgba(255,255,255,0.55)",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>Se déconnecter</button></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── APPLICATION PRINCIPALE ─────────────────────────────────────────────────────
 function App() {
   // Mode création (éditeur) seulement si l'URL contient #admin-create
   const adminMode = isAdminCreateMode();
@@ -4773,12 +4854,16 @@ function App() {
   // Espace éditeur (création d'école) — protégé par mot de passe maître
   if(screen==="master") return <MasterGate onOk={(pw)=>{setMasterPw(pw||"");setScreen("editor");}}/>;
   if(screen==="editor") return <EditorHub onCreate={()=>setScreen("activation")} masterPw={masterPw}/>;
-  if(screen==="activation") return <ActivationScreen onDone={c=>{setCodeActivation(c);setScreen("check");}}/>;
+  if(screen==="activation") return <ActivationScreen onBack={()=>setScreen("login")} onDone={c=>{setCodeActivation(c);setScreen("check");}}/>;
   if(screen==="check") return <CheckScreen codeActivation={codeActivation} onResult={(e)=>{if(e){setEtab(e);setScreen("login");}else setScreen("onboarding");}}/>;
   if(screen==="onboarding") return <Onboarding codeActivation={codeActivation} onDone={(e,a)=>{try{if(a&&a.id!=null)localStorage.setItem("monecole_uid",String(a.id));}catch(_){}setEtab(e);setCurrentUser(a);setScreen("app");}}/>;
 
   // Écran normal pour les écoles : connexion directe
-  if(screen==="login") return <Login lang={lang} setLang={setLang} onLogin={(u,e)=>{try{if(u&&u.id!=null)localStorage.setItem("monecole_uid",String(u.id));}catch(_){}setCurrentUser(u);setEtab(e||etab);setPage("dashboard");setScreen("app");}}/>;
+  if(screen==="login") return <Login lang={lang} setLang={setLang} onActivate={()=>setScreen("activation")} onLogin={(u,e)=>{try{if(u&&u.id!=null)localStorage.setItem("monecole_uid",String(u.id));}catch(_){}setCurrentUser(u);setEtab(e||etab);setPage("dashboard");setScreen("app");}}/>;
+
+  // Abonnement expiré → blocage (l'école peut renouveler avec un code)
+  if(screen==="app" && etab && isAbonnementExpire(etab))
+    return <AbonnementExpire etab={etab} currentUser={currentUser} onRenouvele={nv=>setEtab(e=>({...(e||{}),abonnement_expire_le:nv}))} onLogout={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>;
 
   // Sécurité : un professeur ne peut afficher que les pages autorisées
   const allowed=pagesForUser(currentUser);
@@ -4878,7 +4963,7 @@ body{overscroll-behavior-y:none;}
           <button onClick={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}} className="me-nav" style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"11px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",background:"rgba(239,68,68,0.15)",color:"#fca5a5",fontWeight:700,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}><span style={{fontSize:16}}>🚪</span>{t("logout")}</button>
         </div>
       </div>
-      <div className="me-main" style={{flex:1,overflowY:"auto",zoom:uiZoom,padding:isMobile?"calc(58px + env(safe-area-inset-top)) 13px calc(18px + env(safe-area-inset-bottom))":"24px 26px"}}><div key={safePage} className="me-page">{pages[safePage]}</div></div>
+      <div className="me-main" style={{flex:1,overflowY:"auto",zoom:uiZoom,padding:isMobile?"calc(58px + env(safe-area-inset-top)) 13px calc(18px + env(safe-area-inset-bottom))":"24px 26px"}}>{(()=>{const j=joursAvantExpiration(etab);return (j!==null&&j>=0&&j<=30)?(<div style={{background:"linear-gradient(135deg,#f59e0b,#f97316)",color:"#fff",borderRadius:12,padding:"10px 14px",marginBottom:14,display:"flex",alignItems:"center",gap:10,fontSize:13,fontWeight:700,boxShadow:"0 4px 14px -4px rgba(249,115,22,.5)"}}><span style={{fontSize:18}}>⏳</span><span>{j===0?"Votre abonnement expire aujourd'hui":`Votre abonnement expire dans ${j} jour${j>1?"s":""}`} (le {fmtDate(etab.abonnement_expire_le)}). Pensez à le renouveler auprès de MonEcole.</span></div>):null;})()}<div key={safePage} className="me-page">{pages[safePage]}</div></div>
       {allowed.includes("messagerie")&&safePage!=="messagerie"&&(()=>{
         const unread=currentUser?(data.messages||[]).filter(m=>m.auteur_id!==currentUser.id&&new Date(m.created_at).getTime()>msgSeen).length:0;
         return <button onClick={()=>setPage("messagerie")} title={t("nav_messagerie")} aria-label={t("nav_messagerie")} style={{position:"fixed",right:isMobile?16:26,bottom:isMobile?"calc(16px + env(safe-area-inset-bottom))":26,zIndex:80,width:56,height:56,borderRadius:"50%",border:"none",cursor:"pointer",background:"linear-gradient(135deg,var(--me-brand),var(--me-brand2))",color:"#fff",fontSize:24,boxShadow:"0 10px 26px -6px rgba(26,86,219,.7)",display:"flex",alignItems:"center",justifyContent:"center"}}>
