@@ -301,7 +301,7 @@ const I18N = {
     no_prof_info:"🔒 Vous voyez uniquement vos matières attribuées.",
     no_aucune_cycle:"Aucune matière pour ce cycle / cette classe.",
     no_moy_classe:"Moyenne classe", no_plus_haute:"Plus haute", no_plus_basse:"Plus basse",
-    no_admis:"Admis", no_saisies:"Saisies", no_note:"Note", no_appreciation:"Mention", no_commentaire:"Commentaire du prof", no_commentaire_ph:"Appréciation de l'élève dans cette matière…", no_eleve:"Élève",
+    no_admis:"Admis", no_saisies:"Saisies", no_note:"Note", no_appreciation:"Mention", no_commentaire:"Commentaire du prof", no_appr_obligatoire:"L'appréciation est obligatoire pour chaque élève noté. {n} appréciation(s) manquante(s).", no_commentaire_ph:"Appréciation de l'élève dans cette matière…", no_eleve:"Élève",
     stat_titre:"📊 Statistiques", stat_indicateur:"Indicateur", stat_valeur:"Valeur", stat_eleves_notes:"Élèves notés", stat_taux_reussite:"Taux de réussite", stat_repartition:"Répartition", stat_excellent:"Excellent", stat_moyen:"Moyen", stat_faible:"Faible", stat_effectif:"Effectif total", stat_garcons:"Garçons", stat_filles:"Filles",
     stat_tableau:"📊 Tableau statistique", stat_total:"Total", stat_inscrit:"Inscrits", stat_ont_compose:"Ont composé", stat_pas_compose:"N'ont pas composé", stat_ont_moyenne:"Ont la moyenne", stat_pas_moyenne:"N'ont pas la moyenne", stat_pourcentage:"Pourcentage", stat_mode_matiere:"Par matière", stat_mode_generale:"Générale",
     no_search:"🔍 Rechercher un élève...", no_no_result:"Aucun élève ne correspond à la recherche.",
@@ -488,7 +488,7 @@ const I18N = {
     no_prof_info:"🔒 ترى موادك المخصصة فقط.",
     no_aucune_cycle:"لا توجد مادة لهذا السلك / القسم.",
     no_moy_classe:"معدل القسم", no_plus_haute:"الأعلى", no_plus_basse:"الأدنى",
-    no_admis:"ناجح", no_saisies:"المُدخلة", no_note:"النقطة", no_appreciation:"التقدير", no_commentaire:"ملاحظة الأستاذ", no_commentaire_ph:"تقييم التلميذ في هذه المادة…", no_eleve:"التلميذ",
+    no_admis:"ناجح", no_saisies:"المُدخلة", no_note:"النقطة", no_appreciation:"التقدير", no_commentaire:"ملاحظة الأستاذ", no_appr_obligatoire:"الملاحظة إلزامية لكل تلميذ مُقيَّم. {n} ملاحظة ناقصة.", no_commentaire_ph:"تقييم التلميذ في هذه المادة…", no_eleve:"التلميذ",
     stat_titre:"📊 إحصائيات", stat_indicateur:"المؤشر", stat_valeur:"القيمة", stat_eleves_notes:"التلاميذ المقيَّمون", stat_taux_reussite:"نسبة النجاح", stat_repartition:"التوزيع", stat_excellent:"ممتاز", stat_moyen:"متوسط", stat_faible:"ضعيف", stat_effectif:"العدد الإجمالي", stat_garcons:"البنون", stat_filles:"البنات",
     stat_tableau:"📊 الجدول الإحصائي", stat_total:"المجموع", stat_inscrit:"المسجّلون", stat_ont_compose:"أدّوا الامتحان", stat_pas_compose:"لم يؤدّوا", stat_ont_moyenne:"حصلوا على المعدل", stat_pas_moyenne:"دون المعدل", stat_pourcentage:"النسبة المئوية", stat_mode_matiere:"حسب المادة", stat_mode_generale:"عام",
     no_search:"🔍 ابحث عن تلميذ...", no_no_result:"لا تلميذ يطابق البحث.",
@@ -2854,6 +2854,7 @@ function Notes({data,ops,etab,currentUser}) {
   const [saving,setSaving]=useState(false);
   const [dirty,setDirty]=useState(false);
   useUnsavedGuard(dirty);
+  const [apprMissing,setApprMissing]=useState(()=>new Set());
   const [search,setSearch]=useState("");
   const [statBase,setStatBase]=useState("matiere");
   const [statPos,setStatPos]=useState("left");
@@ -2896,12 +2897,15 @@ function Notes({data,ops,etab,currentUser}) {
   };
   const classeEleves=classeElevesAll.filter(e=>`${e.prenom} ${e.nom} ${e.matricule}`.toLowerCase().includes(search.toLowerCase()));
 
-  useEffect(()=>{const n={};const ap={};classeElevesAll.forEach(e=>{n[e.id]=e.notes?.[periode]?.[matiereId]??"";ap[e.id]=e.appreciations?.[periode]?.[matiereId]??"";});setLocalNotes(n);setLocalAppr(ap);setDirty(false);},[periode,classeId,matiereId,data.eleves]);
+  useEffect(()=>{const n={};const ap={};classeElevesAll.forEach(e=>{n[e.id]=e.notes?.[periode]?.[matiereId]??"";ap[e.id]=e.appreciations?.[periode]?.[matiereId]??"";});setLocalNotes(n);setLocalAppr(ap);setApprMissing(new Set());setDirty(false);},[periode,classeId,matiereId,data.eleves]);
 
   const setNote=(id,val)=>{setLocalNotes(n=>({...n,[id]:val}));setDirty(true);};
-  const setAppr=(id,val)=>{setLocalAppr(a=>({...a,[id]:val}));setDirty(true);};
+  const setAppr=(id,val)=>{setLocalAppr(a=>({...a,[id]:val}));setApprMissing(s=>{if(!s.has(id))return s;const nx=new Set(s);nx.delete(id);return nx;});setDirty(true);};
   const guardSwitch=(fn)=>(e)=>{const val=e.target.value;if(dirty&&!window.confirm(t("quit_unsaved")))return;fn(val);};
   const saveAll=async()=>{
+    const manquants=classeElevesAll.filter(e=>{const v=localNotes[e.id];const note=v!==""&&v!=null&&!isNaN(parseFloat(v));return note&&!(localAppr[e.id]||"").trim();});
+    if(manquants.length){setApprMissing(new Set(manquants.map(e=>e.id)));window.alert(t("no_appr_obligatoire").replace("{n}",manquants.length));return;}
+    setApprMissing(new Set());
     setSaving(true);
     const updates=classeElevesAll.map(e=>({id:e.id,notes:{...(e.notes||{}),[periode]:{...(e.notes?.[periode]||{}),[matiereId]:localNotes[e.id]===""||localNotes[e.id]==null?null:parseFloat(localNotes[e.id])}},appreciations:{...(e.appreciations||{}),[periode]:{...(e.appreciations?.[periode]||{}),[matiereId]:(localAppr[e.id]||"").trim()||null}}}));
     await ops.saveAllNotes(updates);setSaving(false);setDirty(false);
@@ -3015,7 +3019,7 @@ function Notes({data,ops,etab,currentUser}) {
                   <td style={{padding:"9px 13px"}}><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{e.prenom} {e.nom}</div><div style={{fontSize:11,color:"var(--me-text-3)"}}>{e.matricule}</div></td>
                   <td style={{padding:"7px 13px"}}><input ref={el=>inputsRef.current[i]=el} onKeyDown={ev=>onKey(ev,i)} type="number" min="0" max={bareme} step="0.25" value={note} onChange={ev=>setNote(e.id,ev.target.value)} style={{width:80,padding:"8px 10px",borderRadius:9,border:`2px solid ${note!==""&&parseFloat(note)<bareme/2?"#fca5a5":"#e2e8f0"}`,fontSize:14,fontWeight:700,textAlign:"center",outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",color:m?.c||"var(--me-text)"}}/></td>
                   <td style={{padding:"9px 13px"}}>{m&&<span style={{background:m.bg,color:m.c,borderRadius:7,padding:"3px 9px",fontSize:11,fontWeight:700}}>{m.t}</span>}</td>
-                  <td style={{padding:"7px 13px"}}><input value={localAppr[e.id]||""} onChange={ev=>setAppr(e.id,ev.target.value)} placeholder={t("no_commentaire_ph")} style={{width:"100%",minWidth:160,padding:"8px 10px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:12.5,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",color:"var(--me-text)"}}/></td>
+                  <td style={{padding:"7px 13px"}}><input value={localAppr[e.id]||""} onChange={ev=>setAppr(e.id,ev.target.value)} placeholder={t("no_commentaire_ph")} style={{width:"100%",minWidth:160,padding:"8px 10px",borderRadius:9,border:`1.5px solid ${apprMissing.has(e.id)?"#fca5a5":"#e2e8f0"}`,background:apprMissing.has(e.id)?"#fef2f2":"transparent",fontSize:12.5,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",color:"var(--me-text)"}}/></td>
                 </tr>);
               })}</tbody>
             </table>
