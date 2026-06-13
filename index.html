@@ -4538,6 +4538,15 @@ function EditorHub({onCreate,masterPw}) {
     setGenLoading(false);
   };
   const copier=(c)=>{try{navigator.clipboard.writeText(c);setCopied(c);setTimeout(()=>setCopied(""),1500);}catch(_){}}
+  const supprimerCode=async(code)=>{
+    if(!window.confirm("Supprimer définitivement le code "+code+" ?"))return;
+    setGenErr("");
+    try{
+      const{data,error}=await sb.functions.invoke("renouveler",{body:{motDePasse:masterPw||"",action:"supprimer_code",code}});
+      if(error){let m="Suppression impossible.";try{const j=await error.context.json();if(j&&j.error)m=j.error;}catch(_){}setGenErr(m);}
+      else loadCodes();
+    }catch(e){setGenErr("Erreur : "+(e.message||e));}
+  };
   return(
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
       <div style={{background:"var(--me-surface,#fff)",borderRadius:22,padding:34,width:480,maxWidth:"100%",boxShadow:"0 32px 80px rgba(0,0,0,0.3)",maxHeight:"92vh",overflow:"auto"}}>
@@ -4585,6 +4594,7 @@ function EditorHub({onCreate,masterPw}) {
                 <span style={{fontSize:10,fontWeight:700,color:"var(--me-text-2)",textTransform:"capitalize"}}>{FORMULES[c.formule]?.l||c.formule}</span>
                 <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:20,background:c.statut==="libre"?"#dcfce7":"#fee2e2",color:c.statut==="libre"?"#166534":"#991b1b"}}>{c.statut==="libre"?"Libre":"Utilisé"}</span>
                 <a href="#" onClick={e=>{e.preventDefault();copier(c.code);}} style={{fontSize:11,color:"var(--me-brand)",textDecoration:"none",fontWeight:700}}>{copied===c.code?"✓":"Copier"}</a>
+                {c.statut==="libre"&&<button onClick={()=>supprimerCode(c.code)} title="Supprimer" style={{background:"none",border:"none",color:"#dc2626",cursor:"pointer",fontSize:13,padding:"0 2px",lineHeight:1}}>🗑️</button>}
               </div>))}
             </div>
           </div>}
