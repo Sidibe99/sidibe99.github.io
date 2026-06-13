@@ -931,8 +931,8 @@ const printHTML = (html, title="MonEcole", opts={}) => {
 // ── UI ATOMS ──────────────────────────────────────────────────────────────────
 const iSt = (x) => ({width:"100%",padding:"10px 13px",borderRadius:9,border:"1.5px solid var(--me-border-2)",fontSize:13,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",boxSizing:"border-box",background:"var(--me-surface)",color:"var(--me-text)",...(x||{})});
 const Lbl = (props) => { const t=props.t, children=props.children, mb=props.mb==null?14:props.mb; return <div style={{marginBottom:mb}}>{t&&<label style={{display:"block",fontSize:11,fontWeight:700,color:"var(--me-text-2)",marginBottom:5,textTransform:"uppercase",letterSpacing:0.5}}>{t}</label>}{children}</div>; };
-const Inp = ({label,...p}) => <Lbl t={label}><input style={iSt()} {...p}/></Lbl>;
-const Slt = ({label,opts,...p}) => <Lbl t={label}><select style={iSt()} {...p}>{opts.map(o=><option key={o.v??o} value={o.v??o}>{o.l??o}</option>)}</select></Lbl>;
+const Inp = ({label,invalid,...p}) => <Lbl t={label}><input style={iSt(invalid?{border:"1.5px solid #ef4444",background:"rgba(239,68,68,0.06)"}:undefined)} {...p}/></Lbl>;
+const Slt = ({label,opts,invalid,...p}) => <Lbl t={label}><select style={iSt(invalid?{border:"1.5px solid #ef4444",background:"rgba(239,68,68,0.06)"}:undefined)} {...p}>{opts.map(o=><option key={o.v??o} value={o.v??o}>{o.l??o}</option>)}</select></Lbl>;
 const Btn = ({ch,v="primary",onClick,disabled,full,s={}}) => {
   const vs={primary:{background:"linear-gradient(135deg,var(--me-brand),var(--me-brand2))",color:"#fff",border:"none",boxShadow:"0 2px 8px -2px rgba(26,86,219,.5)"},success:{background:"linear-gradient(135deg,#059669,#047857)",color:"#fff",border:"none",boxShadow:"0 2px 8px -2px rgba(5,150,105,.5)"},danger:{background:"#fee2e2",color:"#dc2626",border:"1px solid #fecaca"},ghost:{background:"var(--me-surface)",color:"var(--me-text-2)",border:"1px solid var(--me-border-2)"},warn:{background:"rgba(217,119,6,0.14)",color:"#d97706",border:"1px solid #fde68a"}};
   return <button className="me-btn" disabled={disabled} onClick={onClick} style={{padding:"9px 18px",borderRadius:10,cursor:disabled?"not-allowed":"pointer",fontSize:12,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",opacity:disabled?0.5:1,width:full?"100%":"auto",...vs[v],...s}}>{ch}</button>;
@@ -1043,14 +1043,15 @@ function Onboarding({codeActivation,onDone}) {
   const [ecole,setEcole]=useState({nom:"",devise:"GNF",annee:"",adresse:"",telephone:"",email:"",codeMEN:"",prefixe:"",systeme:"trimestre",devise_txt:"",fraisInscription:"",mensualite:"",formule:"basique"});
   const [admin,setAdmin]=useState({nom:"",prenom:"",identifiant:"",password:"",confirm:""});
   const [err,setErr]=useState("");const [loading,setLoading]=useState(false);
+  const [invalides,setInvalides]=useState({});const clrInv=k=>setInvalides(v=>v[k]?{...v,[k]:false}:v);
   // Récupère la formule portée par le code d'activation (sinon 'basique' pour anciens codes)
   useEffect(()=>{let actif=true;sb.from("codes_activation").select("formule").eq("code",codeActivation).maybeSingle()
     .then(({data})=>{if(actif&&data&&data.formule)setEcole(f=>({...f,formule:data.formule}));}).catch(()=>{});
     return ()=>{actif=false;};},[]);
 
   const finish=async()=>{
-    if(!admin.nom||!admin.identifiant||!admin.password)return setErr("Tous les champs sont requis.");
-    if(admin.password!==admin.confirm)return setErr("Mots de passe différents.");
+    const inv={anom:!String(admin.nom).trim(),aident:!String(admin.identifiant).trim(),apass:!admin.password};setInvalides(inv);if(inv.anom||inv.aident||inv.apass){setErr("");return;}
+    if(admin.password!==admin.confirm){setInvalides({aconfirm:true});return setErr("Les mots de passe ne correspondent pas.");}
     setLoading(true);setErr("");
     try {
       const {data,error}=await sb.functions.invoke("creer-ecole",{body:{code:codeActivation,ecole,admin:{nom:admin.nom,prenom:admin.prenom,identifiant:admin.identifiant,password:admin.password}}});
@@ -1086,9 +1087,9 @@ function Onboarding({codeActivation,onDone}) {
           <>
             <div style={{marginBottom:20}}><h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"var(--me-text)"}}>Votre établissement 🏫</h2><p style={{margin:0,color:"var(--me-text-2)",fontSize:13}}>Ces infos apparaîtront sur les bulletins et reçus.</p></div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 16px"}}>
-              <div style={{gridColumn:"1/-1"}}><Inp label="Nom de l'établissement *" value={ecole.nom} onChange={e=>setEcole(f=>({...f,nom:e.target.value}))} placeholder="Collège Moderne de..."/></div>
+              <div style={{gridColumn:"1/-1"}}><Inp label="Nom de l'établissement *" invalid={invalides.nom} value={ecole.nom} onChange={e=>{clrInv("nom");setEcole(f=>({...f,nom:e.target.value}));}} placeholder="Collège Moderne de..."/></div>
               <Inp label="Devise / Slogan" value={ecole.devise_txt} onChange={e=>setEcole(f=>({...f,devise_txt:e.target.value}))} placeholder="L'excellence avant tout"/>
-              <Inp label="Année scolaire *" value={ecole.annee} onChange={e=>setEcole(f=>({...f,annee:e.target.value}))} placeholder="2026-2027"/>
+              <Inp label="Année scolaire *" invalid={invalides.annee} value={ecole.annee} onChange={e=>{clrInv("annee");setEcole(f=>({...f,annee:e.target.value}));}} placeholder="2026-2027"/>
               <Slt label="Devise monétaire" value={ecole.devise} onChange={e=>setEcole(f=>({...f,devise:e.target.value}))} opts={[{v:"GNF",l:"GNF — Franc Guinéen"},{v:"XOF",l:"FCFA — Franc CFA"}]}/>
               <Slt label="Système de notation" value={ecole.systeme} onChange={e=>setEcole(f=>({...f,systeme:e.target.value}))} opts={[{v:"trimestre",l:"Trimestriel (3 périodes)"},{v:"semestre",l:"Semestriel (2 périodes)"}]}/>
               <Inp label="Adresse" value={ecole.adresse} onChange={e=>setEcole(f=>({...f,adresse:e.target.value}))} placeholder="Commune, Ville"/>
@@ -1110,18 +1111,18 @@ function Onboarding({codeActivation,onDone}) {
           <>
             <div style={{marginBottom:20}}><h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"var(--me-text)"}}>Compte administrateur 🔐</h2><p style={{margin:0,color:"var(--me-text-2)",fontSize:13}}>Accès complet à toutes les fonctionnalités.</p></div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 16px"}}>
-              <Inp label="Nom *" value={admin.nom} onChange={e=>setAdmin(f=>({...f,nom:e.target.value}))}/>
+              <Inp label="Nom *" invalid={invalides.anom} value={admin.nom} onChange={e=>{clrInv("anom");setAdmin(f=>({...f,nom:e.target.value}));}}/>
               <Inp label="Prénom" value={admin.prenom} onChange={e=>setAdmin(f=>({...f,prenom:e.target.value}))}/>
-              <div style={{gridColumn:"1/-1"}}><Inp label="Identifiant *" value={admin.identifiant} onChange={e=>setAdmin(f=>({...f,identifiant:e.target.value}))} placeholder="admin.directeur"/></div>
-              <Lbl t="Mot de passe *"><input type="password" value={admin.password} onChange={e=>setAdmin(f=>({...f,password:e.target.value}))} style={iSt()}/></Lbl>
-              <Lbl t="Confirmer *"><input type="password" value={admin.confirm} onChange={e=>setAdmin(f=>({...f,confirm:e.target.value}))} style={iSt()}/></Lbl>
+              <div style={{gridColumn:"1/-1"}}><Inp label="Identifiant *" invalid={invalides.aident} value={admin.identifiant} onChange={e=>{clrInv("aident");setAdmin(f=>({...f,identifiant:e.target.value}));}} placeholder="admin.directeur"/></div>
+              <Lbl t="Mot de passe *"><input type="password" value={admin.password} onChange={e=>{clrInv("apass");setAdmin(f=>({...f,password:e.target.value}));}} style={iSt(invalides.apass?{border:"1.5px solid #ef4444",background:"rgba(239,68,68,0.06)"}:undefined)}/></Lbl>
+              <Lbl t="Confirmer *"><input type="password" value={admin.confirm} onChange={e=>{clrInv("aconfirm");setAdmin(f=>({...f,confirm:e.target.value}));}} style={iSt(invalides.aconfirm?{border:"1.5px solid #ef4444",background:"rgba(239,68,68,0.06)"}:undefined)}/></Lbl>
             </div>
           </>
         )}
         {err&&<div style={{background:"rgba(220,38,38,0.10)",border:"1px solid #fecaca",borderRadius:9,padding:"9px 13px",color:"#dc2626",fontSize:12,margin:"10px 0"}}>{err}</div>}
         <div style={{display:"flex",justifyContent:"space-between",marginTop:10}}>
           {step===2?<Btn ch="← Retour" v="ghost" onClick={()=>setStep(1)}/>:<div/>}
-          {step===1?<Btn ch="Suivant →" v="primary" onClick={()=>{if(!ecole.nom||!ecole.annee){setErr("Nom et année obligatoires.");return;}setErr("");setStep(2);}} s={{padding:"11px 26px"}}/>
+          {step===1?<Btn ch="Suivant →" v="primary" onClick={()=>{const inv={nom:!String(ecole.nom).trim(),annee:!String(ecole.annee).trim()};setInvalides(inv);if(inv.nom||inv.annee){setErr("");return;}setStep(2);}} s={{padding:"11px 26px"}}/>
           :<Btn ch={loading?"Création...":"Terminer ✓"} v="primary" onClick={finish} disabled={loading} s={{padding:"11px 26px"}}/>}
         </div>
       </div>
