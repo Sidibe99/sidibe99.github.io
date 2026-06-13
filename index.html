@@ -355,7 +355,7 @@ const I18N = {
     msg_voc:"Message vocal", msg_voc_enr:"Enregistrement…", msg_voc_stop:"Terminer", msg_voc_envoyer:"Envoyer", msg_voc_non_supporte:"L'enregistrement vocal n'est pas pris en charge par ce navigateur.", msg_voc_acces:"Impossible d'accéder au micro :",
     msg_creer_groupe:"Créer un groupe", msg_nom_groupe:"Nom du groupe *", msg_nom_groupe_ph:"Ex: Profs 6ème Année",
     msg_membres_groupe:"Membres du groupe", msg_aucun_a_ajouter:"Aucun autre membre à ajouter.", msg_auto_ajout:"Vous serez automatiquement ajouté au groupe.", msg_creer_btn:"Créer le groupe",
-    us_sub:"Gérez les accès", us_th_user:"Utilisateur", us_th_ident:"Identifiant", us_th_role:"Rôle", us_th_actions:"Actions", us_empty:"Aucun utilisateur.",
+    us_prefill:"Pré-remplir depuis le personnel sans compte :", us_sub:"Gérez les accès", us_th_user:"Utilisateur", us_th_ident:"Identifiant", us_th_role:"Rôle", us_th_actions:"Actions", us_empty:"Aucun utilisateur.",
     us_new_titre:"Nouvel utilisateur", us_edit_titre:"Modifier", us_prenom:"Prénom", us_ident:"Identifiant *",
     us_mdp:"Mot de passe *", us_mdp_new:"Nouveau mot de passe", us_role:"Rôle",
     us_matieres:"Matières enseignées (accès en saisie de notes)", us_aucune_mat:"Aucune matière créée.", us_note_prof:"Le professeur ne pourra saisir que les notes des matières cochées.",
@@ -542,7 +542,7 @@ const I18N = {
     msg_voc:"رسالة صوتية", msg_voc_enr:"جارٍ التسجيل…", msg_voc_stop:"إنهاء", msg_voc_envoyer:"إرسال", msg_voc_non_supporte:"تسجيل الصوت غير مدعوم في هذا المتصفح.", msg_voc_acces:"تعذّر الوصول إلى الميكروفون:",
     msg_creer_groupe:"إنشاء مجموعة", msg_nom_groupe:"اسم المجموعة *", msg_nom_groupe_ph:"مثال: أساتذة السنة السادسة",
     msg_membres_groupe:"أعضاء المجموعة", msg_aucun_a_ajouter:"لا يوجد أعضاء آخرون للإضافة.", msg_auto_ajout:"ستُضاف تلقائيًا إلى المجموعة.", msg_creer_btn:"إنشاء المجموعة",
-    us_sub:"إدارة الوصول", us_th_user:"المستخدم", us_th_ident:"المعرّف", us_th_role:"الدور", us_th_actions:"إجراءات", us_empty:"لا مستخدمين.",
+    us_prefill:"تعبئة من الطاقم بدون حساب:", us_sub:"إدارة الوصول", us_th_user:"المستخدم", us_th_ident:"المعرّف", us_th_role:"الدور", us_th_actions:"إجراءات", us_empty:"لا مستخدمين.",
     us_new_titre:"مستخدم جديد", us_edit_titre:"تعديل", us_prenom:"الاسم", us_ident:"المعرّف *",
     us_mdp:"كلمة المرور *", us_mdp_new:"كلمة مرور جديدة", us_role:"الدور",
     us_matieres:"المواد المُدرّسة (صلاحية إدخال النقاط)", us_aucune_mat:"لا توجد مواد.", us_note_prof:"لن يتمكن الأستاذ إلا من إدخال نقاط المواد المحددة.",
@@ -3790,6 +3790,11 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
   const toggleMat=id=>setForm(f=>({...f,matieres_autorisees:(f.matieres_autorisees||[]).includes(id)?f.matieres_autorisees.filter(x=>x!==id):[...(f.matieres_autorisees||[]),id]}));
   const toggleClasse=id=>setForm(f=>({...f,classes_autorisees:(f.classes_autorisees||[]).includes(id)?f.classes_autorisees.filter(x=>x!==id):[...(f.classes_autorisees||[]),id]}));
   const togglePage=id=>setForm(f=>({...f,pages_autorisees:(f.pages_autorisees||[]).includes(id)?f.pages_autorisees.filter(x=>x!==id):[...(f.pages_autorisees||[]),id]}));
+  const _normU=s=>(s||"").trim().toLowerCase().replace(/\s+/g," ");
+  const _comptes=new Set((data.utilisateurs||[]).map(u=>_normU(u.nom)+"|"+_normU(u.prenom)));
+  const personnelSansCompte=(data.professeurs||[]).filter(p=>!_comptes.has(_normU(p.nom)+"|"+_normU(p.prenom)));
+  const roleFromFonction=fn=>({"Enseignant":"Professeur","Directeur":"Directeur","Directeur adjoint":"Directeur","Secrétaire":"Secrétaire","Comptable":"Comptable"})[fn]||"Professeur";
+  const prefillFrom=p=>{const r=roleFromFonction(p.fonction||"Enseignant");setErr("");setInvalides({});setForm(f=>({...f,nom:p.nom||"",prenom:p.prenom||"",genre:p.genre||"",role:r,pages_autorisees:roleBase(r)}));};
   const sectLevel=id=>((form.sections_etab_modif||[]).includes(id)?"modifier":((form.sections_etab||[]).includes(id)?"voir":"none"));
   const setSectLevel=(id,lvl)=>setForm(f=>{const se=(f.sections_etab||[]).filter(x=>x!==id);const sm=(f.sections_etab_modif||[]).filter(x=>x!==id);if(lvl==="voir")se.push(id);if(lvl==="modifier"){se.push(id);sm.push(id);}return{...f,sections_etab:se,sections_etab_modif:sm};});
   // Pages accessibles d'un utilisateur (pour l'aperçu dans la liste)
@@ -3816,6 +3821,14 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
       />
       {modal&&<Modal title={modal==="add"?t("us_new_titre"):t("us_edit_titre")} onClose={()=>{setErr("");setModal(null);}}>
         {err&&<div style={{background:"rgba(220,38,38,0.10)",border:"1px solid #fecaca",color:"#dc2626",borderRadius:10,padding:"10px 13px",fontSize:12,fontWeight:600,marginBottom:13,lineHeight:1.45}}>⚠️ {err}</div>}
+        {modal==="add"&&personnelSansCompte.length>0&&<div style={{background:"var(--me-surface-2,#f8fafc)",border:"1px solid var(--me-border-2,#eef2f7)",borderRadius:11,padding:"11px 13px",marginBottom:13}}>
+          <div style={{fontSize:11.5,fontWeight:700,color:"var(--me-text-2)",marginBottom:8}}>{t("us_prefill")}</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+            {personnelSansCompte.map(p=>(
+              <button key={p.id} type="button" onClick={()=>prefillFrom(p)} style={{background:"var(--me-surface,#fff)",border:"1.5px solid var(--me-brand)",color:"var(--me-brand)",borderRadius:20,padding:"5px 12px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{p.prenom} {p.nom}<span style={{opacity:.6,fontWeight:600}}> · {fonctionLabel(p.fonction||"Enseignant")}</span></button>
+            ))}
+          </div>
+        </div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
           <Inp label={t("el_nom")} invalid={invalides.nom} value={form.nom} onChange={e=>{clrInv("nom");setForm(f=>({...f,nom:e.target.value}));}}/>
           <Inp label={t("us_prenom")} value={form.prenom} onChange={e=>setForm(f=>({...f,prenom:e.target.value}))}/>
