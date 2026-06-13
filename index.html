@@ -218,7 +218,7 @@ const I18N = {
   fr:{
     login_sub:"Connectez-vous pour continuer", login_id:"Identifiant", login_pw:"Mot de passe",
     login_btn:"Se connecter →", login_activer:"Activer mon école avec un code", login_btn_loading:"Connexion...", login_err:"Identifiant ou mot de passe incorrect.",
-    logout:"Déconnexion", reconnect:"Reconnexion…", ui_taille:"Taille du texte", ui_langue:"Langue", ui_apparence:"Affichage", ui_clair:"Clair", ui_sombre:"Sombre", st_theme_aide:"Choisissez l'apparence de l'application. Les thèmes clairs gardent un texte foncé bien lisible.", st_prefs:"Préférences", st_compte:"Compte", st_couleur:"Couleur principale", st_couleur_aide:"Couleur des boutons et menus (le fond reste celui du thème choisi).", st_notif_titre:"Notifications", pref_petit:"Petit", pref_grand:"Grand",
+    logout:"Déconnexion", reconnect:"Reconnexion…", quit_unsaved:"Vous avez des modifications non enregistrées. Voulez-vous quitter sans enregistrer ?", ui_taille:"Taille du texte", ui_langue:"Langue", ui_apparence:"Affichage", ui_clair:"Clair", ui_sombre:"Sombre", st_theme_aide:"Choisissez l'apparence de l'application. Les thèmes clairs gardent un texte foncé bien lisible.", st_prefs:"Préférences", st_compte:"Compte", st_couleur:"Couleur principale", st_couleur_aide:"Couleur des boutons et menus (le fond reste celui du thème choisi).", st_notif_titre:"Notifications", pref_petit:"Petit", pref_grand:"Grand",
     notif_on:"Notifications activées", notif_off:"Activer les notifications", notif_refus:"Les notifications ont été refusées. Autorisez-les dans les réglages du navigateur pour ce site.",
     notif_actif_titre:"MonEcole", notif_actif_corps:"Notifications activées ✓", notif_msg_titre:"Nouveau message", notif_msg_plus:"nouveaux messages",
     notif_jour_titre:"Vos cours aujourd'hui", notif_jour_cours:"cours prévu", notif_jour_cours_p:"cours prévus", notif_cours_titre:"Cours dans 15 min",
@@ -301,7 +301,7 @@ const I18N = {
     no_prof_info:"🔒 Vous voyez uniquement vos matières attribuées.",
     no_aucune_cycle:"Aucune matière pour ce cycle / cette classe.",
     no_moy_classe:"Moyenne classe", no_plus_haute:"Plus haute", no_plus_basse:"Plus basse",
-    no_admis:"Admis", no_saisies:"Saisies", no_note:"Note", no_appreciation:"Appréciation", no_eleve:"Élève",
+    no_admis:"Admis", no_saisies:"Saisies", no_note:"Note", no_appreciation:"Mention", no_commentaire:"Commentaire du prof", no_commentaire_ph:"Appréciation de l'élève dans cette matière…", no_eleve:"Élève",
     stat_titre:"📊 Statistiques", stat_indicateur:"Indicateur", stat_valeur:"Valeur", stat_eleves_notes:"Élèves notés", stat_taux_reussite:"Taux de réussite", stat_repartition:"Répartition", stat_excellent:"Excellent", stat_moyen:"Moyen", stat_faible:"Faible", stat_effectif:"Effectif total", stat_garcons:"Garçons", stat_filles:"Filles",
     stat_tableau:"📊 Tableau statistique", stat_total:"Total", stat_inscrit:"Inscrits", stat_ont_compose:"Ont composé", stat_pas_compose:"N'ont pas composé", stat_ont_moyenne:"Ont la moyenne", stat_pas_moyenne:"N'ont pas la moyenne", stat_pourcentage:"Pourcentage", stat_mode_matiere:"Par matière", stat_mode_generale:"Générale",
     no_search:"🔍 Rechercher un élève...", no_no_result:"Aucun élève ne correspond à la recherche.",
@@ -405,7 +405,7 @@ const I18N = {
   ar:{
     login_sub:"سجّل الدخول للمتابعة", login_id:"اسم المستخدم", login_pw:"كلمة المرور",
     login_btn:"تسجيل الدخول ←", login_activer:"تفعيل مدرستي برمز", login_btn_loading:"جارٍ الدخول...", login_err:"اسم المستخدم أو كلمة المرور غير صحيحة.",
-    logout:"تسجيل الخروج", reconnect:"إعادة الاتصال…", ui_taille:"حجم النص", ui_langue:"اللغة", ui_apparence:"العرض", ui_clair:"فاتح", ui_sombre:"داكن", st_theme_aide:"اختر مظهر التطبيق. السمات الفاتحة تحافظ على نص داكن واضح القراءة.", st_prefs:"التفضيلات", st_compte:"الحساب", st_couleur:"اللون الرئيسي", st_couleur_aide:"لون الأزرار والقوائم (تبقى الخلفية حسب السمة المختارة).", st_notif_titre:"الإشعارات", pref_petit:"صغير", pref_grand:"كبير",
+    logout:"تسجيل الخروج", reconnect:"إعادة الاتصال…", quit_unsaved:"لديك تغييرات غير محفوظة. هل تريد المغادرة دون حفظ؟", ui_taille:"حجم النص", ui_langue:"اللغة", ui_apparence:"العرض", ui_clair:"فاتح", ui_sombre:"داكن", st_theme_aide:"اختر مظهر التطبيق. السمات الفاتحة تحافظ على نص داكن واضح القراءة.", st_prefs:"التفضيلات", st_compte:"الحساب", st_couleur:"اللون الرئيسي", st_couleur_aide:"لون الأزرار والقوائم (تبقى الخلفية حسب السمة المختارة).", st_notif_titre:"الإشعارات", pref_petit:"صغير", pref_grand:"كبير",
     notif_on:"الإشعارات مفعّلة", notif_off:"تفعيل الإشعارات", notif_refus:"تم رفض الإشعارات. فعّلها من إعدادات المتصفح لهذا الموقع.",
     notif_actif_titre:"مدرستي", notif_actif_corps:"تم تفعيل الإشعارات ✓", notif_msg_titre:"رسالة جديدة", notif_msg_plus:"رسائل جديدة",
     notif_jour_titre:"حصصك اليوم", notif_jour_cours:"حصة", notif_jour_cours_p:"حصص", notif_cours_titre:"حصة بعد 15 دقيقة",
@@ -488,7 +488,7 @@ const I18N = {
     no_prof_info:"🔒 ترى موادك المخصصة فقط.",
     no_aucune_cycle:"لا توجد مادة لهذا السلك / القسم.",
     no_moy_classe:"معدل القسم", no_plus_haute:"الأعلى", no_plus_basse:"الأدنى",
-    no_admis:"ناجح", no_saisies:"المُدخلة", no_note:"النقطة", no_appreciation:"الملاحظة", no_eleve:"التلميذ",
+    no_admis:"ناجح", no_saisies:"المُدخلة", no_note:"النقطة", no_appreciation:"التقدير", no_commentaire:"ملاحظة الأستاذ", no_commentaire_ph:"تقييم التلميذ في هذه المادة…", no_eleve:"التلميذ",
     stat_titre:"📊 إحصائيات", stat_indicateur:"المؤشر", stat_valeur:"القيمة", stat_eleves_notes:"التلاميذ المقيَّمون", stat_taux_reussite:"نسبة النجاح", stat_repartition:"التوزيع", stat_excellent:"ممتاز", stat_moyen:"متوسط", stat_faible:"ضعيف", stat_effectif:"العدد الإجمالي", stat_garcons:"البنون", stat_filles:"البنات",
     stat_tableau:"📊 الجدول الإحصائي", stat_total:"المجموع", stat_inscrit:"المسجّلون", stat_ont_compose:"أدّوا الامتحان", stat_pas_compose:"لم يؤدّوا", stat_ont_moyenne:"حصلوا على المعدل", stat_pas_moyenne:"دون المعدل", stat_pourcentage:"النسبة المئوية", stat_mode_matiere:"حسب المادة", stat_mode_generale:"عام",
     no_search:"🔍 ابحث عن تلميذ...", no_no_result:"لا تلميذ يطابق البحث.",
@@ -939,17 +939,25 @@ const Btn = ({ch,v="primary",onClick,disabled,full,s={}}) => {
 };
 const Badge = ({role}) => <span style={{background:(ROLE_CLR[role]||"#6b7280")+"20",color:ROLE_CLR[role]||"#6b7280",border:`1px solid ${ROLE_CLR[role]||"#6b7280"}35`,padding:"2px 9px",borderRadius:999,fontSize:10,fontWeight:700,textTransform:"uppercase"}}>{role}</span>;
 const Card = ({children,s={}}) => <div className="me-card" style={{background:"var(--me-surface)",borderRadius:16,padding:22,boxShadow:"0 1px 3px rgba(15,23,42,.04),0 6px 18px -10px rgba(15,23,42,.12)",border:"1px solid var(--me-border)",...s}}>{children}</div>;
-const Modal = ({title,onClose,children,w=520}) => (
-  <div className="me-modal-bg" style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.5)",zIndex:999,display:"flex",alignItems:"center",justifyContent:"center",WebkitBackdropFilter:"blur(8px)",backdropFilter:"blur(8px)",padding:16}} onClick={onClose}>
-    <div className="me-modal" style={{background:"var(--me-surface)",borderRadius:20,padding:28,width:w,maxWidth:"100%",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 32px 70px rgba(15,23,42,0.28)"}} onClick={e=>e.stopPropagation()}>
+let _meUnsaved=false;
+const setGlobalDirty=v=>{_meUnsaved=!!v;};
+const isGlobalDirty=()=>_meUnsaved;
+const useUnsavedGuard=(dirty)=>{useEffect(()=>{setGlobalDirty(dirty);return ()=>setGlobalDirty(false);},[dirty]);};
+const Modal = ({title,onClose,children,w=520,confirmClose=false}) => {
+  const [touched,setTouched]=useState(false);
+  const tryClose=()=>{if(confirmClose&&touched&&!window.confirm(t("quit_unsaved")))return;onClose();};
+  return (
+  <div className="me-modal-bg" style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.5)",zIndex:999,display:"flex",alignItems:"center",justifyContent:"center",WebkitBackdropFilter:"blur(8px)",backdropFilter:"blur(8px)",padding:16}} onClick={tryClose}>
+    <div className="me-modal" style={{background:"var(--me-surface)",borderRadius:20,padding:28,width:w,maxWidth:"100%",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 32px 70px rgba(15,23,42,0.28)"}} onClick={e=>e.stopPropagation()} onInput={confirmClose?()=>setTouched(true):undefined} onChange={confirmClose?()=>setTouched(true):undefined}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
         <h3 style={{margin:0,fontSize:17,fontWeight:800,color:"var(--me-text)",fontFamily:"'Sora',sans-serif"}}>{title}</h3>
-        <button className="me-btn" onClick={onClose} style={{background:"var(--me-surface-2)",color:"var(--me-text-2)",border:"none",borderRadius:9,width:31,height:31,cursor:"pointer",fontSize:14}}>✕</button>
+        <button className="me-btn" onClick={tryClose} style={{background:"var(--me-surface-2)",color:"var(--me-text-2)",border:"none",borderRadius:9,width:31,height:31,cursor:"pointer",fontSize:14}}>✕</button>
       </div>
       {children}
     </div>
   </div>
-);
+  );
+};
 const SHdr = ({title,sub,action}) => (
   <div className="me-shdr" style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:22,gap:12}}>
     <div><h2 style={{margin:0,fontSize:26,fontWeight:800,color:"var(--me-text)",fontFamily:"'Sora',sans-serif",letterSpacing:-0.5}}>{title}</h2>{sub&&<p style={{margin:"6px 0 0",color:"var(--me-text-2)",fontSize:14.5}}>{sub}</p>}</div>
@@ -1264,7 +1272,7 @@ function useSupabaseData(etablissementId) {
     },
     saveAllNotes: async(updates)=>{
       setSyncStatus("syncing");
-      await Promise.all(updates.map(({id,notes})=>sb.from("eleves").update({notes}).eq("id",id)));
+      await Promise.all(updates.map(({id,notes,appreciations})=>sb.from("eleves").update({notes,...(appreciations!==undefined?{appreciations}:{})}).eq("id",id)));
       load();showToast("Notes enregistrées");
     },
 
@@ -1690,7 +1698,7 @@ function Classes({data,ops,etab,currentUser}) {
           )}
         </Modal>
       );})()}
-      {modal&&<Modal title={modal==="add"?t("cl_new_titre"):t("cl_edit_titre")} onClose={()=>setModal(null)} w={540}>
+      {modal&&<Modal confirmClose title={modal==="add"?t("cl_new_titre"):t("cl_edit_titre")} onClose={()=>setModal(null)} w={540}>
         <Slt label={t("cl_cycle")} value={form.niveau} onChange={e=>{const niveau=e.target.value;setForm(f=>({...f,niveau,niveau_detail:"",serie:niveau==="Lycée"?f.serie:""}));}} opts={[{v:"",l:t("cl_choisir_cycle")},...CYCLES.map(c=>({v:c,l:`${(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[c]||c)} (${t("cl_note_sur")} ${baremeOf(c)})`}))]}/>
         {form.niveau&&<Slt label={t("cl_niveau")} value={form.niveau_detail} onChange={e=>{const nd=e.target.value;setForm(f=>({...f,niveau_detail:nd,nom:suggereNom(nd,f.serie)}));}} opts={[{v:"",l:t("cl_choisir_niveau")},...(NIVEAUX_CYCLE[form.niveau]||[]).map(n=>({v:n,l:n}))]}/>}
         {form.niveau==="Lycée"&&<Slt label={t("cl_serie")} value={form.serie} onChange={e=>{const s=e.target.value;setForm(f=>({...f,serie:s,nom:suggereNom(f.niveau_detail,s)}));}} opts={[{v:"",l:t("cl_choisir_serie")},...SERIES.map(s=>({v:s,l:s}))]}/>}
@@ -1777,7 +1785,7 @@ function Matieres({data,ops,currentUser}) {
           })}
         </div>
       )}
-      {modal&&<Modal title={modal==="add"?t("ma_new_titre"):t("ma_edit_titre")} onClose={()=>setModal(null)}>
+      {modal&&<Modal confirmClose title={modal==="add"?t("ma_new_titre"):t("ma_edit_titre")} onClose={()=>setModal(null)}>
         <Inp label={t("ma_nom")} invalid={invalides.nom} value={form.nom} onChange={e=>{clrInv("nom");setForm(f=>({...f,nom:e.target.value}));}} placeholder={t("ma_nom_ph")}/>
         <Lbl t="الاسم بالعربية · Nom en arabe (facultatif)"><input dir="rtl" value={form.nom_ar||""} onChange={e=>setForm(f=>({...f,nom_ar:e.target.value}))} style={{...iSt(),fontFamily:"'Traditional Arabic','Amiri',serif",fontSize:15}} placeholder="الرياضيات"/></Lbl>
         <Inp label={t("ma_coeff")} type="number" value={form.coefficient} onChange={e=>setForm(f=>({...f,coefficient:e.target.value}))}/>
@@ -1868,7 +1876,7 @@ function Professeurs({data,ops,etab}) {
           </div>))}
         </div>
       )}
-      {modal&&<Modal title={modal==="add"?t("pf_new_titre"):t("pf_edit_titre")} onClose={()=>setModal(null)} w={560}>
+      {modal&&<Modal confirmClose title={modal==="add"?t("pf_new_titre"):t("pf_edit_titre")} onClose={()=>setModal(null)} w={560}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
           <Inp label={t("el_prenom")} invalid={invalides.prenom} value={form.prenom} onChange={e=>{clrInv("prenom");setForm(f=>({...f,prenom:e.target.value}));}}/>
           <Inp label={t("el_nom")} invalid={invalides.nom} value={form.nom} onChange={e=>{clrInv("nom");setForm(f=>({...f,nom:e.target.value}));}}/>
@@ -1972,7 +1980,7 @@ function ProfDetail({prof,data,ops,etab,devise,onBack}) {
           )}
         </Card>
       </div>
-      {modalSal&&<Modal title={t("pf_verser_titre")} onClose={()=>setModalSal(false)}>
+      {modalSal&&<Modal confirmClose title={t("pf_verser_titre")} onClose={()=>setModalSal(false)}>
         <Slt label={t("pf_mois_conc")} value={salForm.mois} onChange={e=>setSalForm(f=>({...f,mois:e.target.value}))} opts={[{v:"",l:t("el_choisir")},...MOIS.map(m=>({v:m,l:m}))]}/>
         {prof.type_salaire==="horaire"&&<Inp label={t("pf_nb_heures")} type="number" value={salForm.heures} onChange={e=>setSalForm(f=>({...f,heures:e.target.value,montant:e.target.value?String(parseFloat(e.target.value)*parseFloat(prof.taux_horaire||0)):f.montant}))}/>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
@@ -2102,7 +2110,7 @@ function EmploiTemps({data,ops,etab,currentUser}) {
           );})()}
         </Card>
       </>)}
-      {modal&&<Modal title={modal==="add"?t("edt_add_titre"):t("edt_edit_titre")} onClose={()=>setModal(null)}>
+      {modal&&<Modal confirmClose title={modal==="add"?t("edt_add_titre"):t("edt_edit_titre")} onClose={()=>setModal(null)}>
         <Slt label={t("edt_jour")} value={form.jour} onChange={e=>setForm(f=>({...f,jour:e.target.value}))} opts={JOURS.map(j=>({v:j,l:jourLabel(j)}))}/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
           <Inp label={t("edt_debut")} type="time" value={form.debut} onChange={e=>setForm(f=>({...f,debut:e.target.value}))}/>
@@ -2755,7 +2763,7 @@ function Eleves({data,ops,etab,currentUser}) {
         </div>
       )}
       {fiche&&canFiche&&<FicheEleve eleve={fiche} data={data} etab={etab} canPaie={canPaie} onClose={()=>setFiche(null)}/>}
-      {modal&&<Modal title={modal==="add"?t("el_inscrire_titre"):t("el_modifier")} onClose={()=>setModal(null)} w={540}>
+      {modal&&<Modal confirmClose title={modal==="add"?t("el_inscrire_titre"):t("el_modifier")} onClose={()=>setModal(null)} w={540}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
           <div style={{gridColumn:"1/-1",display:"flex",alignItems:"center",gap:14,marginBottom:10}}>
             {form.photo?<img src={form.photo} alt="" style={{width:66,height:66,borderRadius:13,objectFit:"cover",border:"2px solid var(--me-brand)"}}/>:<div style={{width:66,height:66,borderRadius:13,background:"var(--me-surface-2,#f1f5f9)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26}}>📷</div>}
@@ -2842,8 +2850,10 @@ function Notes({data,ops,etab,currentUser}) {
   const [periode,setPeriode]=useState(periodes[0]);
   const [classeId,setClasseId]=useState(data.classes[0]?.id||"");
   const [localNotes,setLocalNotes]=useState({});
+  const [localAppr,setLocalAppr]=useState({});
   const [saving,setSaving]=useState(false);
   const [dirty,setDirty]=useState(false);
+  useUnsavedGuard(dirty);
   const [search,setSearch]=useState("");
   const [statBase,setStatBase]=useState("matiere");
   const [statPos,setStatPos]=useState("left");
@@ -2886,12 +2896,14 @@ function Notes({data,ops,etab,currentUser}) {
   };
   const classeEleves=classeElevesAll.filter(e=>`${e.prenom} ${e.nom} ${e.matricule}`.toLowerCase().includes(search.toLowerCase()));
 
-  useEffect(()=>{const n={};classeElevesAll.forEach(e=>{n[e.id]=e.notes?.[periode]?.[matiereId]??""});setLocalNotes(n);setDirty(false);},[periode,classeId,matiereId,data.eleves]);
+  useEffect(()=>{const n={};const ap={};classeElevesAll.forEach(e=>{n[e.id]=e.notes?.[periode]?.[matiereId]??"";ap[e.id]=e.appreciations?.[periode]?.[matiereId]??"";});setLocalNotes(n);setLocalAppr(ap);setDirty(false);},[periode,classeId,matiereId,data.eleves]);
 
   const setNote=(id,val)=>{setLocalNotes(n=>({...n,[id]:val}));setDirty(true);};
+  const setAppr=(id,val)=>{setLocalAppr(a=>({...a,[id]:val}));setDirty(true);};
+  const guardSwitch=(fn)=>(e)=>{const val=e.target.value;if(dirty&&!window.confirm(t("quit_unsaved")))return;fn(val);};
   const saveAll=async()=>{
     setSaving(true);
-    const updates=classeElevesAll.map(e=>({id:e.id,notes:{...(e.notes||{}),[periode]:{...(e.notes?.[periode]||{}),[matiereId]:localNotes[e.id]===""||localNotes[e.id]==null?null:parseFloat(localNotes[e.id])}}}));
+    const updates=classeElevesAll.map(e=>({id:e.id,notes:{...(e.notes||{}),[periode]:{...(e.notes?.[periode]||{}),[matiereId]:localNotes[e.id]===""||localNotes[e.id]==null?null:parseFloat(localNotes[e.id])}},appreciations:{...(e.appreciations||{}),[periode]:{...(e.appreciations?.[periode]||{}),[matiereId]:(localAppr[e.id]||"").trim()||null}}}));
     await ops.saveAllNotes(updates);setSaving(false);setDirty(false);
   };
   // Navigation clavier : Entrée = champ suivant
@@ -2970,9 +2982,9 @@ function Notes({data,ops,etab,currentUser}) {
       }/>
       <Card s={{marginBottom:14}}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:13}}>
-          <Slt label={t("no_periode")} value={periode} onChange={e=>setPeriode(e.target.value)} opts={periodes.map(p=>({v:p,l:periodeLabel(etab,p)}))}/>
-          <Slt label={t("no_classe")} value={classeId} onChange={e=>{setClasseId(e.target.value);}} opts={data.classes.map(c=>({v:c.id,l:txt(c.nom,c.nom_ar)}))}/>
-          <Slt label={t("no_matiere")} value={matiereId} onChange={e=>setMatiereId(e.target.value)} opts={matieresCycle.length?matieresCycle.map(m=>({v:m.id,l:`${txt(m.nom,m.nom_ar)} (${t("no_coef")} ${m.coefficient})`})):[{v:"",l:t("no_aucune_mat")}]}/>
+          <Slt label={t("no_periode")} value={periode} onChange={guardSwitch(setPeriode)} opts={periodes.map(p=>({v:p,l:periodeLabel(etab,p)}))}/>
+          <Slt label={t("no_classe")} value={classeId} onChange={guardSwitch(setClasseId)} opts={data.classes.map(c=>({v:c.id,l:txt(c.nom,c.nom_ar)}))}/>
+          <Slt label={t("no_matiere")} value={matiereId} onChange={guardSwitch(setMatiereId)} opts={matieresCycle.length?matieresCycle.map(m=>({v:m.id,l:`${txt(m.nom,m.nom_ar)} (${t("no_coef")} ${m.coefficient})`})):[{v:"",l:t("no_aucune_mat")}]}/>
         </div>
         {isProf&&<div style={{fontSize:11,color:"var(--me-brand)",marginTop:8,fontWeight:600}}>{t("no_prof_info")}</div>}
       </Card>
@@ -2995,7 +3007,7 @@ function Notes({data,ops,etab,currentUser}) {
               <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t("no_search")} style={{padding:"7px 12px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",width:210}}/>
             </div>
             <table style={{width:"100%",borderCollapse:"collapse"}}>
-              <thead><tr style={{background:"var(--me-surface-2,#f8fafc)"}}>{["N°",t("no_eleve"),`${t("no_note")} /${bareme}`,t("no_appreciation")].map(h=><th key={h} style={{padding:"10px 13px",textAlign:"left",fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
+              <thead><tr style={{background:"var(--me-surface-2,#f8fafc)"}}>{["N°",t("no_eleve"),`${t("no_note")} /${bareme}`,t("no_appreciation"),t("no_commentaire")].map(h=><th key={h} style={{padding:"10px 13px",textAlign:"left",fontSize:10,fontWeight:700,color:"var(--me-text-3)",textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
               <tbody>{classeEleves.map((e,i)=>{
                 const note=localNotes[e.id]??"";const m=note!==""?MENTION(note,bareme):null;
                 return(<tr key={e.id} className="me-row" style={{borderTop:"1px solid #f4f7fb"}}>
@@ -3003,6 +3015,7 @@ function Notes({data,ops,etab,currentUser}) {
                   <td style={{padding:"9px 13px"}}><div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{e.prenom} {e.nom}</div><div style={{fontSize:11,color:"var(--me-text-3)"}}>{e.matricule}</div></td>
                   <td style={{padding:"7px 13px"}}><input ref={el=>inputsRef.current[i]=el} onKeyDown={ev=>onKey(ev,i)} type="number" min="0" max={bareme} step="0.25" value={note} onChange={ev=>setNote(e.id,ev.target.value)} style={{width:80,padding:"8px 10px",borderRadius:9,border:`2px solid ${note!==""&&parseFloat(note)<bareme/2?"#fca5a5":"#e2e8f0"}`,fontSize:14,fontWeight:700,textAlign:"center",outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",color:m?.c||"var(--me-text)"}}/></td>
                   <td style={{padding:"9px 13px"}}>{m&&<span style={{background:m.bg,color:m.c,borderRadius:7,padding:"3px 9px",fontSize:11,fontWeight:700}}>{m.t}</span>}</td>
+                  <td style={{padding:"7px 13px"}}><input value={localAppr[e.id]||""} onChange={ev=>setAppr(e.id,ev.target.value)} placeholder={t("no_commentaire_ph")} style={{width:"100%",minWidth:160,padding:"8px 10px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:12.5,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",color:"var(--me-text)"}}/></td>
                 </tr>);
               })}</tbody>
             </table>
@@ -3075,6 +3088,7 @@ function Bulletins({data,etab}) {
     const mAnn=moyAnnuelle!=null?MENTION(moyAnnuelle,bareme):{t:"—",c:"#94a3b8",bg:"#f8fafc"};
     const classmates=data.eleves.filter(x=>x.classe_id===e.classe_id);
     const rangAnn=classmates.map(x=>{const mp=pers.map(p=>parseFloat(calcMoy(x.notes||{},data.matieres,p))).filter(v=>!isNaN(v));return{id:x.id,moy:mp.length?mp.reduce((a,b)=>a+b,0)/mp.length:0};}).sort((a,b)=>b.moy-a.moy).findIndex(x=>x.id===e.id)+1;
+    const rangP=pers.map(p=>{const arr=classmates.map(x=>({id:x.id,v:parseFloat(calcMoy(x.notes||{},data.matieres,p))})).filter(x=>!isNaN(x.v)).sort((a,b)=>b.v-a.v);const idx=arr.findIndex(x=>x.id===e.id);return {rang:idx>=0?idx+1:null,total:arr.length};});
     const estAnnuel = pers.length===periodes.length;
     const single = pers.length===1; // une seule période : pas de colonne Moy. redondante
     const appr=(v)=>{const f=bareme/20; if(v==null) return {fr:"—",ar:"—"};
@@ -3099,7 +3113,8 @@ function Bulletins({data,etab}) {
     const dl = (fr,ar) => arD ? (ar?arS(ar):fr) : (bilD && ar ? `${fr} <span style="color:#cbd5e1;font-weight:400">/</span> ${arS(ar)}` : fr);
     const nm = (fr,ar) => arD ? (ar?arS(ar):(fr||"")) : (bilD && ar ? `${fr} <span style="color:#94a3b8;font-weight:400">/</span> ${arS(ar)}` : (fr||""));
     const moyClasse=(()=>{const arr=classmates.map(x=>{const mp=pers.map(p=>parseFloat(calcMoy(x.notes||{},data.matieres,p))).filter(v=>!isNaN(v));return mp.length?mp.reduce((a,b)=>a+b,0)/mp.length:null;}).filter(v=>v!=null);return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:null;})();
-    const faibles=data.matieres.map(mat=>{const vals=pers.map(p=>e.notes?.[p]?.[mat.id]).filter(nn=>nn!=null&&nn!=="").map(parseFloat);const mm=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;return {nom:nm(mat.nom,mat.nom_ar),m:mm};}).filter(x=>x.m!=null&&x.m<bareme/2);
+    const _escB=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    const faibles=data.matieres.map(mat=>{const vals=pers.map(p=>e.notes?.[p]?.[mat.id]).filter(nn=>nn!=null&&nn!=="").map(parseFloat);const mm=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;const cs=pers.map(p=>e.appreciations?.[p]?.[mat.id]).filter(c=>c&&String(c).trim());return {nom:nm(mat.nom,mat.nom_ar),m:mm,appr:cs.length?String(cs[cs.length-1]).trim():""};}).filter(x=>x.m!=null&&x.m<bareme/2);
     const perAr = p => { const it=periodeItems(etab).find(x=>x.n===p); return it&&it.ar; };
     const titreDoc = estAnnuel ? `Bulletin annuel — ${etab.annee||""}` : `Bulletin de notes — ${pers[pers.length-1]}`;
     const titreDocAr = (bilD||arD) ? (estAnnuel ? `الكشف السنوي — ${etab.annee||""}` : `كشف الدرجات — ${perAr(pers[pers.length-1])||""}`) : "";
@@ -3112,16 +3127,17 @@ function Bulletins({data,etab}) {
       return`<tr style="background:${i%2===0?"#f8fafc":"#fff"}"><td>${nm(mat.nom,mat.nom_ar)}</td><td style="text-align:center">×${mat.coefficient}</td>${cells}${single?"":`<td style="text-align:center;font-weight:900;color:${etab.theme_couleur||"#1a56db"}">${moyMat}</td>`}<td style="font-size:10px;color:#475569">${moyMatNum!=null?dl(aMat.fr,aMat.ar):"—"}</td></tr>`;
     }).join("");
     const moyRow=`<tr style="background:#eff6ff;font-weight:800"><td colspan="2">${dl("Moyenne","المعدل")}</td>${moyP.map(v=>`<td style="text-align:center;color:${v!=null&&v>=bareme/2?"#059669":v!=null?"#dc2626":"#cbd5e1"}">${v!=null?v.toFixed(2):"—"}</td>`).join("")}${single?"":`<td style="text-align:center;color:${etab.theme_couleur||"#1a56db"}">${moyAnnuelle!=null?moyAnnuelle.toFixed(2):"—"}</td>`}<td style="text-align:center;color:${apprGen.fr?(etab.theme_couleur||"#1a56db"):"#1a56db"}">${moyAnnuelle!=null?dl(apprGen.fr,apprGen.ar):"—"}</td></tr>`;
+    const rangRow=`<tr style="background:#f8fafc;font-weight:700"><td colspan="2">${dl("Rang","الرتبة")}</td>${rangP.map(r=>`<td style="text-align:center;color:#475569">${r.rang?`${r.rang}/${r.total}`:"—"}</td>`).join("")}${single?"":`<td style="text-align:center;font-weight:800;color:${etab.theme_couleur||"#1a56db"}">${rangAnn}/${classmates.length}</td>`}<td></td></tr>`;
     const labelMoyGen = single ? dl("Moyenne","المعدل") : (estAnnuel ? dl("Moyenne annuelle","المعدل السنوي") : dl("Moyenne cumulée","المعدل التراكمي"));
     return`${officialHeader(etab,{classe:nm(cl?.nom,cl?.nom_ar),docTitle:titreDoc,docTitleAr:titreDocAr})}
     <div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr"><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Élève","التلميذ")}</div><b>${e.prenom} ${e.nom}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Matricule","رقم التسجيل")}</div><b style="font-family:monospace">${e.matricule}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Classe","القسم")}</div><b>${nm(cl?.nom,cl?.nom_ar)}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Année","السنة")}</div><b>${etab.annee||""}</b></div></div>
-    ${(e.pere||e.mere||e.tuteur)?`<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:-6px">${e.pere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Père","الأب")}</div><b>${e.pere}</b>${e.tel_pere?` <span style="color:#64748b;font-weight:400">(${e.tel_pere})</span>`:""}</div>`:""}${e.mere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Mère","الأم")}</div><b>${e.mere}</b>${e.tel_mere?` <span style="color:#64748b;font-weight:400">(${e.tel_mere})</span>`:""}</div>`:""}</div>`:""}
-    <table><tr><th>${dl("Matière","المادة")}</th><th>${dl("Coeff.","المعامل")}</th>${entetesP}${single?"":`<th style="text-align:center">${dl("Moy.","المعدل")}</th>`}<th>${dl("Appréciation","الملاحظة")}</th></tr>${lignes}${moyRow}</table>
+    ${(e.pere||e.mere||e.tuteur)?`<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:-6px">${e.pere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Père","الأب")}</div><b>${e.pere}</b></div>`:""}${e.mere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Mère","الأم")}</div><b>${e.mere}</b></div>`:""}</div>`:""}
+    <table><tr><th>${dl("Matière","المادة")}</th><th>${dl("Coeff.","المعامل")}</th>${entetesP}${single?"":`<th style="text-align:center">${dl("Moy.","المعدل")}</th>`}<th>${dl("Appréciation","الملاحظة")}</th></tr>${lignes}${moyRow}${rangRow}</table>
     <div class="result" style="grid-template-columns:repeat(4,1fr);background:${mAnn.bg};border:2px solid ${mAnn.c}40"><div class="stat"><div class="stat-val" style="color:${mAnn.c}">${moyAnnuelle!=null?moyAnnuelle.toFixed(2):"—"}</div><div class="stat-lbl">${labelMoyGen} /${bareme}</div></div><div class="stat"><div class="stat-val" style="color:${mAnn.c};font-size:18px">${mAnn.t}</div><div class="stat-lbl">${dl("Mention","التقدير")}</div></div><div class="stat"><div class="stat-val">${rangAnn}/${classmates.length}</div><div class="stat-lbl">${dl("Rang","الرتبة")}</div></div><div class="stat"><div class="stat-val" style="font-size:20px">${moyClasse!=null?moyClasse.toFixed(2):"—"}</div><div class="stat-lbl">${dl("Moyenne classe","معدل القسم")}</div></div></div>
     ${estAnnuel&&moyAnnuelle!=null?`<div style="margin-top:12px;text-align:center;padding:10px;border-radius:9px;font-weight:800;font-size:13px;background:${admis?"#ecfdf5":"#fef2f2"};color:${admis?"#047857":"#dc2626"};border:1.5px solid ${admis?"#10b981":"#fca5a5"}">${dl("Décision du conseil","قرار المجلس")} : ${dl(decFr,decAr)}</div>`:""}
     <div class="grid" style="grid-template-columns:1fr;margin-top:12px;gap:5px">
       <div style="font-weight:800;font-size:12px;color:${etab.theme_couleur||"#1a56db"}">${dl("Points à améliorer","نقاط للتحسين")}</div>
-      <div style="font-size:11px">${faibles.length?`<b>${dl("Matières à renforcer","مواد تحتاج إلى تعزيز")} :</b> ${faibles.map(x=>x.nom).join(", ")}`:dl("Résultats satisfaisants dans l'ensemble des matières.","نتائج مرضية في مجمل المواد.")}</div>
+      <div style="font-size:11px;line-height:1.6">${faibles.length?faibles.map(x=>`<b>${x.nom}</b>${x.appr?` : ${_escB(x.appr)}`:""}`).join("<br/>"):dl("Résultats satisfaisants dans l'ensemble des matières.","نتائج مرضية في مجمل المواد.")}</div>
     </div>
     <div class="sign" style="margin-top:40px"><span style="text-align:center">${dl(etab.signataire_grade||"Le Directeur","المدير")}<br/>${etab.signataire_nom?`<b>${etab.signataire_nom}</b><br/>`:""}</span><span style="text-align:center">${dl("L'Enseignant(e)","المعلم(ة)")}<br/><br/></span></div>
     <p style="text-align:center;font-size:10px;color:#cbd5e1;margin-top:16px">Généré par MonEcole · ${etab.email||""}</p>`;
@@ -3137,7 +3153,7 @@ function Bulletins({data,etab}) {
     return`${officialHeader(etab,{classe:cl?.nom,docTitle:`Bulletin de notes — ${p}`})}
     ${etab.devise_txt?`<p style="text-align:center;font-style:italic;color:#64748b;margin:0 0 10px">${etab.devise_txt}</p>`:""}
     <div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr"><div><div style="font-size:10px;color:#666;text-transform:uppercase">Élève</div><b>${e.prenom} ${e.nom}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">Matricule</div><b style="font-family:monospace">${e.matricule}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">Classe</div><b>${txt(cl?.nom,cl?.nom_ar)}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">Année</div><b>${etab.annee||""}</b></div></div>
-    ${(e.pere||e.mere||e.tuteur)?`<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:-6px">${e.pere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">Père</div><b>${e.pere}</b>${e.tel_pere?` <span style="color:#64748b;font-weight:400">(${e.tel_pere})</span>`:""}</div>`:""}${e.mere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">Mère</div><b>${e.mere}</b>${e.tel_mere?` <span style="color:#64748b;font-weight:400">(${e.tel_mere})</span>`:""}</div>`:""}${e.tuteur?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">Tuteur</div><b>${e.tuteur}</b>${e.telephone?` <span style="color:#64748b;font-weight:400">(${e.telephone})</span>`:""}</div>`:""}</div>`:""}
+    ${(e.pere||e.mere||e.tuteur)?`<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:-6px">${e.pere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">Père</div><b>${e.pere}</b></div>`:""}${e.mere?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">Mère</div><b>${e.mere}</b></div>`:""}${e.tuteur?`<div><div style="font-size:10px;color:#666;text-transform:uppercase">Tuteur</div><b>${e.tuteur}</b></div>`:""}</div>`:""}
     <table><tr><th>Matière</th><th>Coeff.</th><th>Note /${bareme}</th><th>Points</th><th>Appréciation</th></tr>${lignes}</table>
     <div class="result" style="background:${m.bg};border:2px solid ${m.c}40"><div class="stat"><div class="stat-val" style="color:${m.c}">${moy}</div><div class="stat-lbl">Moyenne /${bareme}</div></div><div class="stat"><div class="stat-val" style="color:${m.c};font-size:18px">${m.t}</div><div class="stat-lbl">Mention</div></div><div class="stat"><div class="stat-val">${rang}/${classmates.length}</div><div class="stat-lbl">Rang</div></div></div>
     <div class="sign" style="margin-top:40px"><span style="text-align:center">${etab.signataire_grade||"Le Directeur"}<br/>${etab.signataire_nom?`<b>${etab.signataire_nom}</b><br/>`:""}</span><span style="text-align:center">L'Enseignant(e)<br/><br/></span></div>
@@ -3493,7 +3509,7 @@ function RecuApercu({html,onClose,onPrint,onPdf,onMail,onWhats}) {
 // Modal de saisie d'un versement (réutilisé)
 function PaiementModal({form,setForm,echeances,isTranche,devise,loading,save,setModal,moyens=[]}) {
   return(
-    <Modal title={t("pa_modal_titre")} onClose={()=>setModal(null)}>
+    <Modal confirmClose title={t("pa_modal_titre")} onClose={()=>setModal(null)}>
       <Slt label={t("pa_th_type")} value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))} opts={[{v:"Scolarité",l:t("pa_scolarite")},{v:"Frais d'inscription",l:t("pa_frais_insc")},{v:"Frais d'examen",l:"Frais d'examen"},{v:"Autre",l:"Autre"}]}/>
       {form.type==="Scolarité"&&<Slt label={isTranche?t("pa_tranche_conc"):t("pa_mois_conc")} value={form.mois} onChange={e=>setForm(f=>({...f,mois:e.target.value}))} opts={echeances.map(x=>({v:x,l:x}))}/>}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
@@ -3776,7 +3792,7 @@ function Messagerie({data,ops,currentUser}) {
         </Card>
       </div>
 
-      {modalGroupe&&<Modal title={t("msg_creer_groupe")} onClose={()=>setModalGroupe(false)}>
+      {modalGroupe&&<Modal confirmClose title={t("msg_creer_groupe")} onClose={()=>setModalGroupe(false)}>
         <Inp label={t("msg_nom_groupe")} value={grpNom} onChange={e=>setGrpNom(e.target.value)} placeholder={t("msg_nom_groupe_ph")}/>
         <Lbl t={t("msg_membres_groupe")}>
           {autres.length===0?<div style={{fontSize:12,color:"var(--me-text-3)"}}>{t("msg_aucun_a_ajouter")}</div>:(
@@ -3830,7 +3846,7 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
           </TR>
         ))}
       />
-      {modal&&<Modal title={modal==="add"?t("us_new_titre"):t("us_edit_titre")} onClose={()=>{setErr("");setModal(null);}}>
+      {modal&&<Modal confirmClose title={modal==="add"?t("us_new_titre"):t("us_edit_titre")} onClose={()=>{setErr("");setModal(null);}}>
         {err&&<div style={{background:"rgba(220,38,38,0.10)",border:"1px solid #fecaca",color:"#dc2626",borderRadius:10,padding:"10px 13px",fontSize:12,fontWeight:600,marginBottom:13,lineHeight:1.45}}>⚠️ {err}</div>}
         {modal==="add"&&personnelSansCompte.length>0&&<div style={{background:"var(--me-surface-2,#f8fafc)",border:"1px solid var(--me-border-2,#eef2f7)",borderRadius:11,padding:"11px 13px",marginBottom:13}}>
           <div style={{fontSize:11.5,fontWeight:700,color:"var(--me-text-2)",marginBottom:8}}>{t("us_prefill")}</div>
@@ -3989,7 +4005,7 @@ function Depenses({data,ops,etab,currentUser}) {
           </div>
         </Card>
       )}
-      {modal&&<Modal title={modal==="add"?t("dp_new_titre"):t("dp_edit_titre")} onClose={()=>setModal(null)} w={520}>
+      {modal&&<Modal confirmClose title={modal==="add"?t("dp_new_titre"):t("dp_edit_titre")} onClose={()=>setModal(null)} w={520}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
           <Inp label={t("dp_date")} type="date" value={form.date} onChange={e=>setForm(f=>({...f,date:e.target.value}))}/>
           <Slt label={t("dp_categorie")} value={form.categorie} onChange={e=>setForm(f=>({...f,categorie:e.target.value}))} opts={CATS.map(c=>({v:c,l:catLabel(c)}))}/>
@@ -4743,7 +4759,8 @@ function App() {
   const mySessionRef=useRef(null); // id de la ligne sessions de CE navigateur
   const [mySessionId,setMySessionId]=useState(null);
   const [etab,setEtab]=useState(null);
-  const [page,setPage]=useState(()=>{try{return localStorage.getItem("monecole_page")||"dashboard";}catch(_){return "dashboard";}});
+  const [page,setPageRaw]=useState(()=>{try{return localStorage.getItem("monecole_page")||"dashboard";}catch(_){return "dashboard";}});
+  const setPage=(id)=>{if(typeof id!=="function"&&isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);setPageRaw(id);};
   const [lang,setLang]=useState(CURRENT_LANG);
   CURRENT_LANG=lang; // synchronise la langue lue par t()/txt() dès ce rendu (changement immédiat en 1 clic)
   const [uiZoom,setUiZoom]=useState(()=>{try{const v=parseFloat(localStorage.getItem("monecole_zoom"));return v&&v>=0.85&&v<=1.6?v:1.1;}catch(_){return 1.1;}});
@@ -4763,6 +4780,7 @@ function App() {
   useEffect(()=>{const onR=()=>{try{setIsMobile(window.innerWidth<860);}catch(_){}};window.addEventListener("resize",onR);return ()=>window.removeEventListener("resize",onR);},[]);
   useEffect(()=>{try{let m=document.querySelector('meta[name=viewport]');if(!m){m=document.createElement("meta");m.name="viewport";document.head.appendChild(m);}m.setAttribute("content","width=device-width, initial-scale=1, viewport-fit=cover");}catch(_){}},[]);
   useEffect(()=>{try{localStorage.setItem("monecole_page",page);}catch(_){}},[page]);
+  useEffect(()=>{const h=e=>{if(isGlobalDirty()){e.preventDefault();e.returnValue="";}};window.addEventListener("beforeunload",h);return ()=>window.removeEventListener("beforeunload",h);},[]);
   useEffect(()=>{try{localStorage.setItem("monecole_zoom",String(uiZoom));}catch(_){}},[uiZoom]);
   const [msgSeen,setMsgSeen]=useState(0);
   useEffect(()=>{if(!currentUser)return;try{setMsgSeen(parseInt(localStorage.getItem("monecole_msg_seen_"+currentUser.id)||"0")||0);}catch(_){}},[currentUser]);
@@ -4910,7 +4928,7 @@ function App() {
 
   // Abonnement expiré → blocage (l'école peut renouveler avec un code)
   if(screen==="app" && etab && isAbonnementExpire(etab))
-    return <AbonnementExpire etab={etab} currentUser={currentUser} onRenouvele={nv=>setEtab(e=>({...(e||{}),abonnement_expire_le:nv}))} onLogout={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>;
+    return <AbonnementExpire etab={etab} currentUser={currentUser} onRenouvele={nv=>setEtab(e=>({...(e||{}),abonnement_expire_le:nv}))} onLogout={()=>{if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>;
 
   // Sécurité : un professeur ne peut afficher que les pages autorisées
   const allowed=pagesForUser(currentUser);
@@ -4941,7 +4959,7 @@ function App() {
     presences:<Presences data={scopedData} ops={ops} etab={etab||{}}/>,
     messagerie:<Messagerie data={data} ops={ops} currentUser={currentUser}/>,
     utilisateurs:<Utilisateurs data={data} ops={ops} currentUser={currentUser} etab={etab||{}}/>,
-    parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser} theme={theme} setTheme={setTheme} brand={brand} setBrand={setBrand} uiZoom={uiZoom} setUiZoom={setUiZoom} lang={lang} setLang={setLang} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} currentSessionId={mySessionId} onLogout={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>,
+    parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser} theme={theme} setTheme={setTheme} brand={brand} setBrand={setBrand} uiZoom={uiZoom} setUiZoom={setUiZoom} lang={lang} setLang={setLang} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} currentSessionId={mySessionId} onLogout={()=>{if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>,
   };
 
   return(
@@ -5007,7 +5025,7 @@ body{overscroll-behavior-y:none;}
           })()}
         </nav>
         <div style={{flexShrink:0,padding:"8px 10px calc(10px + env(safe-area-inset-bottom))",borderTop:"1px solid rgba(255,255,255,0.08)"}}>
-          <button onClick={()=>{try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}} className="me-nav" style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"11px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",background:"rgba(239,68,68,0.15)",color:"#fca5a5",fontWeight:700,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}><span style={{fontSize:16}}>🚪</span>{t("logout")}</button>
+          <button onClick={()=>{if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}} className="me-nav" style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"11px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",background:"rgba(239,68,68,0.15)",color:"#fca5a5",fontWeight:700,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}><span style={{fontSize:16}}>🚪</span>{t("logout")}</button>
         </div>
       </div>
       <div className="me-main" style={{flex:1,overflowY:"auto",zoom:uiZoom,padding:isMobile?"calc(58px + env(safe-area-inset-top)) 13px calc(18px + env(safe-area-inset-bottom))":"24px 26px"}}>{(()=>{const j=joursAvantExpiration(etab);return (j!==null&&j>=0&&j<=30)?(<div style={{background:"linear-gradient(135deg,#f59e0b,#f97316)",color:"#fff",borderRadius:12,padding:"10px 14px",marginBottom:14,display:"flex",alignItems:"center",gap:10,fontSize:13,fontWeight:700,boxShadow:"0 4px 14px -4px rgba(249,115,22,.5)"}}><span style={{fontSize:18}}>⏳</span><span>{j===0?"Votre abonnement expire aujourd'hui":`Votre abonnement expire dans ${j} jour${j>1?"s":""}`} (le {fmtDate(etab.abonnement_expire_le)}). Pensez à le renouveler auprès de MonEcole.</span></div>):null;})()}<div key={safePage} className="me-page">{pages[safePage]}</div></div>
