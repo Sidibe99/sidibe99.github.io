@@ -1608,8 +1608,9 @@ function Classes({data,ops,etab,currentUser}) {
   const periodes=periodesList(etab);
   const moyAnn=(el)=>{const mp=periodes.map(p=>parseFloat(calcMoy(el.notes||{},data.matieres,p))).filter(v=>!isNaN(v));return mp.length?mp.reduce((a,b)=>a+b,0)/mp.length:null;};
   const seuilOf=(cl)=>baremeOf(cl?.niveau)/2;
+  const [invalides,setInvalides]=useState({});const clrInv=k=>setInvalides(v=>v[k]?{...v,[k]:false}:v);
   const save=async()=>{
-    if(!form.nom){setErr(t("cl_nom_oblig"));return;}
+    if(!String(form.nom).trim()){setInvalides({nom:true});return;}
     // Anti-doublon : même nom (insensible casse/espaces) dans le même cycle
     const norm=s=>(s||"").trim().toLowerCase();
     const doublon=data.classes.find(c=>c.id!==modal&&norm(c.nom)===norm(form.nom)&&(c.niveau||"")===(form.niveau||""));
@@ -1693,7 +1694,7 @@ function Classes({data,ops,etab,currentUser}) {
         <Slt label={t("cl_cycle")} value={form.niveau} onChange={e=>{const niveau=e.target.value;setForm(f=>({...f,niveau,niveau_detail:"",serie:niveau==="Lycée"?f.serie:""}));}} opts={[{v:"",l:t("cl_choisir_cycle")},...CYCLES.map(c=>({v:c,l:`${(({Maternelle:t("cyc_mat"),Primaire:t("cyc_pri"),"Collège":t("cyc_col"),"Lycée":t("cyc_lyc")})[c]||c)} (${t("cl_note_sur")} ${baremeOf(c)})`}))]}/>
         {form.niveau&&<Slt label={t("cl_niveau")} value={form.niveau_detail} onChange={e=>{const nd=e.target.value;setForm(f=>({...f,niveau_detail:nd,nom:suggereNom(nd,f.serie)}));}} opts={[{v:"",l:t("cl_choisir_niveau")},...(NIVEAUX_CYCLE[form.niveau]||[]).map(n=>({v:n,l:n}))]}/>}
         {form.niveau==="Lycée"&&<Slt label={t("cl_serie")} value={form.serie} onChange={e=>{const s=e.target.value;setForm(f=>({...f,serie:s,nom:suggereNom(f.niveau_detail,s)}));}} opts={[{v:"",l:t("cl_choisir_serie")},...SERIES.map(s=>({v:s,l:s}))]}/>}
-        <Inp label={t("cl_nom")} value={form.nom} onChange={e=>setForm(f=>({...f,nom:e.target.value}))} placeholder={t("cl_nom_ph")}/>
+        <Inp label={t("cl_nom")} invalid={invalides.nom} value={form.nom} onChange={e=>{clrInv("nom");setForm(f=>({...f,nom:e.target.value}));}} placeholder={t("cl_nom_ph")}/>
         <Lbl t="الاسم بالعربية · Nom en arabe (facultatif)"><input dir="rtl" value={form.nom_ar||""} onChange={e=>setForm(f=>({...f,nom_ar:e.target.value}))} style={{...iSt(),fontFamily:"'Traditional Arabic','Amiri',serif",fontSize:15}} placeholder="القسم"/></Lbl>
         {err&&<div style={{background:"rgba(220,38,38,0.10)",border:"1px solid #fecaca",borderRadius:9,padding:"9px 13px",color:"#dc2626",fontSize:12,margin:"4px 0"}}>{err}</div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
@@ -1732,8 +1733,9 @@ function Matieres({data,ops,currentUser}) {
   const [err,setErr]=useState("");
   const norm=s=>(s||"").trim().toLowerCase().replace(/\s+/g," ");
   const toggleCycle=cyc=>setForm(f=>({...f,cycles:(f.cycles||[]).includes(cyc)?f.cycles.filter(c=>c!==cyc):[...(f.cycles||[]),cyc]}));
+  const [invalides,setInvalides]=useState({});const clrInv=k=>setInvalides(v=>v[k]?{...v,[k]:false}:v);
   const save=async()=>{
-    if(!form.nom)return;
+    if(!String(form.nom).trim()){setInvalides({nom:true});return;}
     // Anti-doublon : même nom (insensible casse/espaces)
     const doublon=data.matieres.find(m=>m.id!==modal&&norm(m.nom)===norm(form.nom));
     if(doublon){setErr(`${t("ma_doublon_a")} "${form.nom}" ${t("ma_doublon_b")}`);return;}
@@ -1776,7 +1778,7 @@ function Matieres({data,ops,currentUser}) {
         </div>
       )}
       {modal&&<Modal title={modal==="add"?t("ma_new_titre"):t("ma_edit_titre")} onClose={()=>setModal(null)}>
-        <Inp label={t("ma_nom")} value={form.nom} onChange={e=>setForm(f=>({...f,nom:e.target.value}))} placeholder={t("ma_nom_ph")}/>
+        <Inp label={t("ma_nom")} invalid={invalides.nom} value={form.nom} onChange={e=>{clrInv("nom");setForm(f=>({...f,nom:e.target.value}));}} placeholder={t("ma_nom_ph")}/>
         <Lbl t="الاسم بالعربية · Nom en arabe (facultatif)"><input dir="rtl" value={form.nom_ar||""} onChange={e=>setForm(f=>({...f,nom_ar:e.target.value}))} style={{...iSt(),fontFamily:"'Traditional Arabic','Amiri',serif",fontSize:15}} placeholder="الرياضيات"/></Lbl>
         <Inp label={t("ma_coeff")} type="number" value={form.coefficient} onChange={e=>setForm(f=>({...f,coefficient:e.target.value}))}/>
         <Inp label={t("ma_ens")} value={form.enseignant} onChange={e=>setForm(f=>({...f,enseignant:e.target.value}))}/>
@@ -1804,8 +1806,9 @@ function Professeurs({data,ops,etab}) {
   const blank={nom:"",prenom:"",genre:"",telephone:"",email:"",matieres_txt:"",date_embauche:"",type_salaire:"mensuel",salaire:"",taux_horaire:""};
   const [form,setForm]=useState(blank);
   const norm=s=>(s||"").trim().toLowerCase().replace(/\s+/g," ");
+  const [invalides,setInvalides]=useState({});const clrInv=k=>setInvalides(v=>v[k]?{...v,[k]:false}:v);
   const save=async()=>{
-    if(!form.nom||!form.prenom){setErr(t("pf_nom_oblig"));return;}
+    const inv={nom:!String(form.nom).trim(),prenom:!String(form.prenom).trim()};setInvalides(inv);if(inv.nom||inv.prenom)return;
     const doublon=(data.professeurs||[]).find(p=>p.id!==modal&&norm(p.nom)===norm(form.nom)&&norm(p.prenom)===norm(form.prenom));
     if(doublon){setErr(`${t("pf_doublon_a")} "${form.prenom} ${form.nom}" ${t("ma_doublon_b")}`);return;}
     setErr("");setLoading(true);
@@ -1856,8 +1859,8 @@ function Professeurs({data,ops,etab}) {
       )}
       {modal&&<Modal title={modal==="add"?t("pf_new_titre"):t("pf_edit_titre")} onClose={()=>setModal(null)} w={560}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
-          <Inp label={t("el_prenom")} value={form.prenom} onChange={e=>setForm(f=>({...f,prenom:e.target.value}))}/>
-          <Inp label={t("el_nom")} value={form.nom} onChange={e=>setForm(f=>({...f,nom:e.target.value}))}/>
+          <Inp label={t("el_prenom")} invalid={invalides.prenom} value={form.prenom} onChange={e=>{clrInv("prenom");setForm(f=>({...f,prenom:e.target.value}));}}/>
+          <Inp label={t("el_nom")} invalid={invalides.nom} value={form.nom} onChange={e=>{clrInv("nom");setForm(f=>({...f,nom:e.target.value}));}}/>
           <Inp label={t("pf_tel")} value={form.telephone} onChange={e=>setForm(f=>({...f,telephone:e.target.value}))}/>
           <Inp label={t("pf_email")} value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))}/>
         </div>
@@ -2652,8 +2655,9 @@ function Eleves({data,ops,etab,currentUser}) {
     if(!toAdd.length){setImpErr(t("imp_doublons"));return;}
     setImpLoading(true);await ops.importEleves(toAdd,etab.prefixe,cid);setImpLoading(false);setImpOpen(false);setImpRows([]);
   };
+  const [invalides,setInvalides]=useState({});const clrInv=k=>setInvalides(v=>v[k]?{...v,[k]:false}:v);
   const save=async()=>{
-    if(!form.nom||!form.prenom)return;
+    const inv={nom:!String(form.nom).trim(),prenom:!String(form.prenom).trim()};setInvalides(inv);if(inv.nom||inv.prenom)return;
     // Anti-doublon : même nom+prénom dans la même classe
     const norm=s=>(s||"").trim().toLowerCase().replace(/\s+/g," ");
     const cid=parseInt(form.classe_id)||data.classes[0]?.id;
@@ -2746,8 +2750,8 @@ function Eleves({data,ops,etab,currentUser}) {
               {form.photo&&<button type="button" onClick={()=>setForm(f=>({...f,photo:""}))} style={{background:"none",border:"none",color:"#dc2626",cursor:"pointer",fontSize:11.5,fontWeight:700,textAlign:"left",padding:0}}>{t("el_photo_retirer")}</button>}
             </div>
           </div>
-          <Inp label={t("el_nom")} value={form.nom} onChange={e=>setForm(f=>({...f,nom:e.target.value}))}/>
-          <Inp label={t("el_prenom")} value={form.prenom} onChange={e=>setForm(f=>({...f,prenom:e.target.value}))}/>
+          <Inp label={t("el_nom")} invalid={invalides.nom} value={form.nom} onChange={e=>{clrInv("nom");setForm(f=>({...f,nom:e.target.value}));}}/>
+          <Inp label={t("el_prenom")} invalid={invalides.prenom} value={form.prenom} onChange={e=>{clrInv("prenom");setForm(f=>({...f,prenom:e.target.value}));}}/>
           <Inp label={t("el_date_naiss")} type="date" value={form.date_naissance} onChange={e=>setForm(f=>({...f,date_naissance:e.target.value}))}/>
           <Inp label={t("el_lieu_naiss")} value={form.lieu_naissance} onChange={e=>setForm(f=>({...f,lieu_naissance:e.target.value}))}/>
           <Slt label={t("el_genre")} value={form.genre} onChange={e=>setForm(f=>({...f,genre:e.target.value}))} opts={[{v:"",l:t("el_choisir")},{v:"M",l:t("el_masculin")},{v:"F",l:t("el_feminin")}]}/>
@@ -3787,7 +3791,8 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
   const setSectLevel=(id,lvl)=>setForm(f=>{const se=(f.sections_etab||[]).filter(x=>x!==id);const sm=(f.sections_etab_modif||[]).filter(x=>x!==id);if(lvl==="voir")se.push(id);if(lvl==="modifier"){se.push(id);sm.push(id);}return{...f,sections_etab:se,sections_etab_modif:sm};});
   // Pages accessibles d'un utilisateur (pour l'aperçu dans la liste)
   const accessOf=(u)=>{const ids=u.role==="Administrateur"?NAV.map(n=>n.id):((Array.isArray(u.pages_autorisees)&&u.pages_autorisees.length)?["dashboard",...u.pages_autorisees]:navForRole(u.role).map(n=>n.id));return NAV.filter(n=>ids.includes(n.id));};
-  const save=async()=>{if(!form.nom||!form.identifiant)return;setErr("");
+  const [invalides,setInvalides]=useState({});const clrInv=k=>setInvalides(v=>v[k]?{...v,[k]:false}:v);
+  const save=async()=>{const inv={nom:!String(form.nom).trim(),ident:!String(form.identifiant).trim()};setInvalides(inv);if(inv.nom||inv.ident)return;setErr("");
     if(form.role==="Administrateur"){const adminMax=adminLimitOf(etab);const autres=(data.utilisateurs||[]).filter(u=>u.role==="Administrateur"&&u.id!==modal).length;if(autres>=adminMax){setErr(t("us_admin_limit").replace("{f}",formuleLabel(etab)||"—").replace("{n}",adminMax===Infinity?"∞":adminMax));return;}}
     setLoading(true);const payload={nom:form.nom,prenom:form.prenom,genre:form.genre,identifiant:form.identifiant,role:form.role,matieres_autorisees:form.role==="Professeur"?(form.matieres_autorisees||[]):[],classes_autorisees:form.role==="Professeur"?(form.classes_autorisees||[]):[],pages_autorisees:form.role==="Administrateur"?[]:(form.pages_autorisees||[]),sections_etab:form.role==="Administrateur"?[]:(form.sections_etab||[]),sections_etab_modif:form.role==="Administrateur"?[]:(form.sections_etab_modif||[])};if(modal==="add")await ops.addUser({...payload,password:form.password});else await ops.updateUser(modal,{...payload,...(form.password?{password:form.password}:{})});setLoading(false);setModal(null);};
   return(
@@ -3809,10 +3814,10 @@ function Utilisateurs({data,ops,currentUser,etab={}}) {
       {modal&&<Modal title={modal==="add"?t("us_new_titre"):t("us_edit_titre")} onClose={()=>{setErr("");setModal(null);}}>
         {err&&<div style={{background:"rgba(220,38,38,0.10)",border:"1px solid #fecaca",color:"#dc2626",borderRadius:10,padding:"10px 13px",fontSize:12,fontWeight:600,marginBottom:13,lineHeight:1.45}}>⚠️ {err}</div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 13px"}}>
-          <Inp label={t("el_nom")} value={form.nom} onChange={e=>setForm(f=>({...f,nom:e.target.value}))}/>
+          <Inp label={t("el_nom")} invalid={invalides.nom} value={form.nom} onChange={e=>{clrInv("nom");setForm(f=>({...f,nom:e.target.value}));}}/>
           <Inp label={t("us_prenom")} value={form.prenom} onChange={e=>setForm(f=>({...f,prenom:e.target.value}))}/>
         </div>
-        <Inp label={t("us_ident")} value={form.identifiant} onChange={e=>setForm(f=>({...f,identifiant:e.target.value}))}/>
+        <Inp label={t("us_ident")} invalid={invalides.ident} value={form.identifiant} onChange={e=>{clrInv("ident");setForm(f=>({...f,identifiant:e.target.value}));}}/>
         <Slt label={t("el_genre")} value={form.genre} onChange={e=>setForm(f=>({...f,genre:e.target.value}))} opts={[{v:"",l:t("el_choisir")},{v:"M",l:t("el_masculin")},{v:"F",l:t("el_feminin")}]}/>
         <Lbl t={modal==="add"?t("us_mdp"):t("us_mdp_new")}><input type="password" value={form.password} onChange={e=>setForm(f=>({...f,password:e.target.value}))} style={iSt()}/></Lbl>
         <Slt label={t("us_role")} value={form.role} onChange={e=>{const r=e.target.value;setErr("");setForm(f=>({...f,role:r,pages_autorisees:roleBase(r)}));}} opts={["Administrateur","Directeur","Secrétaire","Professeur","Comptable"]}/>
