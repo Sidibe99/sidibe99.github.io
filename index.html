@@ -813,9 +813,9 @@ const officialHeader = (etab={}, opts={}) => {
         ${logoMilieuB}
         <div style="text-align:right;flex:1;direction:rtl;font-family:'Traditional Arabic','Amiri',serif;font-size:12px">
           <div>${ar.ministere||""}</div>
-          ${ar.ire?`<div>${ar.ire}</div>`:""}
-          ${ar.dpe?`<div>${ar.dpe}</div>`:""}
-          ${ar.dsee?`<div>${ar.dsee}</div>`:""}
+          ${ar.ire?`<div><b>المفتشية الإقليمية للتعليم :</b> ${ar.ire}</div>`:""}
+          ${ar.dpe?`<div><b>إدارة المحافظية للتعليم :</b> ${ar.dpe}</div>`:""}
+          ${ar.dsee?`<div><b>المندوبية المدرسية للتعليم الابتدائي :</b> ${ar.dsee}</div>`:""}
           ${ar.ecole?`<div>${ar.ecole}</div>`:""}
         </div>
       </div>
@@ -2781,7 +2781,7 @@ function Eleves({data,ops,etab,currentUser}) {
       const pays=esc(lang==="ar"?(arr.pays||"جمهورية غينيا"):(etab.pays||"République de Guinée"));
       const minist=esc(lang==="ar"?(arr.ministere||"وزارة التعليم الوطني ومحو الأمية"):(etab.ministere||"Ministère de l'Éducation Nationale et de l'Alphabétisation"));
       const ire=lang==="ar"?arr.ire:etab.ire,dpe=lang==="ar"?arr.dpe:etab.dpe,dsee=lang==="ar"?arr.dsee:etab.dsee;
-      const aL=[];if(ire)aL.push("IRE : "+esc(ire));if(dpe)aL.push("DPE : "+esc(dpe));if(dsee)aL.push("DSEE : "+esc(dsee));
+      const aL=[];const _lIRE=lang==="ar"?"المفتشية الإقليمية للتعليم":"IRE",_lDPE=lang==="ar"?"إدارة المحافظية للتعليم":"DPE",_lDSEE=lang==="ar"?"المندوبية المدرسية للتعليم الابتدائي":"DSEE";if(ire)aL.push(_lIRE+" : "+esc(ire));if(dpe)aL.push(_lDPE+" : "+esc(dpe));if(dsee)aL.push(_lDSEE+" : "+esc(dsee));
       const devCol=deviseColoredOf(lang==="ar"?(arr.devise||"عمل · عدل · تضامن"):(etab.devise_nationale||"Travail · Justice · Solidarité"));
       return `<div class="off"><div class="o1">${pays}</div>${devCol?`<div class="o2">${devCol}</div>`:""}${minist?`<div class="o3">${minist}</div>`:""}${aL.map(x=>`<div class="o4">${x}</div>`).join("")}</div>`;
     };
