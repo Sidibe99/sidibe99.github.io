@@ -385,7 +385,7 @@ const I18N = {
     st_grade:"Grade du signataire", st_signataire_nom:"Nom du signataire (pré-rempli sur le bulletin)",
     st_lignes:"➕ Lignes personnalisées (ajoutées sous l'en-tête)", st_add_ligne:"+ Ajouter une ligne", st_aucune_ligne:"Aucune ligne ajoutée. Ex : une mention, un n° d'agrément, etc.", st_texte_ligne:"Texte de la ligne",
     st_identite:"🏫 Identité de l'école", st_nom_etab:"Nom de l'établissement *", st_slogan:"Devise / Slogan", st_annee:"Année scolaire",
-    st_systeme:"Système de notation", st_sys_trim:"Trimestriel (3 périodes)", st_sys_sem:"Semestriel (2 périodes)",
+    st_methode_ann:"Calcul moyenne annuelle", st_methode_trim:"Moyenne des trimestres", st_methode_mat:"Par matière (ministère)", st_methode_note:"« Par matière » (ministère) : on calcule d'abord la moyenne annuelle de chaque matière (moyenne de ses notes sur l'année), puis on applique les coefficients pour la moyenne générale. « Moyenne des trimestres » : on fait la moyenne des moyennes générales de chaque trimestre.", st_systeme:"Système de notation", st_sys_trim:"Trimestriel (3 périodes)", st_sys_sem:"Semestriel (2 périodes)",
     st_eval_mat:"Évaluation Maternelle", st_eval_note:"Notes chiffrées (/10)", st_eval_app:"Appréciations (Acquis...)",
     st_devise_mon:"Devise monétaire", st_gnf:"GNF — Franc Guinéen", st_xof:"FCFA — Franc CFA",
     st_code_men:"Code MEN", st_adresse:"Adresse", st_prefixe:"Préfixe matricule", st_frais_insc_def:"Frais inscription (défaut)", st_mensualite_def:"Mensualité (défaut)",
@@ -572,7 +572,7 @@ const I18N = {
     st_grade:"رتبة الموقّع", st_signataire_nom:"اسم الموقّع (يُملأ مسبقًا على الكشف)",
     st_lignes:"➕ أسطر مخصصة (تُضاف تحت الترويسة)", st_add_ligne:"+ إضافة سطر", st_aucune_ligne:"لا أسطر مضافة. مثال: ذكر، رقم اعتماد، إلخ.", st_texte_ligne:"نص السطر",
     st_identite:"🏫 هوية المدرسة", st_nom_etab:"اسم المؤسسة *", st_slogan:"الشعار / العبارة", st_annee:"السنة الدراسية",
-    st_systeme:"نظام التنقيط", st_sys_trim:"فصلي (3 فترات)", st_sys_sem:"سداسي (فترتان)",
+    st_methode_ann:"حساب المعدل السنوي", st_methode_trim:"معدل الفصول", st_methode_mat:"حسب المادة (الوزارة)", st_methode_note:"«حسب المادة» (الوزارة): يُحسب أولًا المعدل السنوي لكل مادة (معدل نقاطها خلال السنة)، ثم تُطبَّق المعاملات للحصول على المعدل العام. «معدل الفصول»: يُؤخذ معدل المعدلات العامة لكل فصل.", st_systeme:"نظام التنقيط", st_sys_trim:"فصلي (3 فترات)", st_sys_sem:"سداسي (فترتان)",
     st_eval_mat:"تقييم الروضة", st_eval_note:"نقاط رقمية (/10)", st_eval_app:"تقديرات (مكتسب...)",
     st_devise_mon:"العملة", st_gnf:"GNF — الفرنك الغيني", st_xof:"FCFA — فرنك سيفا",
     st_code_men:"رمز MEN", st_adresse:"العنوان", st_prefixe:"بادئة رقم التسجيل", st_frais_insc_def:"رسوم التسجيل (افتراضي)", st_mensualite_def:"القسط الشهري (افتراضي)",
@@ -3134,11 +3134,16 @@ function Bulletins({data,etab}) {
     const pers = persInput && persInput.length ? persInput : periodes;
     const cl=data.classes.find(c=>c.id===e.classe_id);
     const bareme=baremeOf(cl?.niveau);
+    const methodeAnn=(etab.methode_annuelle==="matiere")?"matiere":"trimestres";
+    const moyGenAnn=(notes)=>{
+      if(methodeAnn==="matiere"){let sum=0,cs=0;data.matieres.forEach(mat=>{const vs=pers.map(p=>notes?.[p]?.[mat.id]).filter(nn=>nn!=null&&nn!=="").map(parseFloat);if(vs.length){const mm=vs.reduce((a,b)=>a+b,0)/vs.length;const c=Number(mat.coefficient)||1;sum+=mm*c;cs+=c;}});return cs?sum/cs:null;}
+      const mp=pers.map(p=>parseFloat(calcMoy(notes||{},data.matieres,p))).filter(v=>!isNaN(v));return mp.length?mp.reduce((a,b)=>a+b,0)/mp.length:null;
+    };
     const moyP=pers.map(p=>parseFloat(calcMoy(e.notes||{},data.matieres,p))).map(v=>isNaN(v)?null:v);
-    const moyAnnuelle=(()=>{const vals=moyP.filter(v=>v!=null);return vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length):null;})();
+    const moyAnnuelle=moyGenAnn(e.notes);
     const mAnn=moyAnnuelle!=null?MENTION(moyAnnuelle,bareme):{t:"—",c:"#94a3b8",bg:"#f8fafc"};
     const classmates=data.eleves.filter(x=>x.classe_id===e.classe_id);
-    const rangAnn=classmates.map(x=>{const mp=pers.map(p=>parseFloat(calcMoy(x.notes||{},data.matieres,p))).filter(v=>!isNaN(v));return{id:x.id,moy:mp.length?mp.reduce((a,b)=>a+b,0)/mp.length:0};}).sort((a,b)=>b.moy-a.moy).findIndex(x=>x.id===e.id)+1;
+    const rangAnn=classmates.map(x=>({id:x.id,moy:moyGenAnn(x.notes)??0})).sort((a,b)=>b.moy-a.moy).findIndex(x=>x.id===e.id)+1;
     const rangP=pers.map(p=>{const arr=classmates.map(x=>({id:x.id,v:parseFloat(calcMoy(x.notes||{},data.matieres,p))})).filter(x=>!isNaN(x.v)).sort((a,b)=>b.v-a.v);const idx=arr.findIndex(x=>x.id===e.id);return {rang:idx>=0?idx+1:null,total:arr.length};});
     const estAnnuel = pers.length===periodes.length;
     const single = pers.length===1; // une seule période : pas de colonne Moy. redondante
@@ -3163,7 +3168,7 @@ function Bulletins({data,etab}) {
     const arS = s => `<span style="font-family:'Traditional Arabic','Amiri',serif;direction:rtl">${s}</span>`;
     const dl = (fr,ar) => arD ? (ar?arS(ar):fr) : (bilD && ar ? `${fr} <span style="color:#cbd5e1;font-weight:400">/</span> ${arS(ar)}` : fr);
     const nm = (fr,ar) => arD ? (ar?arS(ar):(fr||"")) : (bilD && ar ? `${fr} <span style="color:#94a3b8;font-weight:400">/</span> ${arS(ar)}` : (fr||""));
-    const moyClasse=(()=>{const arr=classmates.map(x=>{const mp=pers.map(p=>parseFloat(calcMoy(x.notes||{},data.matieres,p))).filter(v=>!isNaN(v));return mp.length?mp.reduce((a,b)=>a+b,0)/mp.length:null;}).filter(v=>v!=null);return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:null;})();
+    const moyClasse=(()=>{const arr=classmates.map(x=>moyGenAnn(x.notes)).filter(v=>v!=null);return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:null;})();
     const _escB=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     const faibles=data.matieres.map(mat=>{const vals=pers.map(p=>e.notes?.[p]?.[mat.id]).filter(nn=>nn!=null&&nn!=="").map(parseFloat);const mm=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;const cs=pers.map(p=>e.appreciations?.[p]?.[mat.id]).filter(c=>c&&String(c).trim());return {nom:nm(mat.nom,mat.nom_ar),m:mm,appr:cs.length?String(cs[cs.length-1]).trim():""};}).filter(x=>x.m!=null&&x.m<bareme/2);
     const perAr = p => { const it=periodeItems(etab).find(x=>x.n===p); return it&&it.ar; };
@@ -4109,6 +4114,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
     ministere:etab.ministere||"Ministère de l'Éducation Nationale et de l'Alphabétisation",ire:etab.ire||"",dpe:etab.dpe||"",dsee:etab.dsee||"",
     devise_mots:etab.devise_mots||{m1:"",c1:"#dc2626",m2:"",c2:"#d97706",m3:"",c3:"#059669"},
     langue:etab.langue||"fr",
+    methode_annuelle:etab.methode_annuelle||"trimestres",
     theme_couleur:etab.theme_couleur||"#1a56db",theme_police:etab.theme_police||"'Segoe UI',Helvetica,Arial,sans-serif",theme_titre_centre:etab.theme_titre_centre!==false,
     signataire_grade:etab.signataire_grade||"Le Directeur",signataire_nom:etab.signataire_nom||"",
     ar:etab.ar||{pays:"جمهورية غينيا",devise:"عمل · عدل · تضامن",ministere:"وزارة التعليم الوطني ومحو الأمية",ire:"",dpe:"",dsee:"",ecole:"",bulletin:"كشف الدرجات",recu:"وصل",classe:"القسم",eleve:"التلميذ",matricule:"رقم التسجيل",annee:"السنة الدراسية"},
@@ -4410,6 +4416,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
           <Inp label={t("st_slogan")} value={form.devise_txt} onChange={set("devise_txt")} placeholder="L'excellence avant tout"/>
           <Inp label={t("st_annee")} value={form.annee} onChange={set("annee")} placeholder="2026-2027"/>
           <Slt label={t("st_systeme")} value={form.systeme} onChange={set("systeme")} opts={[{v:"trimestre",l:t("st_sys_trim")},{v:"semestre",l:t("st_sys_sem")}]}/>
+          <Slt label={t("st_methode_ann")} value={form.methode_annuelle} onChange={set("methode_annuelle")} opts={[{v:"trimestres",l:t("st_methode_trim")},{v:"matiere",l:t("st_methode_mat")}]}/>
           <Slt label={t("st_eval_mat")} value={form.mode_maternelle} onChange={set("mode_maternelle")} opts={[{v:"note",l:t("st_eval_note")},{v:"appreciation",l:t("st_eval_app")}]}/>
           <Slt label={t("st_devise_mon")} value={form.devise} onChange={set("devise")} opts={[{v:"GNF",l:t("st_gnf")},{v:"XOF",l:t("st_xof")}]}/>
           <Inp label={t("st_code_men")} value={form.codeMEN} onChange={set("codeMEN")} placeholder="GN 12 345 678"/>
@@ -4420,6 +4427,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
           <Inp label={t("st_frais_insc_def")} type="number" value={form.fraisInscription} onChange={set("fraisInscription")}/>
           <Inp label={t("st_mensualite_def")} type="number" value={form.mensualite} onChange={set("mensualite")}/>
         </div>
+        <div style={{marginTop:12,background:"var(--me-surface-2,#f8fafc)",borderRadius:11,padding:"10px 13px",fontSize:11,color:"var(--me-text-2)",lineHeight:1.55}}>{t("st_methode_note")}</div>
         <div style={{marginTop:14,display:"flex",alignItems:"center",gap:10,background:"rgba(26,86,219,0.12)",border:"1px solid #bfdbfe",borderRadius:11,padding:"11px 14px"}}>
           <span style={{fontSize:17}}>🎟️</span>
           <div style={{fontSize:12.5,color:"var(--me-brand2)",fontWeight:600}}>{t("st_formule")} : <b>{FORMULES[etab.formule]?.l||t("st_formule_nd")}</b>{FORMULES[etab.formule]?` — ${FORMULES[etab.formule].admins===Infinity?t("st_admins_illimite"):FORMULES[etab.formule].admins+" "+t("st_admins_mot")}`:""}</div>
