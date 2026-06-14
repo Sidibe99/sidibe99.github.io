@@ -363,7 +363,7 @@ const I18N = {
     us_classes:"Classes autorisées", us_classes_note:"L'enseignant ne verra que ces classes (élèves, présences, bulletins…). Vide = toutes les classes.",
     st_sub:"Infos officielles, en-tête des documents et réglages — modifiables à tout moment",
     st_logos:"🖼️ Logos", st_logo_app:"📱 Logo de l'application (interface)", st_logo_app_d:"Affiché dans le menu de l'app — peut être différent des logos imprimés. Si vide, le logo de l'école ci-dessous est utilisé.",
-    st_televerser:"📁 Téléverser", st_img_lourde:"Image trop lourde (max 500 Ko).", st_ou_url:"Ou lien (URL)", st_retirer:"Retirer", st_perso_titre:"Mes réglages de documents (personnel)", st_perso_d:"Vos réglages s'appliquent à VOS documents (fiches, reçus, emploi du temps…) sans affecter les autres utilisateurs. Le bulletin garde les réglages communs de l'école.", st_perso_logo:"Mon logo (remplace celui de l'école sur mes documents)", st_perso_embleme:"Emblème / 2ᵉ logo", st_perso_choisir:"📁 Choisir une image", st_perso_disposition:"Disposition des logos", st_perso_position:"Position verticale du logo", st_perso_reset:"↺ Utiliser les réglages de l'école",
+    st_televerser:"📁 Téléverser", st_img_lourde:"Image trop lourde (max 500 Ko).", st_ou_url:"Ou lien (URL)", st_retirer:"Retirer", st_perso_titre:"Mes réglages de documents (personnel)", st_perso_d:"Vos réglages s'appliquent à VOS documents (fiches, emploi du temps…) sans affecter les autres utilisateurs. Le bulletin et le reçu de paiement gardent les réglages communs de l'école.", st_perso_logo:"Mon logo", st_perso_embleme:"Emblème / 2ᵉ logo", st_perso_choisir:"📁 Choisir une image", st_perso_disposition:"Disposition des logos", st_perso_position:"Position verticale du logo", st_perso_reset:"↺ Utiliser les réglages de l'école",
     st_logos_doc:"🖨️ Logos des documents (bulletins, reçus, fiches…)", st_logos_doc_d1:"Vous pouvez ajouter ", st_logos_doc_b:"deux images", st_logos_doc_d2:" : le logo de l'école et l'emblème/armoiries du pays. Puis choisissez leur disposition sur les imprimés.",
     st_logo_ecole:"Logo de l'école", st_armoiries:"Emblème / Armoiries du pays",
     st_dispo:"📐 Disposition sur les documents (cliquez un aperçu)", st_dispo_centre:"Centré", st_dispo_gauche:"À gauche", st_dispo_droite:"À droite", st_dispo_deux:"Deux côtés",
@@ -550,7 +550,7 @@ const I18N = {
     us_classes:"الأقسام المتاحة", us_classes_note:"لن يرى الأستاذ إلا هذه الأقسام (التلاميذ، الحضور، الكشوف…). فارغ = كل الأقسام.",
     st_sub:"معلومات رسمية، ترويسة الوثائق والإعدادات — قابلة للتعديل في أي وقت",
     st_logos:"🖼️ الشعارات", st_logo_app:"📱 شعار التطبيق (الواجهة)", st_logo_app_d:"يظهر في قائمة التطبيق — قد يختلف عن الشعارات المطبوعة. إذا كان فارغًا، يُستخدم شعار المدرسة أدناه.",
-    st_televerser:"📁 رفع", st_img_lourde:"الصورة كبيرة جدًا (الحد 500 كيلوبايت).", st_ou_url:"أو رابط (URL)", st_retirer:"إزالة", st_perso_titre:"إعداداتي للوثائق (شخصية)", st_perso_d:"تنطبق إعداداتك على وثائقك أنت دون التأثير على المستخدمين الآخرين. يحتفظ كشف الدرجات بإعدادات المدرسة المشتركة.", st_perso_logo:"شعاري (يحل محل شعار المدرسة في وثائقي)", st_perso_embleme:"الشعار الثاني", st_perso_choisir:"📁 اختر صورة", st_perso_disposition:"ترتيب الشعارات", st_perso_position:"الموضع العمودي للشعار", st_perso_reset:"↺ استخدام إعدادات المدرسة",
+    st_televerser:"📁 رفع", st_img_lourde:"الصورة كبيرة جدًا (الحد 500 كيلوبايت).", st_ou_url:"أو رابط (URL)", st_retirer:"إزالة", st_perso_titre:"إعداداتي للوثائق (شخصية)", st_perso_d:"تنطبق إعداداتك على وثائقك أنت دون التأثير على المستخدمين الآخرين. يحتفظ كشف الدرجات وإيصال الدفع بإعدادات المدرسة المشتركة.", st_perso_logo:"شعاري", st_perso_embleme:"الشعار الثاني", st_perso_choisir:"📁 اختر صورة", st_perso_disposition:"ترتيب الشعارات", st_perso_position:"الموضع العمودي للشعار", st_perso_reset:"↺ استخدام إعدادات المدرسة",
     st_logos_doc:"🖨️ شعارات الوثائق (الكشوف، الإيصالات، الأوراق…)", st_logos_doc_d1:"يمكنك إضافة ", st_logos_doc_b:"صورتين", st_logos_doc_d2:" : شعار المدرسة وشعار/رمز الدولة. ثم اختر ترتيبهما على المطبوعات.",
     st_logo_ecole:"شعار المدرسة", st_armoiries:"شعار / رمز الدولة",
     st_dispo:"📐 الترتيب على الوثائق (انقر معاينة)", st_dispo_centre:"في الوسط", st_dispo_gauche:"إلى اليسار", st_dispo_droite:"إلى اليمين", st_dispo_deux:"الجهتان",
@@ -4422,7 +4422,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
       </div>
       {roSection&&<div style={{display:"flex",alignItems:"center",gap:8,background:"#fffbeb",border:"1px solid #fde68a",color:"#92400e",borderRadius:10,padding:"9px 13px",fontSize:12.5,fontWeight:700,marginBottom:14}}>👁 {t("st_lecture_seule")}</div>}
       <fieldset disabled={roSection} style={{border:"none",margin:0,padding:0,minInlineSize:"auto"}}>
-      {section==="apparence"&&<Card s={{marginBottom:14}}>
+      {section==="apparence"&&isAdminP&&<Card s={{marginBottom:14}}>
         <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:12}}>{t("st_logos")}</div>
         <div style={{fontWeight:700,fontSize:12,color:"var(--me-text)",marginBottom:6}}>{t("st_logos_doc")}</div>
         <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:14}}>{t("st_logos_doc_d1")}<b>{t("st_logos_doc_b")}</b>{t("st_logos_doc_d2")}</div>
