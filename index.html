@@ -4346,6 +4346,8 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
   const [saved,setSaved]=useState(false);
   const [docPrefs,setDP]=useState(currentUser&&currentUser.doc_prefs?currentUser.doc_prefs:{});
   const [docSaved,setDocSaved]=useState(false);
+  const [allowedLangs,setAllowedLangs]=useState(null);
+  useEffect(()=>{let a=true;const code=etab&&etab.code_activation;if(code){sb.from("codes_activation").select("langues").eq("code",code).maybeSingle().then(({data})=>{if(a&&data&&Array.isArray(data.langues)&&data.langues.length)setAllowedLangs(data.langues);}).catch(()=>{});}return()=>{a=false;};},[etab&&etab.code_activation]);
   const setDPk=(k,v)=>setDP(p=>({...p,[k]:v}));
   const saveDocs=async()=>{try{if(currentUser&&currentUser.id!=null)await sb.from("utilisateurs").update({doc_prefs:docPrefs}).eq("id",currentUser.id);setDocPrefs(docPrefs);setDocSaved(true);setTimeout(()=>setDocSaved(false),2500);}catch(_){}};
   // Admin : toutes les sections. Sinon : uniquement ce qui concerne les documents.
@@ -4497,7 +4499,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
       {section==="documents"&&<Card s={{marginBottom:14}}>
         <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:6}}>{t("st_langue_doc")}</div>
         <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:14}}>{t("st_langue_doc_d")}</div>
-        <Slt label={t("st_langue")} value={form.langue} onChange={set("langue")} opts={[{v:"fr",l:t("st_langue_fr")},{v:"fr_ar",l:t("st_langue_frar")},{v:"ar",l:t("st_langue_ar")}]}/>
+        <Slt label={t("st_langue")} value={form.langue} onChange={set("langue")} opts={[{v:"fr",l:t("st_langue_fr")},{v:"fr_ar",l:t("st_langue_frar")},{v:"ar",l:t("st_langue_ar")}].filter(o=>!allowedLangs||allowedLangs.includes(o.v))}/>
         {(form.langue==="fr_ar"||form.langue==="ar")&&<div style={{marginTop:14,background:"var(--me-surface-2,#f8fafc)",borderRadius:11,padding:14}}>
           <div style={{fontSize:12,fontWeight:700,color:"var(--me-text)",marginBottom:10}}>الترجمة العربية · Traductions arabes (modifiables)</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:11}}>
@@ -4862,6 +4864,7 @@ function MasterGate({onOk}) {
 function EditorHub({onCreate,masterPw}) {
   const [cfgUrl,setCfgUrl]=useState("");const [cfgKey,setCfgKey]=useState("");
   const [genFormule,setGenFormule]=useState("standard");
+  const [genLangues,setGenLangues]=useState(["fr","fr_ar","ar"]);
   const [genLoading,setGenLoading]=useState(false);
   const [genErr,setGenErr]=useState("");
   const [codes,setCodes]=useState([]);
@@ -4891,7 +4894,7 @@ function EditorHub({onCreate,masterPw}) {
     try{
       const{data,error}=await sb.functions.invoke("generer-code",{body:{motDePasse:masterPw||"",formule:genFormule,dureeMois:genDuree}});
       if(error){let m="Génération impossible.";try{const j=await error.context.json();if(j&&j.error)m=j.error;}catch(_){}setGenErr(m);}
-      else if(data&&data.code){setLastCode(data.code);loadCodes();}
+      else if(data&&data.code){setLastCode(data.code);try{await sb.from("codes_activation").update({langues:(genLangues.length?genLangues:["fr"])}).eq("code",data.code);}catch(_){}loadCodes();}
       else setGenErr("Réponse inattendue du serveur.");
     }catch(e){setGenErr("Erreur : "+(e.message||e));}
     setGenLoading(false);
@@ -4935,6 +4938,16 @@ function EditorHub({onCreate,masterPw}) {
         <div style={{background:"var(--me-surface-2,#f8fafc)",borderRadius:13,padding:16,marginBottom:14}}>
           <div style={{fontWeight:800,fontSize:13,color:"var(--me-text)",marginBottom:4}}>3️⃣ Générer un code d'activation</div>
           <div style={{fontSize:11,color:"var(--me-text-2)",marginBottom:12,lineHeight:1.5}}>Choisissez la formule, générez un code, puis transmettez-le à l'école. Un code = une école.</div>
+          <div style={{marginBottom:12}}>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--me-text-2)",marginBottom:6}}>Langues autorisées pour l'école</div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:8}}>
+              {[["fr","Français"],["fr_ar","Bilingue FR + Arabe"],["ar","Arabe"]].map(([v,l])=>{const on=genLangues.includes(v);return <button key={v} type="button" onClick={()=>setGenLangues(g=>on?g.filter(x=>x!==v):[...g,v])} style={{padding:"7px 12px",borderRadius:9,border:on?"2px solid #059669":"1.5px solid #e2e8f0",background:on?"#ecfdf5":"#fff",fontWeight:700,fontSize:12,cursor:"pointer",color:"var(--me-text)"}}>{on?"\u2713 ":""}{l}</button>;})}
+            </div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              <button type="button" onClick={()=>setGenLangues(["fr"])} style={{padding:"6px 11px",borderRadius:8,border:"1.5px solid #e2e8f0",background:"#fff",fontWeight:700,fontSize:11,cursor:"pointer",color:"var(--me-text-2)"}}>🇫🇷 École française (FR uniquement)</button>
+              <button type="button" onClick={()=>setGenLangues(["fr","fr_ar","ar"])} style={{padding:"6px 11px",borderRadius:8,border:"1.5px solid #e2e8f0",background:"#fff",fontWeight:700,fontSize:11,cursor:"pointer",color:"var(--me-text-2)"}}>🌍 Franco-arabe (toutes)</button>
+            </div>
+          </div>
           <div style={{display:"flex",gap:8,alignItems:"flex-end",flexWrap:"wrap"}}>
             <div style={{flex:1,minWidth:150}}><Slt label="Formule" value={genFormule} onChange={e=>setGenFormule(e.target.value)} opts={[{v:"basique",l:"Basique — 1 administrateur"},{v:"standard",l:"Standard — 3 administrateurs"},{v:"premium",l:"Premium — illimité"}]}/></div>
             <div style={{minWidth:120}}><Slt label="Durée" value={String(genDuree)} onChange={e=>setGenDuree(parseInt(e.target.value,10)||12)} opts={[{v:"3",l:"3 mois"},{v:"6",l:"6 mois"},{v:"12",l:"1 an"},{v:"24",l:"2 ans"},{v:"36",l:"3 ans"}]}/></div>
