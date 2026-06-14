@@ -1264,7 +1264,7 @@ function useSupabaseData(etablissementId) {
       const updates=[];
       (data.eleves||[]).forEach(e=>{
         const hist=Array.isArray(e.comite_hist)?e.comite_hist:[];
-        const member=comiteList.find(m=>m.eleve_id===e.id);
+        const member=comiteList.find(m=>String(m.eleve_id)===String(e.id));
         const others=hist.filter(h=>h.annee!==annee);
         const nh=member?[...others,{annee,fonction:member.fonction,fin:member.fin||null}]:others;
         if(JSON.stringify(nh)!==JSON.stringify(hist))updates.push({id:e.id,comite_hist:nh});
@@ -2804,7 +2804,7 @@ function Eleves({data,ops,etab,currentUser}) {
     const opts={color:cardOpts.color,color2:cardOpts.color2,deviseColor:cardOpts.deviseColor,style:cardOpts.style,sigTitre:cardOpts.sigTitre,sigNom:cardOpts.sigNom};
     let res;
     if(cardOpts.mode==="comite"){
-      const items=(cardOpts.list||[]).map(m=>({e:data.eleves.find(x=>x.id===m.eleve_id),role:m.fonction,fin:m.fin,titre:t("cartes_comite_titre")})).filter(x=>x.e);
+      const items=(cardOpts.list||[]).map(m=>({e:data.eleves.find(x=>String(x.id)===String(m.eleve_id)),role:m.fonction,fin:m.fin,titre:t("cartes_comite_titre")})).filter(x=>x.e);
       res=cartesHTML(items,t("cartes_comite_titre"),opts);
     }else{
       const els=data.eleves.filter(e=>classesCycle.some(c=>c.id===e.classe_id));
@@ -3039,7 +3039,7 @@ function Eleves({data,ops,etab,currentUser}) {
       {comiteOpen&&<Modal title={t("comite_titre")} onClose={()=>setComiteOpen(false)} w={560}>
         <div style={{fontSize:12,color:"var(--me-text-2)",marginBottom:12,lineHeight:1.5}}>{t("comite_aide")}</div>
         {comiteDraft.length>0?<div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:14}}>
-          {comiteDraft.map((m,i)=>{const el=data.eleves.find(x=>x.id===m.eleve_id);const c=el&&data.classes.find(x=>x.id===el.classe_id);return(
+          {comiteDraft.map((m,i)=>{const el=data.eleves.find(x=>String(x.id)===String(m.eleve_id));const c=el&&data.classes.find(x=>x.id===el.classe_id);return(
             <div key={i} style={{display:"flex",alignItems:"center",gap:9,background:"var(--me-surface-2,#f8fafc)",borderRadius:9,padding:"8px 11px"}}>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:12.5,fontWeight:700,color:"var(--me-text)"}}>{el?`${el.prenom} ${el.nom}`:"— (élève supprimé)"}{c?<span style={{fontWeight:500,color:"var(--me-text-3)"}}> · {txt(c.nom,c.nom_ar)}</span>:null}</div>
@@ -3050,7 +3050,7 @@ function Eleves({data,ops,etab,currentUser}) {
           );})}
         </div>:<div style={{fontSize:12,color:"var(--me-text-3)",marginBottom:14}}>{t("comite_vide")}</div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:11,alignItems:"end"}}>
-          <Slt label={t("comite_eleve")} value={comEleve} onChange={e=>setComEleve(e.target.value)} opts={[{v:"",l:"—"},...data.eleves.filter(e=>!comiteDraft.some(m=>m.eleve_id===e.id)).map(e=>{const c=data.classes.find(x=>x.id===e.classe_id);return{v:e.id,l:`${e.prenom} ${e.nom}${c?` · ${txt(c.nom,c.nom_ar)}`:""}`};})]}/>
+          <Slt label={t("comite_eleve")} value={comEleve} onChange={e=>setComEleve(e.target.value)} opts={[{v:"",l:"—"},...data.eleves.filter(e=>!comiteDraft.some(m=>String(m.eleve_id)===String(e.id))).map(e=>{const c=data.classes.find(x=>x.id===e.classe_id);return{v:e.id,l:`${e.prenom} ${e.nom}${c?` · ${txt(c.nom,c.nom_ar)}`:""}`};})]}/>
           <Inp label={t("comite_fonction")} value={comFonction} onChange={e=>setComFonction(e.target.value)} placeholder={t("comite_fonction_ph")}/>
         </div>
         <div style={{marginTop:11}}><Inp label={t("comite_fin")} type="date" value={comFin} onChange={e=>setComFin(e.target.value)}/></div>
@@ -3059,7 +3059,7 @@ function Eleves({data,ops,etab,currentUser}) {
             <button key={r} type="button" onClick={()=>setComFonction(r)} style={{background:"var(--me-surface-2,#f1f5f9)",border:"1px solid var(--me-border-2,#e2e8f0)",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",color:"var(--me-text-2)",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{r}</button>
           ))}
         </div>
-        <div style={{marginTop:10}}><Btn ch={t("comite_ajouter")} v="ghost" onClick={()=>{if(comEleve&&comFonction.trim()){setComiteDraft(d=>[...d,{eleve_id:comEleve,fonction:comFonction.trim(),fin:comFin||null}]);setComEleve("");setComFonction("");setComFin("");}}} disabled={!comEleve||!comFonction.trim()}/></div>
+        <div style={{marginTop:10}}><Btn ch={t("comite_ajouter")} v="ghost" onClick={()=>{if(comEleve&&comFonction.trim()){setComiteDraft(d=>[...d,{eleve_id:parseInt(comEleve)||comEleve,fonction:comFonction.trim(),fin:comFin||null}]);setComEleve("");setComFonction("");setComFin("");}}} disabled={!comEleve||!comFonction.trim()}/></div>
         <div style={{display:"flex",justifyContent:"space-between",gap:8,marginTop:16,flexWrap:"wrap"}}>
           <Btn ch={t("cartes_comite_btn")} v="ghost" onClick={()=>{setComiteOpen(false);printCartesComite(comiteDraft);}} disabled={comiteDraft.length===0}/>
           <div style={{display:"flex",gap:8}}>
