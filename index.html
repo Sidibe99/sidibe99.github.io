@@ -4874,6 +4874,9 @@ function EditorHub({onCreate,masterPw}) {
   const [ecoles,setEcoles]=useState([]);
   const [extDuree,setExtDuree]=useState({});
   const [extBusy,setExtBusy]=useState(0);
+  const [formSel,setFormSel]=useState({});
+  const [formBusy,setFormBusy]=useState("");
+  const changerFormule=async(id,fm)=>{setFormBusy(id);setExtMsg("");try{const{error}=await sb.from("etablissements").update({formule:fm}).eq("id",id);if(error){let m="Échec du changement de formule.";try{m=error.message||m;}catch(_){}setExtMsg(m);}else{setExtMsg("✓ Formule changée : "+(FORMULES[fm]?.l||fm));loadEcoles();}}catch(e){setExtMsg("Erreur : "+(e.message||e));}setFormBusy("");};
   const [extMsg,setExtMsg]=useState("");
   const loadEcoles=async()=>{try{const{data,error}=await sb.functions.invoke("renouveler",{body:{motDePasse:masterPw||"",action:"list"}});if(!error&&data&&Array.isArray(data.ecoles))setEcoles(data.ecoles);}catch(_){}};
   useEffect(()=>{loadEcoles();},[]);
@@ -4991,6 +4994,10 @@ function EditorHub({onCreate,masterPw}) {
                 <div style={{display:"flex",gap:8,alignItems:"flex-end",marginTop:8}}>
                   <div style={{width:120}}><Slt label="Ajouter" value={String(extDuree[e.id]||12)} onChange={ev=>setExtDuree(d=>({...d,[e.id]:parseInt(ev.target.value,10)||12}))} opts={[{v:"3",l:"3 mois"},{v:"6",l:"6 mois"},{v:"12",l:"1 an"},{v:"24",l:"2 ans"}]}/></div>
                   <Btn ch={extBusy===e.id?"…":"Prolonger"} v="success" onClick={()=>prolonger(e.id)} disabled={extBusy===e.id}/>
+                </div>
+                <div style={{display:"flex",gap:8,alignItems:"flex-end",marginTop:8}}>
+                  <div style={{flex:1,minWidth:140}}><Slt label="Formule d'abonnement" value={formSel[e.id]||e.formule||"basique"} onChange={ev=>setFormSel(sx=>({...sx,[e.id]:ev.target.value}))} opts={[{v:"basique",l:"Basique — 1 admin"},{v:"standard",l:"Standard — 3 admins"},{v:"premium",l:"Premium — illimité"}]}/></div>
+                  <Btn ch={formBusy===e.id?"…":"Changer"} v="primary" onClick={()=>changerFormule(e.id,formSel[e.id]||e.formule||"basique")} disabled={formBusy===e.id}/>
                 </div>
               </div>);})}
           </div>}
