@@ -1354,7 +1354,21 @@ function useSupabaseData(etablissementId) {
         load(); showToast("Utilisateur créé");
       }catch(e){ showToast(e.message||"Erreur de création","error"); }
     },
-    updateUser: async(id,form)=>{const f=await withHashedPw(form);const{error}=await sb.from("utilisateurs").update(f).eq("id",id);if(!error){if(form&&form.password){try{await sb.functions.invoke("set-password",{body:{userId:id,password:form.password}});}catch(_){}}load();showToast("Utilisateur modifié");}else showToast(error.message,"error");},
+    updateUser: async(id,form)=>{
+      const f=await withHashedPw(form);
+      const{error}=await sb.from("utilisateurs").update(f).eq("id",id);
+      if(error){showToast(error.message,"error");return;}
+      if(form&&form.password){
+        let syncMsg="";
+        try{
+          const {data:sp,error:spErr}=await sb.functions.invoke("set-password",{body:{userId:id,password:form.password}});
+          if(spErr){syncMsg="synchronisation Auth impossible";try{const b=await spErr.context.json();if(b&&b.error)syncMsg=b.error;}catch(_){}}
+          else if(sp&&sp.error){syncMsg=sp.error;}
+        }catch(e){syncMsg=(e&&e.message)||"synchronisation Auth impossible";}
+        if(syncMsg){load();showToast("⚠️ Mot de passe NON synchronisé : "+syncMsg+". L'ancien mot de passe reste actif — réessayez.","error");return;}
+      }
+      load();showToast(form&&form.password?"Utilisateur modifié — mot de passe synchronisé ✅":"Utilisateur modifié");
+    },
     deleteUser: async(id)=>{if(!confirmSuppr())return;await sb.from("utilisateurs").delete().eq("id",id);load();showToast("Utilisateur supprimé");},
   };
 
