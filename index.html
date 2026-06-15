@@ -375,7 +375,7 @@ const I18N = {
     st_ar_pays:"Pays (arabe)", st_ar_devise:"Devise (arabe)", st_ar_ministere:"Ministère (arabe)", st_ar_ecole:"École (arabe)", st_ar_ire:"IRE (arabe)", st_ar_dpe:"DPE (arabe)", st_ar_dsee:"DSEE (arabe)", st_ar_bulletin:"« Bulletin » (arabe)",
     st_theme:"🎨 Thème des documents", st_theme_d:"Personnalisez l'apparence des imprimés (bulletins, reçus, fiches).", st_couleur_p:"Couleur principale",
     st_police:"Police des documents", st_police_moderne:"Moderne (Segoe UI)", st_police_classique:"Classique (Georgia)", st_police_tnr:"Times New Roman", st_police_machine:"Machine à écrire", st_police_arial:"Arial",
-    st_centrer_titre:"Centrer le titre du document", st_apercu_theme:"Aperçu du thème",
+    st_centrer_titre:"Centrer le titre du document", st_apercu_theme:"Aperçu du thème", st_apercu_entete:"👁️ Aperçu de l'en-tête (rendu réel)", st_apercu_nologo:"Aucun logo chargé : ajoutez un logo ci-dessus pour le voir apparaître à la position choisie.",
     st_entete:"🏛️ En-tête officiel des documents", st_entete_d:"Ces informations apparaîtront en haut de tous les imprimés (bulletins, reçus, fiches).",
     st_pays:"Pays / République", st_devise_nat:"Devise nationale", st_couleur_devise:"🎨 Couleur de la devise (affichée sous le pays, centrée)",
     st_dv_drapeau:"🇬🇳 Drapeau guinéen", st_dv_uni:"Une seule couleur", st_dv_manuel:"Mot par mot", st_dv_sans:"Sans couleur",
@@ -562,7 +562,7 @@ const I18N = {
     st_ar_pays:"الدولة (بالعربية)", st_ar_devise:"الشعار الوطني (بالعربية)", st_ar_ministere:"الوزارة (بالعربية)", st_ar_ecole:"المدرسة (بالعربية)", st_ar_ire:"IRE (بالعربية)", st_ar_dpe:"DPE (بالعربية)", st_ar_dsee:"DSEE (بالعربية)", st_ar_bulletin:"«الكشف» (بالعربية)",
     st_theme:"🎨 سمة الوثائق", st_theme_d:"خصّص مظهر المطبوعات (الكشوف، الإيصالات، الأوراق).", st_couleur_p:"اللون الرئيسي",
     st_police:"خط الوثائق", st_police_moderne:"حديث (Segoe UI)", st_police_classique:"كلاسيكي (Georgia)", st_police_tnr:"Times New Roman", st_police_machine:"آلة كاتبة", st_police_arial:"Arial",
-    st_centrer_titre:"توسيط عنوان الوثيقة", st_apercu_theme:"معاينة السمة",
+    st_centrer_titre:"توسيط عنوان الوثيقة", st_apercu_theme:"معاينة السمة", st_apercu_entete:"👁️ معاينة الترويسة (عرض فعلي)", st_apercu_nologo:"لا يوجد شعار: أضف شعارًا أعلاه لتراه يظهر في الموضع المختار.",
     st_entete:"🏛️ الترويسة الرسمية للوثائق", st_entete_d:"تظهر هذه المعلومات في أعلى كل المطبوعات (الكشوف، الإيصالات، الأوراق).",
     st_pays:"الدولة / الجمهورية", st_devise_nat:"الشعار الوطني", st_couleur_devise:"🎨 لون الشعار الوطني (يظهر تحت الدولة، في الوسط)",
     st_dv_drapeau:"🇬🇳 العلم الغيني", st_dv_uni:"لون واحد", st_dv_manuel:"كلمة بكلمة", st_dv_sans:"بدون لون",
@@ -4505,6 +4505,11 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
             </button>
           );})}
         </div>
+        <div style={{marginTop:16}}>
+          <div style={{fontSize:9.5,color:"var(--me-text-3)",textTransform:"uppercase",fontWeight:700,letterSpacing:.4,marginBottom:6}}>{t("st_apercu_entete")}</div>
+          <div style={{border:"1.5px dashed #e2e8f0",borderRadius:11,padding:14,background:"#fff",overflowX:"auto"}} dangerouslySetInnerHTML={{__html:`<style>${OH_CSS}</style>`+officialHeader({...etab,...form},{docTitle:"BULLETIN DE NOTES",classe:"6ᵉ A",shared:true})}}/>
+          {!form.logo&&!form.logo2&&<div style={{fontSize:10.5,color:"#b45309",marginTop:6}}>⚠️ {t("st_apercu_nologo")}</div>}
+        </div>
         <div style={{display:"flex",gap:10,justifyContent:"flex-end",marginTop:16,alignItems:"center"}}>
           {saved&&<span style={{color:"#059669",fontSize:12,fontWeight:700}}>{t("st_enregistre")}</span>}
           <Btn ch={loading?t("st_enregistrement"):t("no_save")} v="success" onClick={save} disabled={loading}/>
@@ -4546,6 +4551,11 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
         <div style={{marginTop:12}}><Lbl t={t("st_perso_position")}>
           <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{[["milieu",t("st_pos_milieu")],["sousdevise",t("st_pos_sousdevise")],["haut",t("st_pos_haut")]].map(([v,l])=>{const on=(docPrefs.logo_position||"")===v;return <button key={v} onClick={()=>setDPk("logo_position",v)} style={{padding:"7px 12px",borderRadius:9,border:on?"2px solid var(--me-brand)":"1.5px solid #e2e8f0",background:on?"#eff6ff":"#fff",fontWeight:700,fontSize:12,cursor:"pointer",color:"var(--me-text)"}}>{l}</button>;})}</div>
         </Lbl></div>
+        <div style={{marginTop:16}}>
+          <div style={{fontSize:9.5,color:"var(--me-text-3)",textTransform:"uppercase",fontWeight:700,letterSpacing:.4,marginBottom:6}}>{t("st_apercu_entete")}</div>
+          <div style={{border:"1.5px dashed #e2e8f0",borderRadius:11,padding:14,background:"#fff",overflowX:"auto"}} dangerouslySetInnerHTML={{__html:`<style>${OH_CSS}</style>`+officialHeader({...etab,...(docPrefs.logo!==undefined&&docPrefs.logo!==""?{logo:docPrefs.logo}:{}),...(docPrefs.logo2!==undefined?{logo2:docPrefs.logo2}:{}),...(docPrefs.logo_position?{logo_position:docPrefs.logo_position}:{}),...(docPrefs.logo_disposition?{logo_disposition:docPrefs.logo_disposition}:{})},{docTitle:t("fe_titre"),classe:"6ᵉ A",shared:true})}}/>
+          {!docPrefs.logo&&!docPrefs.logo2&&!etab.logo&&!etab.logo2&&<div style={{fontSize:10.5,color:"#b45309",marginTop:6}}>⚠️ {t("st_apercu_nologo")}</div>}
+        </div>
         <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",marginTop:16,flexWrap:"wrap"}}>
           <button onClick={()=>setDP({})} style={{background:"none",border:"1.5px solid #e2e8f0",borderRadius:9,padding:"7px 12px",cursor:"pointer",fontSize:12,fontWeight:700,color:"var(--me-text-2)",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t("st_perso_reset")}</button>
           <div style={{display:"flex",gap:10,alignItems:"center"}}>{docSaved&&<span style={{color:"#059669",fontSize:12,fontWeight:700}}>{t("st_enregistre")}</span>}<Btn ch={t("no_save")} v="success" onClick={saveDocs}/></div>
