@@ -4553,7 +4553,7 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
         </Lbl></div>
         <div style={{marginTop:16}}>
           <div style={{fontSize:9.5,color:"var(--me-text-3)",textTransform:"uppercase",fontWeight:700,letterSpacing:.4,marginBottom:6}}>{t("st_apercu_entete")}</div>
-          <div style={{border:"1.5px dashed #e2e8f0",borderRadius:11,padding:14,background:"#fff",overflowX:"auto"}} dangerouslySetInnerHTML={{__html:`<style>${OH_CSS}</style>`+officialHeader({...etab,...(docPrefs.logo!==undefined&&docPrefs.logo!==""?{logo:docPrefs.logo}:{}),...(docPrefs.logo2!==undefined?{logo2:docPrefs.logo2}:{}),...(docPrefs.logo_position?{logo_position:docPrefs.logo_position}:{}),...(docPrefs.logo_disposition?{logo_disposition:docPrefs.logo_disposition}:{})},{docTitle:t("fe_titre"),classe:"6ᵉ A",shared:true})}}/>
+          <div style={{border:"1.5px dashed #e2e8f0",borderRadius:11,padding:14,background:"#fff",overflowX:"auto"}} dangerouslySetInnerHTML={{__html:`<style>${OH_CSS}</style>`+officialHeader({...etab,...form,...(docPrefs.logo!==undefined&&docPrefs.logo!==""?{logo:docPrefs.logo}:{}),...(docPrefs.logo2!==undefined?{logo2:docPrefs.logo2}:{}),...(docPrefs.logo_position?{logo_position:docPrefs.logo_position}:{}),...(docPrefs.logo_disposition?{logo_disposition:docPrefs.logo_disposition}:{})},{docTitle:t("fe_titre"),docTitleAr:"بطاقة التلميذ",classe:"6ᵉ A",shared:true})}}/>
           {!docPrefs.logo&&!docPrefs.logo2&&!etab.logo&&!etab.logo2&&<div style={{fontSize:10.5,color:"#b45309",marginTop:6}}>⚠️ {t("st_apercu_nologo")}</div>}
         </div>
         <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",marginTop:16,flexWrap:"wrap"}}>
