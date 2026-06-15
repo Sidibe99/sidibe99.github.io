@@ -783,8 +783,41 @@ const officialHeader = (etab={}, opts={}) => {
   }
   const lignes = Array.isArray(etab.entete_lignes)?etab.entete_lignes:[];
   const lignesHTML = lignes.filter(l=>l&&l.texte).map(l=>`<div style="text-align:${l.pos||"center"};font-weight:${l.gras?"700":"400"};font-size:11px;color:#334155">${l.texte}</div>`).join("");
-  const bil = etab.langue==="fr_ar" || etab.langue==="ar";
+  const bil = etab.langue==="fr_ar";
+  const arOnly = etab.langue==="ar";
   const ar = etab.ar||{};
+  // En-tête ARABE UNIQUEMENT (RTL, sans français)
+  if(arOnly){
+    const arFont="'Traditional Arabic','Amiri',serif";
+    const logoPosA = etab.logo_position || "milieu";
+    const lblocA = logoBlock(etab);
+    const logoMilieuA = logoPosA==="milieu" ? `<div class="oh-mid">${logoBlock(etab,{dispo:"centre",compact:true,h:54})}</div>` : "";
+    return `<div class="oh" dir="rtl" style="font-family:${arFont}">
+      ${logoPosA==="haut"?lblocA:""}
+      <div class="oh-top">
+        <div class="oh-pays" style="font-size:16px">${ar.pays||pays}</div>
+        ${ar.devise?`<div class="oh-devise" style="font-style:normal">${ar.devise}</div>`:""}
+      </div>
+      ${logoPosA==="sousdevise"?lblocA:""}
+      <div class="oh-body">
+        <div class="oh-left" style="text-align:right">
+          <div><b>${ar.ministere||""}</b></div>
+          ${ar.ire?`<div><b>المفتشية الإقليمية للتعليم :</b> ${ar.ire}</div>`:""}
+          ${ar.dpe?`<div><b>إدارة المحافظية للتعليم :</b> ${ar.dpe}</div>`:""}
+          ${ar.dsee?`<div><b>المندوبية المدرسية للتعليم الابتدائي :</b> ${ar.dsee}</div>`:""}
+          <div><b>المدرسة :</b> ${etab.nom_ar||ar.ecole||etab.nom||""}</div>
+          ${classe?`<div><b>القسم :</b> ${classe}</div>`:""}
+          ${opts.matiere?`<div><b>المادة :</b> ${opts.matiere}</div>`:""}
+        </div>
+        ${logoMilieuA}
+        <div class="oh-right" style="text-align:left">
+          ${etab.annee?`<div><b>السنة الدراسية :</b> ${etab.annee}</div>`:""}
+          ${etab.telephone?`<div>الهاتف : ${etab.telephone}</div>`:""}
+        </div>
+      </div>
+      ${(opts.docTitleAr||docTitle)?`<div class="oh-title">${opts.docTitleAr||docTitle}</div>`:""}
+    </div>`;
+  }
   // En-tête bilingue : pays FR à gauche, AR à droite ; idem ministère
   if(bil){
     const logoPosB = etab.logo_position || "milieu";
