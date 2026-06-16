@@ -5177,6 +5177,38 @@ function App() {
   useEffect(()=>{try{let m=document.querySelector('meta[name=viewport]');if(!m){m=document.createElement("meta");m.name="viewport";document.head.appendChild(m);}m.setAttribute("content","width=device-width, initial-scale=1, viewport-fit=cover");}catch(_){}},[]);
   useEffect(()=>{try{localStorage.setItem("monecole_page",page);}catch(_){}},[page]);
   useEffect(()=>{const h=e=>{if(isGlobalDirty()){e.preventDefault();e.returnValue="";}};window.addEventListener("beforeunload",h);return ()=>window.removeEventListener("beforeunload",h);},[]);
+  // ── Bouton "retour" du téléphone : naviguer dans l'app au lieu de quitter le site ──
+  const mainRef=useRef(null);
+  const backStack=useRef([]);
+  const isBackNav=useRef(false);
+  const prevPageRef=useRef(page);
+  const navStateRef=useRef({});
+  navStateRef.current={loggedIn:!!currentUser,navOpen,quickOpen,themeOpen,page};
+  useEffect(()=>{
+    if(prevPageRef.current!==page){
+      if(isBackNav.current){isBackNav.current=false;}
+      else{backStack.current.push(prevPageRef.current);if(backStack.current.length>40)backStack.current.shift();}
+      prevPageRef.current=page;
+    }
+    try{if(mainRef.current)mainRef.current.scrollTo({top:0,left:0});}catch(_){}
+  },[page]);
+  useEffect(()=>{
+    try{history.pushState({me:1},"");}catch(_){}
+    const onPop=()=>{
+      const s=navStateRef.current;
+      if(!s.loggedIn)return;
+      try{history.pushState({me:1},"");}catch(_){}
+      if(s.navOpen){setNavOpen(false);return;}
+      if(s.quickOpen){setQuickOpen(false);return;}
+      if(s.themeOpen){setThemeOpen(false);return;}
+      if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;
+      setGlobalDirty(false);
+      if(backStack.current.length){const prev=backStack.current.pop();isBackNav.current=true;setPageRaw(prev);return;}
+      if(s.page!=="dashboard"){isBackNav.current=true;setPageRaw("dashboard");return;}
+    };
+    window.addEventListener("popstate",onPop);
+    return ()=>window.removeEventListener("popstate",onPop);
+  },[]);
   useEffect(()=>{try{localStorage.setItem("monecole_zoom",String(uiZoom));}catch(_){}},[uiZoom]);
   const [msgSeen,setMsgSeen]=useState(0);
   useEffect(()=>{if(!currentUser)return;try{setMsgSeen(parseInt(localStorage.getItem("monecole_msg_seen_"+currentUser.id)||"0")||0);}catch(_){}},[currentUser]);
@@ -5424,7 +5456,7 @@ body{overscroll-behavior-y:none;}
           <button onClick={()=>{if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}} className="me-nav" style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"11px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",background:"rgba(239,68,68,0.15)",color:"#fca5a5",fontWeight:700,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}><span style={{fontSize:16}}>🚪</span>{t("logout")}</button>
         </div>
       </div>
-      <div className="me-main" style={{flex:1,overflowY:"auto",zoom:uiZoom,padding:isMobile?"calc(58px + env(safe-area-inset-top)) 13px calc(18px + env(safe-area-inset-bottom))":"24px 26px"}}>{(()=>{const j=joursAvantExpiration(etab);return (j!==null&&j>=0&&j<=30)?(<div style={{background:"linear-gradient(135deg,#f59e0b,#f97316)",color:"#fff",borderRadius:12,padding:"10px 14px",marginBottom:14,display:"flex",alignItems:"center",gap:10,fontSize:13,fontWeight:700,boxShadow:"0 4px 14px -4px rgba(249,115,22,.5)"}}><span style={{fontSize:18}}>⏳</span><span>{j===0?"Votre abonnement expire aujourd'hui":`Votre abonnement expire dans ${j} jour${j>1?"s":""}`} (le {fmtDate(etab.abonnement_expire_le)}). Pensez à le renouveler auprès de MonEcole.</span></div>):null;})()}<div key={safePage} className="me-page">{pages[safePage]}</div></div>
+      <div ref={mainRef} className="me-main" style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehavior:"contain",zoom:uiZoom,padding:isMobile?"calc(58px + env(safe-area-inset-top)) 13px calc(18px + env(safe-area-inset-bottom))":"24px 26px"}}>{(()=>{const j=joursAvantExpiration(etab);return (j!==null&&j>=0&&j<=30)?(<div style={{background:"linear-gradient(135deg,#f59e0b,#f97316)",color:"#fff",borderRadius:12,padding:"10px 14px",marginBottom:14,display:"flex",alignItems:"center",gap:10,fontSize:13,fontWeight:700,boxShadow:"0 4px 14px -4px rgba(249,115,22,.5)"}}><span style={{fontSize:18}}>⏳</span><span>{j===0?"Votre abonnement expire aujourd'hui":`Votre abonnement expire dans ${j} jour${j>1?"s":""}`} (le {fmtDate(etab.abonnement_expire_le)}). Pensez à le renouveler auprès de MonEcole.</span></div>):null;})()}<div key={safePage} className="me-page">{pages[safePage]}</div></div>
       {allowed.includes("messagerie")&&safePage!=="messagerie"&&(()=>{
         const unread=currentUser?(data.messages||[]).filter(m=>m.auteur_id!==currentUser.id&&new Date(m.created_at).getTime()>msgSeen).length:0;
         return <button onClick={()=>setPage("messagerie")} title={t("nav_messagerie")} aria-label={t("nav_messagerie")} style={{position:"fixed",right:isMobile?16:26,bottom:isMobile?"calc(16px + env(safe-area-inset-bottom))":26,zIndex:80,width:56,height:56,borderRadius:"50%",border:"none",cursor:"pointer",background:"linear-gradient(135deg,var(--me-brand),var(--me-brand2))",color:"#fff",fontSize:24,boxShadow:"0 10px 26px -6px rgba(26,86,219,.7)",display:"flex",alignItems:"center",justifyContent:"center"}}>
