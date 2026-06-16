@@ -5209,6 +5209,18 @@ function App() {
     window.addEventListener("popstate",onPop);
     return ()=>window.removeEventListener("popstate",onPop);
   },[]);
+  // ── Petits écrans (Fold, petits téléphones) : tableaux défilables horizontalement ──
+  useEffect(()=>{
+    try{
+      const id="me-fix-tables";
+      if(!document.getElementById(id)){
+        const st=document.createElement("style");
+        st.id=id;
+        st.textContent="@media (max-width:600px){.me-main table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}}";
+        document.head.appendChild(st);
+      }
+    }catch(_){}
+  },[]);
   useEffect(()=>{try{localStorage.setItem("monecole_zoom",String(uiZoom));}catch(_){}},[uiZoom]);
   const [msgSeen,setMsgSeen]=useState(0);
   useEffect(()=>{if(!currentUser)return;try{setMsgSeen(parseInt(localStorage.getItem("monecole_msg_seen_"+currentUser.id)||"0")||0);}catch(_){}},[currentUser]);
