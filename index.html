@@ -3916,6 +3916,11 @@ function Presences({data,ops,etab}) {
 }
 
 // ── MESSAGERIE ────────────────────────────────────────────────────────────────
+const _SVGIC={fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"};
+const IcAttach=()=>(<svg width="21" height="21" viewBox="0 0 24 24" {..._SVGIC}><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>);
+const IcCam=()=>(<svg width="21" height="21" viewBox="0 0 24 24" {..._SVGIC}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>);
+const IcMic=()=>(<svg width="21" height="21" viewBox="0 0 24 24" {..._SVGIC}><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>);
+const IcSend=()=>(<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>);
 function Messagerie({data,ops,currentUser}) {
   const me=currentUser||{};
   const myName=`${me.prenom||""} ${me.nom||""}`.trim();
@@ -3946,6 +3951,7 @@ function Messagerie({data,ops,currentUser}) {
   const [pending,setPending]=useState([]); // fichiers sélectionnés à envoyer
   const [uploading,setUploading]=useState(false);
   const fileRef=useRef(null);
+  const camRef=useRef(null);
   const endRef=useRef(null);
   // ── Message vocal ──
   const [recording,setRecording]=useState(false);
@@ -4017,7 +4023,7 @@ function Messagerie({data,ops,currentUser}) {
     const ups=[];
     for(const f of files){const r=await ops.uploadFichier(f);if(r)ups.push(r);}
     setPending(p=>[...p,...ups]);setUploading(false);
-    if(fileRef.current)fileRef.current.value="";
+    try{e.target.value="";}catch(_){}
   };
   const send=()=>{if(!msg.trim()&&pending.length===0)return;ops.sendMessage(myName,me.role,msg.trim(),active,me.id,pending);setMsg("");setPending([]);};
   const toggleMembre=id=>setGrpMembres(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);
@@ -4128,12 +4134,17 @@ function Messagerie({data,ops,currentUser}) {
                 <button className="me-btn" onClick={stopAndSend} disabled={uploading} title={t("msg_voc_envoyer")} style={{padding:"10px 18px",borderRadius:11,border:"none",background:"linear-gradient(135deg,var(--me-brand),var(--me-brand2))",color:"#fff",cursor:uploading?"not-allowed":"pointer",fontSize:13,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",opacity:uploading?0.6:1}}>{uploading?"⏳":"➤ "+t("msg_voc_envoyer")}</button>
               </div>
             ):(
-            <div style={{padding:"10px 10px 14px",display:"flex",gap:6,alignItems:"center"}}>
+            <div style={{padding:"8px 8px 14px",display:"flex",gap:3,alignItems:"center"}}>
               <input ref={fileRef} type="file" multiple onChange={pickFiles} style={{display:"none"}}/>
-              <button className="me-btn" onClick={()=>fileRef.current?.click()} disabled={uploading} title={t("msg_joindre")} style={{padding:"9px 10px",borderRadius:11,border:"1.5px solid #e2e8f0",background:"var(--me-surface,#fff)",cursor:"pointer",fontSize:16,flexShrink:0}}>{uploading?"⏳":"📎"}</button>
-              <button className="me-btn" onClick={startRec} disabled={uploading} title={t("msg_voc")} style={{padding:"9px 10px",borderRadius:11,border:"1.5px solid #e2e8f0",background:"var(--me-surface,#fff)",cursor:"pointer",fontSize:16,flexShrink:0}}>🎤</button>
-              <input value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder={t("msg_ecrire_ph")} style={{flex:1,minWidth:0,padding:"10px 12px",borderRadius:11,border:"1.5px solid #e2e8f0",fontSize:13,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
-              <button className="me-btn" onClick={send} disabled={(!msg.trim()&&pending.length===0)||uploading} style={{padding:"10px 14px",borderRadius:11,border:"none",background:(msg.trim()||pending.length)?"linear-gradient(135deg,var(--me-brand),var(--me-brand2))":"#e2e8f0",color:(msg.trim()||pending.length)?"#fff":"#94a3b8",fontSize:16,fontWeight:800,cursor:(msg.trim()||pending.length)?"pointer":"not-allowed",fontFamily:"'Plus Jakarta Sans',sans-serif",flexShrink:0}}>→</button>
+              <input ref={camRef} type="file" accept="image/*" capture="environment" onChange={pickFiles} style={{display:"none"}}/>
+              <button onClick={()=>fileRef.current?.click()} disabled={uploading} title={t("msg_joindre")} style={{background:"none",border:"none",cursor:"pointer",color:"var(--me-text-3)",padding:7,display:"flex",alignItems:"center",flexShrink:0}}><IcAttach/></button>
+              <button onClick={()=>camRef.current?.click()} disabled={uploading} title="Photo" style={{background:"none",border:"none",cursor:"pointer",color:"var(--me-text-3)",padding:7,display:"flex",alignItems:"center",flexShrink:0}}><IcCam/></button>
+              <input value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder={t("msg_ecrire_ph")} style={{flex:1,minWidth:0,padding:"11px 15px",borderRadius:22,border:"1.5px solid #e2e8f0",fontSize:13,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif",background:"var(--me-surface-2,#f8fafc)"}}/>
+              {(msg.trim()||pending.length)?(
+                <button onClick={send} disabled={uploading} title="Envoyer" style={{width:42,height:42,borderRadius:"50%",border:"none",background:"linear-gradient(135deg,var(--me-brand),var(--me-brand2))",color:"#fff",cursor:uploading?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,opacity:uploading?0.6:1}}><IcSend/></button>
+              ):(
+                <button onClick={startRec} disabled={uploading} title={t("msg_voc")} style={{width:42,height:42,borderRadius:"50%",border:"none",background:"linear-gradient(135deg,var(--me-brand),var(--me-brand2))",color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><IcMic/></button>
+              )}
             </div>
             )}
           </div>
