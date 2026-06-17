@@ -3928,6 +3928,18 @@ function Messagerie({data,ops,currentUser}) {
   const [isMobileMsg,setIsMobileMsg]=useState(()=>typeof window!=="undefined"&&window.matchMedia?window.matchMedia("(max-width:768px)").matches:false);
   useEffect(()=>{if(typeof window==="undefined"||!window.matchMedia)return;const mq=window.matchMedia("(max-width:768px)");const h=()=>setIsMobileMsg(mq.matches);mq.addEventListener?mq.addEventListener("change",h):mq.addListener(h);return ()=>{mq.removeEventListener?mq.removeEventListener("change",h):mq.removeListener(h);};},[]);
   const openConv=(key)=>{setActive(key);setOpenedMobile(true);};
+  const _z=(()=>{try{const v=parseFloat(localStorage.getItem("monecole_zoom"));return v&&v>=0.85&&v<=1.6?v:1.1;}catch(_){return 1.1;}})();
+  const gridRef=useRef(null);
+  const [chatH,setChatH]=useState(0);
+  useEffect(()=>{
+    if(!isMobileMsg){setChatH(0);return;}
+    const calc=()=>{const el=gridRef.current;if(!el)return;const top=el.getBoundingClientRect().top;const vh=(window.visualViewport&&window.visualViewport.height)||window.innerHeight;const h=Math.max(220,(vh-top)/_z-6);setChatH(h);};
+    calc();const t1=setTimeout(calc,250);const t2=setTimeout(calc,600);
+    const vv=window.visualViewport;
+    window.addEventListener("resize",calc);window.addEventListener("orientationchange",calc);
+    if(vv){vv.addEventListener("resize",calc);vv.addEventListener("scroll",calc);}
+    return ()=>{clearTimeout(t1);clearTimeout(t2);window.removeEventListener("resize",calc);window.removeEventListener("orientationchange",calc);if(vv){vv.removeEventListener("resize",calc);vv.removeEventListener("scroll",calc);}};
+  },[isMobileMsg,openedMobile,active]);
   const [msg,setMsg]=useState("");
   const [modalGroupe,setModalGroupe]=useState(false);
   const [grpNom,setGrpNom]=useState("");const [grpMembres,setGrpMembres]=useState([]);
@@ -4041,7 +4053,7 @@ function Messagerie({data,ops,currentUser}) {
   return(
     <div>
       {(!isMobileMsg||!openedMobile)&&<SHdr title={t("nav_messagerie")+" 💬"} sub={t("msg_sub")} action={<Btn ch={t("btn_new_groupe")} v="primary" onClick={()=>{setGrpNom("");setGrpMembres([]);setModalGroupe(true);}}/>}/>}
-      <div className="me-msg-grid" style={{display:"grid",gridTemplateColumns:isMobileMsg?"1fr":"230px 1fr",gap:14,height:isMobileMsg?"calc(100dvh - 150px)":500}}>
+      <div ref={gridRef} className="me-msg-grid" style={{display:"grid",gridTemplateColumns:isMobileMsg?"1fr":"230px 1fr",gap:14,height:isMobileMsg?(chatH||`calc(100dvh / ${_z} - 74px)`):500}}>
         {/* Liste des conversations */}
         {(!isMobileMsg||!openedMobile)&&<Card s={{padding:10,overflowY:"auto"}}>
           <div style={{fontSize:10,fontWeight:800,color:"var(--me-text-3)",textTransform:"uppercase",padding:"4px 8px 8px"}}>{t("msg_canaux")}</div>
