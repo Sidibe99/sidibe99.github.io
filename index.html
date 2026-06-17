@@ -4394,10 +4394,10 @@ function Depenses({data,ops,etab,currentUser}) {
 function AppareilsConnectes({currentSessionId}){
   const [list,setList]=useState(null);
   const [busy,setBusy]=useState(false);
-  const charger=async()=>{ try{ const {data}=await sb.from("sessions").select("*").order("created_at",{ascending:false}); setList(data||[]); }catch(_){ setList([]); } };
+  const charger=async()=>{ try{ const {data}=await sb.from("sessions").select("*").order("created_at",{ascending:false}); setList((data||[]).filter(x=>!x.revoked)); }catch(_){ setList([]); } };
   useEffect(()=>{ charger(); },[]);
-  const deco=async(id)=>{ if(!confirmSuppr(t("sess_deco_confirm")))return; setBusy(true); try{ await sb.from("sessions").update({revoked:true}).eq("id",id); }catch(_){} try{ await new Promise(r=>setTimeout(r,800)); await sb.from("sessions").delete().eq("id",id); }catch(_){} await charger(); setBusy(false); };
-  const decoAll=async()=>{ const others=(list||[]).filter(x=>x.id!==currentSessionId); if(others.length===0)return; if(!confirmSuppr(t("sess_deco_tous_confirm")))return; setBusy(true); for(const x of others){ try{await sb.from("sessions").update({revoked:true}).eq("id",x.id);}catch(_){} } try{ await new Promise(r=>setTimeout(r,800)); }catch(_){} for(const x of others){ try{await sb.from("sessions").delete().eq("id",x.id);}catch(_){} } await charger(); setBusy(false); };
+  const deco=async(id)=>{ if(!confirmSuppr(t("sess_deco_confirm")))return; setBusy(true); try{ await sb.from("sessions").update({revoked:true}).eq("id",id); }catch(_){} await charger(); setBusy(false); setTimeout(()=>{ try{ sb.from("sessions").delete().eq("id",id).then(()=>{},()=>{}); }catch(_){} },1000); };
+  const decoAll=async()=>{ const others=(list||[]).filter(x=>x.id!==currentSessionId); if(others.length===0)return; if(!confirmSuppr(t("sess_deco_tous_confirm")))return; setBusy(true); for(const x of others){ try{await sb.from("sessions").update({revoked:true}).eq("id",x.id);}catch(_){} } await charger(); setBusy(false); setTimeout(()=>{ others.forEach(x=>{ try{ sb.from("sessions").delete().eq("id",x.id).then(()=>{},()=>{}); }catch(_){} }); },1000); };
   if(list===null) return <div style={{fontSize:13,color:"var(--me-text-2)"}}>…</div>;
   if(!list.length) return <div style={{fontSize:13,color:"var(--me-text-3)"}}>{t("sess_aucun")}</div>;
   const autresAppareils=list.filter(x=>x.id!==currentSessionId).length;
