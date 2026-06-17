@@ -1119,7 +1119,7 @@ function Onboarding({codeActivation,onDone}) {
   };
 
   return(
-    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
+    <div style={{minHeight:"100dvh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
       <div style={{background:"var(--me-surface,#fff)",borderRadius:22,padding:38,width:560,maxWidth:"100%",boxShadow:"0 32px 80px rgba(0,0,0,0.3)"}}>
         <div style={{display:"flex",gap:8,marginBottom:28}}>
           {[{n:1,l:"École"},{n:2,l:"Admin"}].map((s,i,arr)=>(
@@ -1212,8 +1212,8 @@ function Login({onLogin,lang,setLang,onActivate}) {
     setLoading(false);
   };
   return(
-    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
-      <div style={{background:"var(--me-surface,#fff)",borderRadius:22,padding:38,width:400,maxWidth:"100%",boxShadow:"0 32px 80px rgba(0,0,0,0.3)"}}>
+    <div style={{minHeight:"100dvh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
+      <div style={{background:"var(--me-surface,#fff)",borderRadius:22,padding:38,width:400,maxWidth:"100%",boxShadow:"0 32px 80px rgba(0,0,0,0.3)",margin:"auto 0"}}>
         <div style={{display:"flex",justifyContent:"flex-end",marginBottom:6}}><LangToggle lang={lang} setLang={setLang}/></div>
         <div style={{textAlign:"center",marginBottom:26}}>
           <div style={{width:56,height:56,borderRadius:15,background:"rgba(26,86,219,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,margin:"0 auto 12px"}}>🎓</div>
@@ -4904,8 +4904,8 @@ function MasterGate({onOk}) {
     setBusy(false);
   };
   return(
-    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
-      <div style={{background:"var(--me-surface,#fff)",borderRadius:22,padding:38,width:400,maxWidth:"100%",boxShadow:"0 32px 80px rgba(0,0,0,0.3)"}}>
+    <div style={{minHeight:"100dvh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
+      <div style={{background:"var(--me-surface,#fff)",borderRadius:22,padding:38,width:400,maxWidth:"100%",boxShadow:"0 32px 80px rgba(0,0,0,0.3)",margin:"auto 0"}}>
         <div style={{textAlign:"center",marginBottom:22}}>
           <div style={{width:56,height:56,borderRadius:15,background:"rgba(220,38,38,0.10)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,margin:"0 auto 12px"}}>🔐</div>
           <h2 style={{margin:"0 0 3px",fontSize:19,fontWeight:900,color:"var(--me-text)"}}>Espace éditeur</h2>
@@ -4973,7 +4973,7 @@ function EditorHub({onCreate,masterPw}) {
     }catch(e){setGenErr("Erreur : "+(e.message||e));}
   };
   return(
-    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
+    <div style={{minHeight:"100dvh",background:"linear-gradient(135deg,#0f172a,#1a56db)",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto",fontFamily:"'Plus Jakarta Sans',sans-serif",padding:16}}>
       <div style={{background:"var(--me-surface,#fff)",borderRadius:22,padding:34,width:480,maxWidth:"100%",boxShadow:"0 32px 80px rgba(0,0,0,0.3)",maxHeight:"92vh",overflow:"auto"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{width:54,height:54,borderRadius:15,background:"rgba(26,86,219,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,margin:"0 auto 12px"}}>🛠️</div>
