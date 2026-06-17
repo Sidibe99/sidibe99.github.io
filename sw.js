@@ -3,7 +3,7 @@
 // arrivent immédiatement), "cache d'abord" pour le reste (rapidité + hors-ligne).
 // À placer à la racine du site (même dossier que index.html).
 
-const CACHE = "monecole-2026-06-16"; // ⬅️ change la date à chaque déploiement
+const CACHE = "monecole-2026-06-17"; // ⬅️ change la date à chaque déploiement
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
