@@ -4035,6 +4035,12 @@ function Messagerie({data,ops,currentUser}) {
     if(active.startsWith("dm:")){const ids=active.slice(3).split("-").map(Number);const other=ids.find(i=>i!==me.id);const u=(data.utilisateurs||[]).find(x=>x.id===other);return "👤 "+(u?`${u.prenom} ${u.nom}`:t("msg_prive"));}
     return t("msg_conversation");
   })();
+  const activeSub=(()=>{
+    if(active==="general")return t("msg_tout_le_monde");
+    if(active.startsWith("group:")){const g=groupes.find(x=>"group:"+x.id===active);return `${(g?.membres||[]).length} ${t("msg_membres")}`;}
+    if(active.startsWith("dm:")){const ids=active.slice(3).split("-").map(Number);const other=ids.find(i=>i!==me.id);const u=(data.utilisateurs||[]).find(x=>x.id===other);return u?u.role:"";}
+    return "";
+  })();
 
   const msgsOf=(key)=>(data.messages||[]).filter(m=>(m.conversation||"general")===key);
   const lastOf=(key)=>{const a=msgsOf(key);if(!a.length)return "";let m=a[0];for(const x of a){if(new Date(x.created_at)>=new Date(m.created_at))m=x;}const mine=m.auteur_id===me.id;const fs=Array.isArray(m.fichiers)?m.fichiers:[];const body=m.texte||(fs.length?("📎 "+(fs[0].nom||"")):"");const grp=key==="general"||key.indexOf("group:")===0;const pre=mine?"Vous : ":(grp&&m.auteur?(String(m.auteur).split(" ")[0]+" : "):"");return pre+body;};
@@ -4069,7 +4075,7 @@ function Messagerie({data,ops,currentUser}) {
 
         {/* Zone de chat */}
         {(!isMobileMsg||openedMobile)&&(()=>{const chatInner=(<React.Fragment>
-          <div style={{padding:"12px 16px",borderBottom:"1px solid #f1f5f9",fontWeight:800,fontSize:13,color:"var(--me-text)",display:"flex",alignItems:"center",gap:10}}>{isMobileMsg&&openedMobile&&<button onClick={()=>setOpenedMobile(false)} title="Retour" style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"var(--me-brand)",padding:0,lineHeight:1}}>←</button>}<span>{activeTitle}</span></div>
+          <div style={{padding:"9px 14px",borderBottom:"1px solid #f1f5f9",color:"var(--me-text)",display:"flex",alignItems:"center",gap:10}}>{isMobileMsg&&openedMobile&&<button onClick={()=>setOpenedMobile(false)} title="Retour" style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"var(--me-brand)",padding:0,lineHeight:1,flexShrink:0}}>←</button>}<div style={{display:"flex",flexDirection:"column",minWidth:0,lineHeight:1.25}}><span style={{fontWeight:800,fontSize:14.5,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{activeTitle}</span>{activeSub&&<span style={{fontSize:11,color:"var(--me-text-3)",fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{activeSub}</span>}</div></div>
           <div style={{flex:1,overflowY:"auto",padding:16,display:"flex",flexDirection:"column",gap:10}}>
             {msgs.length===0?<div style={{textAlign:"center",color:"var(--me-text-3)",padding:"40px 0"}}><div style={{fontSize:32}}>💬</div><p style={{fontSize:13}}>{t("msg_aucun_message")}</p></div>:
             msgs.map(m=>{const mine=m.auteur===myName;const fichiers=Array.isArray(m.fichiers)?m.fichiers:[];
