@@ -237,7 +237,7 @@ const I18N = {
     sh_bienvenue:"Bienvenue", sh_fiche:"Fiche vierge",
     btn_new_classe:"+ Nouvelle classe", btn_new_matiere:"+ Nouvelle matière", btn_new_prof:"+ Nouveau membre",
     btn_new_user:"+ Nouvel utilisateur", btn_new_groupe:"+ Nouveau groupe",
-    btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.", sess_new_login:"Nouvelle connexion détectée", sess_new_desc:"Quelqu'un vient de se connecter à votre compte depuis :", sess_deconnecter:"Déconnecter", sess_cetait_moi:"C'était moi", sess_revoked:"Cette session a été déconnectée à distance.", sess_inconnu:"Appareil inconnu", sess_appareils:"Appareils connectés", sess_appareils_aide:"Voici les appareils connectés à votre compte. Vous pouvez déconnecter ceux que vous ne reconnaissez pas.", sess_aucun:"Aucun appareil connecté pour le moment.", sess_cet_appareil:"Cet appareil", sess_deco_confirm:"Déconnecter cet appareil ?",
+    btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.", sess_new_login:"Nouvelle connexion détectée", sess_new_desc:"Quelqu'un vient de se connecter à votre compte depuis :", sess_deconnecter:"Déconnecter", sess_cetait_moi:"C'était moi", sess_revoked:"Cette session a été déconnectée à distance.", sess_inconnu:"Appareil inconnu", sess_appareils:"Appareils connectés", sess_appareils_aide:"Voici les appareils connectés à votre compte. Vous pouvez déconnecter ceux que vous ne reconnaissez pas.", sess_aucun:"Aucun appareil connecté pour le moment.", sess_cet_appareil:"Cet appareil", sess_deco_confirm:"Déconnecter et retirer cet appareil ?", sess_deco_tous:"Déconnecter tous les autres", sess_deco_tous_confirm:"Déconnecter et retirer tous les autres appareils ?",
     imp_export:"⬇ Exporter Excel", imp_import:"⬆ Importer Excel", imp_titre:"Importer des élèves (Excel / CSV)", imp_word:"⬇ Exporter Word",
     imp_intro:"Choisissez la classe de destination, puis un fichier Excel (.xlsx) ou CSV. La première ligne doit contenir les intitulés de colonnes.",
     imp_choisir_fichier:"📁 Choisir un fichier", imp_detectes:"élève(s) détecté(s)", imp_importer:"Importer",
@@ -424,7 +424,7 @@ const I18N = {
     sh_bienvenue:"مرحبًا", sh_fiche:"ورقة فارغة",
     btn_new_classe:"+ فصل جديد", btn_new_matiere:"+ مادة جديدة", btn_new_prof:"+ عضو جديد",
     btn_new_user:"+ مستخدم جديد", btn_new_groupe:"+ مجموعة جديدة",
-    btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.", sess_new_login:"تم اكتشاف تسجيل دخول جديد", sess_new_desc:"قام شخص ما بتسجيل الدخول إلى حسابك من:", sess_deconnecter:"قطع الاتصال", sess_cetait_moi:"كان أنا", sess_revoked:"تم قطع هذه الجلسة عن بُعد.", sess_inconnu:"جهاز غير معروف", sess_appareils:"الأجهزة المتصلة", sess_appareils_aide:"هذه هي الأجهزة المتصلة بحسابك. يمكنك قطع اتصال ما لا تعرفه.", sess_aucun:"لا يوجد جهاز متصل حاليًا.", sess_cet_appareil:"هذا الجهاز", sess_deco_confirm:"قطع اتصال هذا الجهاز؟",
+    btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.", sess_new_login:"تم اكتشاف تسجيل دخول جديد", sess_new_desc:"قام شخص ما بتسجيل الدخول إلى حسابك من:", sess_deconnecter:"قطع الاتصال", sess_cetait_moi:"كان أنا", sess_revoked:"تم قطع هذه الجلسة عن بُعد.", sess_inconnu:"جهاز غير معروف", sess_appareils:"الأجهزة المتصلة", sess_appareils_aide:"هذه هي الأجهزة المتصلة بحسابك. يمكنك قطع اتصال ما لا تعرفه.", sess_aucun:"لا يوجد جهاز متصل حاليًا.", sess_cet_appareil:"هذا الجهاز", sess_deco_confirm:"قطع اتصال هذا الجهاز وإزالته؟", sess_deco_tous:"قطع اتصال جميع الأجهزة الأخرى", sess_deco_tous_confirm:"قطع اتصال جميع الأجهزة الأخرى وإزالتها؟",
     imp_export:"⬇ تصدير إكسل", imp_import:"⬆ استيراد إكسل", imp_titre:"استيراد التلاميذ (إكسل / CSV)", imp_word:"⬇ تصدير وورد",
     imp_intro:"اختر القسم الوجهة، ثم ملف إكسل (.xlsx) أو CSV. يجب أن يحتوي السطر الأول على عناوين الأعمدة.",
     imp_choisir_fichier:"📁 اختر ملفًا", imp_detectes:"تلميذ تم اكتشافه", imp_importer:"استيراد",
@@ -3921,6 +3921,7 @@ const IcAttach=()=>(<svg width="23" height="23" viewBox="0 0 24 24" {..._SVGIC}>
 const IcCam=()=>(<svg width="23" height="23" viewBox="0 0 24 24" {..._SVGIC}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>);
 const IcMic=()=>(<svg width="23" height="23" viewBox="0 0 24 24" {..._SVGIC}><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>);
 const IcSend=()=>(<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>);
+let _msgBackHandler=null;
 function Messagerie({data,ops,currentUser}) {
   const me=currentUser||{};
   const myName=`${me.prenom||""} ${me.nom||""}`.trim();
@@ -3933,7 +3934,6 @@ function Messagerie({data,ops,currentUser}) {
   const [isMobileMsg,setIsMobileMsg]=useState(()=>typeof window!=="undefined"&&window.matchMedia?window.matchMedia("(max-width:768px)").matches:false);
   useEffect(()=>{if(typeof window==="undefined"||!window.matchMedia)return;const mq=window.matchMedia("(max-width:768px)");const h=()=>setIsMobileMsg(mq.matches);mq.addEventListener?mq.addEventListener("change",h):mq.addListener(h);return ()=>{mq.removeEventListener?mq.removeEventListener("change",h):mq.removeListener(h);};},[]);
   const openConv=(key)=>{setActive(key);setOpenedMobile(true);};
-  const _z=(()=>{try{const v=parseFloat(localStorage.getItem("monecole_zoom"));return v&&v>=0.85&&v<=1.6?v:1.1;}catch(_){return 1.1;}})();
   const [vpH,setVpH]=useState(0);
   const [vpTop,setVpTop]=useState(0);
   useEffect(()=>{
@@ -3944,6 +3944,7 @@ function Messagerie({data,ops,currentUser}) {
     if(vv){vv.addEventListener("resize",calc);vv.addEventListener("scroll",calc);}
     return ()=>{window.removeEventListener("resize",calc);window.removeEventListener("orientationchange",calc);if(vv){vv.removeEventListener("resize",calc);vv.removeEventListener("scroll",calc);}};
   },[]);
+  useEffect(()=>{ if(isMobileMsg&&openedMobile){_msgBackHandler=()=>setOpenedMobile(false);}else{_msgBackHandler=null;} return ()=>{_msgBackHandler=null;}; },[isMobileMsg,openedMobile]);
   const [msg,setMsg]=useState("");
   const [modalGroupe,setModalGroupe]=useState(false);
   const [grpNom,setGrpNom]=useState("");const [grpMembres,setGrpMembres]=useState([]);
@@ -4395,10 +4396,13 @@ function AppareilsConnectes({currentSessionId}){
   const [busy,setBusy]=useState(false);
   const charger=async()=>{ try{ const {data}=await sb.from("sessions").select("*").order("created_at",{ascending:false}); setList(data||[]); }catch(_){ setList([]); } };
   useEffect(()=>{ charger(); },[]);
-  const deco=async(id)=>{ if(!confirmSuppr(t("sess_deco_confirm")))return; setBusy(true); try{ await sb.from("sessions").update({revoked:true}).eq("id",id); }catch(_){} await charger(); setBusy(false); };
+  const deco=async(id)=>{ if(!confirmSuppr(t("sess_deco_confirm")))return; setBusy(true); try{ await sb.from("sessions").update({revoked:true}).eq("id",id); }catch(_){} try{ await new Promise(r=>setTimeout(r,800)); await sb.from("sessions").delete().eq("id",id); }catch(_){} await charger(); setBusy(false); };
+  const decoAll=async()=>{ const others=(list||[]).filter(x=>x.id!==currentSessionId); if(others.length===0)return; if(!confirmSuppr(t("sess_deco_tous_confirm")))return; setBusy(true); for(const x of others){ try{await sb.from("sessions").update({revoked:true}).eq("id",x.id);}catch(_){} } try{ await new Promise(r=>setTimeout(r,800)); }catch(_){} for(const x of others){ try{await sb.from("sessions").delete().eq("id",x.id);}catch(_){} } await charger(); setBusy(false); };
   if(list===null) return <div style={{fontSize:13,color:"var(--me-text-2)"}}>…</div>;
   if(!list.length) return <div style={{fontSize:13,color:"var(--me-text-3)"}}>{t("sess_aucun")}</div>;
+  const autresAppareils=list.filter(x=>x.id!==currentSessionId).length;
   return <div style={{display:"flex",flexDirection:"column",gap:9}}>
+    {autresAppareils>0&&<button onClick={decoAll} disabled={busy} style={{alignSelf:"flex-start",background:"rgba(220,38,38,0.10)",color:"#dc2626",border:"none",borderRadius:9,padding:"8px 13px",cursor:busy?"default":"pointer",fontSize:12,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",marginBottom:2}}>🗑️ {t("sess_deco_tous")}</button>}
     {list.map(s=>{ const moi=s.id===currentSessionId; let dte=""; try{dte=new Date(s.created_at).toLocaleString(CURRENT_LANG==="ar"?"ar":"fr-FR");}catch(_){}
       return <div key={s.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,padding:"11px 13px",borderRadius:11,border:"1.5px solid var(--me-border-2)",background:"var(--me-surface)"}}>
         <div style={{minWidth:0}}>
@@ -5237,6 +5241,7 @@ function App() {
       if(s.navOpen){setNavOpen(false);return;}
       if(s.quickOpen){setQuickOpen(false);return;}
       if(s.themeOpen){setThemeOpen(false);return;}
+      if(_msgBackHandler){_msgBackHandler();return;}
       if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;
       setGlobalDirty(false);
       if(backStack.current.length){const prev=backStack.current.pop();isBackNav.current=true;setPageRaw(prev);return;}
