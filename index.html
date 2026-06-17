@@ -4122,12 +4122,12 @@ function Messagerie({data,ops,currentUser}) {
                 <button className="me-btn" onClick={stopAndSend} disabled={uploading} title={t("msg_voc_envoyer")} style={{padding:"10px 18px",borderRadius:11,border:"none",background:"linear-gradient(135deg,var(--me-brand),var(--me-brand2))",color:"#fff",cursor:uploading?"not-allowed":"pointer",fontSize:13,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",opacity:uploading?0.6:1}}>{uploading?"⏳":"➤ "+t("msg_voc_envoyer")}</button>
               </div>
             ):(
-            <div style={{padding:"12px 15px",display:"flex",gap:9,alignItems:"center"}}>
+            <div style={{padding:"10px 10px 14px",display:"flex",gap:6,alignItems:"center"}}>
               <input ref={fileRef} type="file" multiple onChange={pickFiles} style={{display:"none"}}/>
-              <button className="me-btn" onClick={()=>fileRef.current?.click()} disabled={uploading} title={t("msg_joindre")} style={{padding:"10px 13px",borderRadius:11,border:"1.5px solid #e2e8f0",background:"var(--me-surface,#fff)",cursor:"pointer",fontSize:16}}>{uploading?"⏳":"📎"}</button>
-              <button className="me-btn" onClick={startRec} disabled={uploading} title={t("msg_voc")} style={{padding:"10px 13px",borderRadius:11,border:"1.5px solid #e2e8f0",background:"var(--me-surface,#fff)",cursor:"pointer",fontSize:16}}>🎤</button>
-              <input value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder={t("msg_ecrire_ph")} style={{flex:1,padding:"10px 14px",borderRadius:11,border:"1.5px solid #e2e8f0",fontSize:13,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
-              <button className="me-btn" onClick={send} disabled={(!msg.trim()&&pending.length===0)||uploading} style={{padding:"10px 18px",borderRadius:11,border:"none",background:(msg.trim()||pending.length)?"linear-gradient(135deg,var(--me-brand),var(--me-brand2))":"#e2e8f0",color:(msg.trim()||pending.length)?"#fff":"#94a3b8",fontSize:14,fontWeight:700,cursor:(msg.trim()||pending.length)?"pointer":"not-allowed",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>→</button>
+              <button className="me-btn" onClick={()=>fileRef.current?.click()} disabled={uploading} title={t("msg_joindre")} style={{padding:"9px 10px",borderRadius:11,border:"1.5px solid #e2e8f0",background:"var(--me-surface,#fff)",cursor:"pointer",fontSize:16,flexShrink:0}}>{uploading?"⏳":"📎"}</button>
+              <button className="me-btn" onClick={startRec} disabled={uploading} title={t("msg_voc")} style={{padding:"9px 10px",borderRadius:11,border:"1.5px solid #e2e8f0",background:"var(--me-surface,#fff)",cursor:"pointer",fontSize:16,flexShrink:0}}>🎤</button>
+              <input value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder={t("msg_ecrire_ph")} style={{flex:1,minWidth:0,padding:"10px 12px",borderRadius:11,border:"1.5px solid #e2e8f0",fontSize:13,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
+              <button className="me-btn" onClick={send} disabled={(!msg.trim()&&pending.length===0)||uploading} style={{padding:"10px 14px",borderRadius:11,border:"none",background:(msg.trim()||pending.length)?"linear-gradient(135deg,var(--me-brand),var(--me-brand2))":"#e2e8f0",color:(msg.trim()||pending.length)?"#fff":"#94a3b8",fontSize:16,fontWeight:800,cursor:(msg.trim()||pending.length)?"pointer":"not-allowed",fontFamily:"'Plus Jakarta Sans',sans-serif",flexShrink:0}}>→</button>
             </div>
             )}
           </div>
