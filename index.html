@@ -3929,17 +3929,15 @@ function Messagerie({data,ops,currentUser}) {
   useEffect(()=>{if(typeof window==="undefined"||!window.matchMedia)return;const mq=window.matchMedia("(max-width:768px)");const h=()=>setIsMobileMsg(mq.matches);mq.addEventListener?mq.addEventListener("change",h):mq.addListener(h);return ()=>{mq.removeEventListener?mq.removeEventListener("change",h):mq.removeListener(h);};},[]);
   const openConv=(key)=>{setActive(key);setOpenedMobile(true);};
   const _z=(()=>{try{const v=parseFloat(localStorage.getItem("monecole_zoom"));return v&&v>=0.85&&v<=1.6?v:1.1;}catch(_){return 1.1;}})();
-  const gridRef=useRef(null);
-  const [chatH,setChatH]=useState(0);
+  const [vpH,setVpH]=useState(0);
   useEffect(()=>{
-    if(!isMobileMsg){setChatH(0);return;}
-    const calc=()=>{const el=gridRef.current;if(!el)return;const top=el.getBoundingClientRect().top;const vh=(window.visualViewport&&window.visualViewport.height)||window.innerHeight;const h=Math.max(220,(vh-top)/_z-6);setChatH(h);};
-    calc();const t1=setTimeout(calc,250);const t2=setTimeout(calc,600);
+    const calc=()=>setVpH((window.visualViewport&&window.visualViewport.height)||window.innerHeight||0);
+    calc();
     const vv=window.visualViewport;
     window.addEventListener("resize",calc);window.addEventListener("orientationchange",calc);
     if(vv){vv.addEventListener("resize",calc);vv.addEventListener("scroll",calc);}
-    return ()=>{clearTimeout(t1);clearTimeout(t2);window.removeEventListener("resize",calc);window.removeEventListener("orientationchange",calc);if(vv){vv.removeEventListener("resize",calc);vv.removeEventListener("scroll",calc);}};
-  },[isMobileMsg,openedMobile,active]);
+    return ()=>{window.removeEventListener("resize",calc);window.removeEventListener("orientationchange",calc);if(vv){vv.removeEventListener("resize",calc);vv.removeEventListener("scroll",calc);}};
+  },[]);
   const [msg,setMsg]=useState("");
   const [modalGroupe,setModalGroupe]=useState(false);
   const [grpNom,setGrpNom]=useState("");const [grpMembres,setGrpMembres]=useState([]);
@@ -4053,7 +4051,7 @@ function Messagerie({data,ops,currentUser}) {
   return(
     <div>
       {(!isMobileMsg||!openedMobile)&&<SHdr title={t("nav_messagerie")+" 💬"} sub={t("msg_sub")} action={<Btn ch={t("btn_new_groupe")} v="primary" onClick={()=>{setGrpNom("");setGrpMembres([]);setModalGroupe(true);}}/>}/>}
-      <div ref={gridRef} className="me-msg-grid" style={{display:"grid",gridTemplateColumns:isMobileMsg?"1fr":"230px 1fr",gap:14,height:isMobileMsg?(openedMobile?(chatH||`calc(100dvh / ${_z} - 74px)`):"auto"):500}}>
+      <div className="me-msg-grid" style={{display:"grid",gridTemplateColumns:isMobileMsg?"1fr":"230px 1fr",gap:14,height:isMobileMsg?"auto":500}}>
         {/* Liste des conversations */}
         {(!isMobileMsg||!openedMobile)&&<Card s={{padding:10,overflowY:"auto"}}>
           <div style={{fontSize:10,fontWeight:800,color:"var(--me-text-3)",textTransform:"uppercase",padding:"4px 8px 8px"}}>{t("msg_canaux")}</div>
@@ -4069,7 +4067,7 @@ function Messagerie({data,ops,currentUser}) {
         </Card>}
 
         {/* Zone de chat */}
-        {(!isMobileMsg||openedMobile)&&<Card s={{display:"flex",flexDirection:"column",padding:0,overflow:"hidden"}}>
+        {(!isMobileMsg||openedMobile)&&(()=>{const chatInner=(<React.Fragment>
           <div style={{padding:"12px 16px",borderBottom:"1px solid #f1f5f9",fontWeight:800,fontSize:13,color:"var(--me-text)",display:"flex",alignItems:"center",gap:10}}>{isMobileMsg&&openedMobile&&<button onClick={()=>setOpenedMobile(false)} title="Retour" style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"var(--me-brand)",padding:0,lineHeight:1}}>←</button>}<span>{activeTitle}</span></div>
           <div style={{flex:1,overflowY:"auto",padding:16,display:"flex",flexDirection:"column",gap:10}}>
             {msgs.length===0?<div style={{textAlign:"center",color:"var(--me-text-3)",padding:"40px 0"}}><div style={{fontSize:32}}>💬</div><p style={{fontSize:13}}>{t("msg_aucun_message")}</p></div>:
@@ -4132,7 +4130,7 @@ function Messagerie({data,ops,currentUser}) {
             </div>
             )}
           </div>
-        </Card>}
+        </React.Fragment>);return (isMobileMsg&&openedMobile)?ReactDOM.createPortal(<div style={{position:"fixed",left:0,top:0,width:"100%",height:vpH||"100dvh",zIndex:200,background:"var(--me-surface,#fff)",display:"flex",flexDirection:"column",paddingTop:"env(safe-area-inset-top)"}}>{chatInner}</div>,document.body):(<Card s={{display:"flex",flexDirection:"column",padding:0,overflow:"hidden"}}>{chatInner}</Card>);})()}
       </div>
 
       {modalGroupe&&<Modal confirmClose title={t("msg_creer_groupe")} onClose={()=>setModalGroupe(false)}>
