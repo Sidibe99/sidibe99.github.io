@@ -4053,7 +4053,7 @@ function Messagerie({data,ops,currentUser}) {
   return(
     <div>
       {(!isMobileMsg||!openedMobile)&&<SHdr title={t("nav_messagerie")+" 💬"} sub={t("msg_sub")} action={<Btn ch={t("btn_new_groupe")} v="primary" onClick={()=>{setGrpNom("");setGrpMembres([]);setModalGroupe(true);}}/>}/>}
-      <div ref={gridRef} className="me-msg-grid" style={{display:"grid",gridTemplateColumns:isMobileMsg?"1fr":"230px 1fr",gap:14,height:isMobileMsg?(chatH||`calc(100dvh / ${_z} - 74px)`):500}}>
+      <div ref={gridRef} className="me-msg-grid" style={{display:"grid",gridTemplateColumns:isMobileMsg?"1fr":"230px 1fr",gap:14,height:isMobileMsg?(openedMobile?(chatH||`calc(100dvh / ${_z} - 74px)`):"auto"):500}}>
         {/* Liste des conversations */}
         {(!isMobileMsg||!openedMobile)&&<Card s={{padding:10,overflowY:"auto"}}>
           <div style={{fontSize:10,fontWeight:800,color:"var(--me-text-3)",textTransform:"uppercase",padding:"4px 8px 8px"}}>{t("msg_canaux")}</div>
