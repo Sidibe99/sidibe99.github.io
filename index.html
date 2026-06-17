@@ -4774,8 +4774,6 @@ function Parametres({etab,data,ops,onEtabUpdate,currentUser,theme,setTheme,brand
           <Inp label={t("pf_tel")} value={form.telephone} onChange={set("telephone")} placeholder="+224 ..."/>
           <Inp label={t("pf_email")} value={form.email} onChange={set("email")} placeholder="direction@ecole.gn"/>
           <Inp label={t("st_prefixe")} value={form.prefixe} onChange={set("prefixe")} placeholder="CMC"/>
-          <Inp label={t("st_frais_insc_def")} type="number" value={form.fraisInscription} onChange={set("fraisInscription")}/>
-          <Inp label={t("st_mensualite_def")} type="number" value={form.mensualite} onChange={set("mensualite")}/>
         </div>
         <div style={{marginTop:12,background:"var(--me-surface-2,#f8fafc)",borderRadius:11,padding:"10px 13px",fontSize:11,color:"var(--me-text-2)",lineHeight:1.55}}>{t("st_methode_note")}</div>
         <div style={{marginTop:14,display:"flex",alignItems:"center",gap:10,background:"rgba(26,86,219,0.12)",border:"1px solid #bfdbfe",borderRadius:11,padding:"11px 14px"}}>
@@ -5375,8 +5373,11 @@ function App() {
         const {data:{session}}=await sb.auth.getSession();
         if(!session||!session.user) return;
         const auth_uid=session.user.id;
-        const {data:row}=await sb.from("sessions").insert({auth_uid,appareil:deviceLabel(),revoked:false}).select().single();
-        if(cancelled){ if(row&&row.id){try{await sb.from("sessions").delete().eq("id",row.id);}catch(_){}} return; }
+        const dev=(()=>{try{let d=localStorage.getItem("monecole_device_id");if(!d){d="dev_"+Math.random().toString(36).slice(2,10)+Date.now().toString(36);localStorage.setItem("monecole_device_id",d);}return d;}catch(_){return null;}})();
+        let row=null;
+        if(dev){ try{ const {data:ex}=await sb.from("sessions").select("*").eq("auth_uid",auth_uid).eq("device_id",dev).limit(1); if(ex&&ex.length){ row=ex[0]; try{await sb.from("sessions").update({revoked:false,appareil:deviceLabel()}).eq("id",row.id);}catch(_){} } }catch(_){} }
+        if(!row){ const {data:ins}=await sb.from("sessions").insert({auth_uid,appareil:deviceLabel(),device_id:dev,revoked:false}).select().single(); row=ins; }
+        if(cancelled) return;
         if(row&&row.id){ mySessionRef.current=row.id; setMySessionId(row.id); }
         chan=sb.channel("sessions-"+auth_uid)
           .on("postgres_changes",{event:"INSERT",schema:"public",table:"sessions",filter:"auth_uid=eq."+auth_uid},(p)=>{ const n=p.new; if(n&&n.id!==mySessionRef.current) setNewLogin({id:n.id,appareil:n.appareil||t("sess_inconnu")}); })
@@ -5384,7 +5385,7 @@ function App() {
           .subscribe();
       }catch(_){ /* table absente / hors-ligne : fonctionnalité inactive sans gêner l'app */ }
     })();
-    return ()=>{ cancelled=true; try{ if(mySessionRef.current) sb.from("sessions").delete().eq("id",mySessionRef.current); }catch(_){} try{ if(chan) sb.removeChannel(chan); }catch(_){} mySessionRef.current=null; };
+    return ()=>{ cancelled=true; try{ if(chan) sb.removeChannel(chan); }catch(_){} mySessionRef.current=null; };
   },[currentUser&&currentUser.id,screen]);
 
   if(booting) return (
@@ -5406,7 +5407,7 @@ function App() {
 
   // Abonnement expiré → blocage (l'école peut renouveler avec un code)
   if(screen==="app" && etab && isAbonnementExpire(etab))
-    return <AbonnementExpire etab={etab} currentUser={currentUser} onRenouvele={nv=>setEtab(e=>({...(e||{}),abonnement_expire_le:nv}))} onLogout={()=>{if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>;
+    return <AbonnementExpire etab={etab} currentUser={currentUser} onRenouvele={nv=>setEtab(e=>({...(e||{}),abonnement_expire_le:nv}))} onLogout={()=>{if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);try{if(mySessionRef.current)sb.from("sessions").delete().eq("id",mySessionRef.current);}catch(_){}try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>;
 
   // Sécurité : un professeur ne peut afficher que les pages autorisées
   const allowed=pagesForUser(currentUser);
@@ -5437,7 +5438,7 @@ function App() {
     presences:<Presences data={scopedData} ops={ops} etab={etab||{}}/>,
     messagerie:<Messagerie data={data} ops={ops} currentUser={currentUser}/>,
     utilisateurs:<Utilisateurs data={data} ops={ops} currentUser={currentUser} etab={etab||{}}/>,
-    parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser} theme={theme} setTheme={setTheme} brand={brand} setBrand={setBrand} uiZoom={uiZoom} setUiZoom={setUiZoom} lang={lang} setLang={setLang} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} currentSessionId={mySessionId} onLogout={()=>{if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>,
+    parametres:<Parametres etab={etab||{}} data={data} ops={ops} onEtabUpdate={setEtab} currentUser={currentUser} theme={theme} setTheme={setTheme} brand={brand} setBrand={setBrand} uiZoom={uiZoom} setUiZoom={setUiZoom} lang={lang} setLang={setLang} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} currentSessionId={mySessionId} onLogout={()=>{if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);try{if(mySessionRef.current)sb.from("sessions").delete().eq("id",mySessionRef.current);}catch(_){}try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}}/>,
   };
 
   return(
@@ -5503,7 +5504,7 @@ body{overscroll-behavior-y:none;}
           })()}
         </nav>
         <div style={{flexShrink:0,padding:"8px 10px calc(10px + env(safe-area-inset-bottom))",borderTop:"1px solid rgba(255,255,255,0.08)"}}>
-          <button onClick={()=>{if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}} className="me-nav" style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"11px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",background:"rgba(239,68,68,0.15)",color:"#fca5a5",fontWeight:700,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}><span style={{fontSize:16}}>🚪</span>{t("logout")}</button>
+          <button onClick={()=>{if(isGlobalDirty()&&!window.confirm(t("quit_unsaved")))return;setGlobalDirty(false);try{if(mySessionRef.current)sb.from("sessions").delete().eq("id",mySessionRef.current);}catch(_){}try{sb.auth.signOut();}catch(_){}try{localStorage.removeItem("monecole_uid");}catch(_){}setCurrentUser(null);setScreen("login");}} className="me-nav" style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"11px 12px",borderRadius:10,border:"none",cursor:"pointer",textAlign:"left",background:"rgba(239,68,68,0.15)",color:"#fca5a5",fontWeight:700,fontSize:13.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}><span style={{fontSize:16}}>🚪</span>{t("logout")}</button>
         </div>
       </div>
       <div ref={mainRef} className="me-main" style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehavior:"contain",zoom:uiZoom,padding:isMobile?"calc(58px + env(safe-area-inset-top)) 13px calc(18px + env(safe-area-inset-bottom))":"24px 26px"}}>{(()=>{const j=joursAvantExpiration(etab);return (j!==null&&j>=0&&j<=30)?(<div style={{background:"linear-gradient(135deg,#f59e0b,#f97316)",color:"#fff",borderRadius:12,padding:"10px 14px",marginBottom:14,display:"flex",alignItems:"center",gap:10,fontSize:13,fontWeight:700,boxShadow:"0 4px 14px -4px rgba(249,115,22,.5)"}}><span style={{fontSize:18}}>⏳</span><span>{j===0?"Votre abonnement expire aujourd'hui":`Votre abonnement expire dans ${j} jour${j>1?"s":""}`} (le {fmtDate(etab.abonnement_expire_le)}). Pensez à le renouveler auprès de MonEcole.</span></div>):null;})()}<div key={safePage} className="me-page">{pages[safePage]}</div></div>
