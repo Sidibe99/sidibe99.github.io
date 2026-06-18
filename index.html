@@ -237,7 +237,7 @@ const I18N = {
     sh_bienvenue:"Bienvenue", sh_fiche:"Fiche vierge",
     btn_new_classe:"+ Nouvelle classe", btn_new_matiere:"+ Nouvelle matière", btn_new_prof:"+ Nouveau membre",
     btn_new_user:"+ Nouvel utilisateur", btn_new_groupe:"+ Nouveau groupe",
-    btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.", offline_banner:"Hors ligne — consultation des dernières données", sess_new_login:"Nouvelle connexion détectée", sess_new_desc:"Quelqu'un vient de se connecter à votre compte depuis :", sess_deconnecter:"Déconnecter", sess_cetait_moi:"C'était moi", sess_revoked:"Cette session a été déconnectée à distance.", sess_inconnu:"Appareil inconnu", sess_appareils:"Appareils connectés", sess_appareils_aide:"Voici les appareils connectés à votre compte. Vous pouvez déconnecter ceux que vous ne reconnaissez pas.", sess_aucun:"Aucun appareil connecté pour le moment.", sess_cet_appareil:"Cet appareil", sess_deco_confirm:"Déconnecter et retirer cet appareil ?", sess_deco_tous:"Déconnecter tous les autres", sess_deco_tous_confirm:"Déconnecter et retirer tous les autres appareils ?",
+    btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.", offline_banner:"Hors ligne — consultation des dernières données", sync_pending:"en attente de synchro", sess_new_login:"Nouvelle connexion détectée", sess_new_desc:"Quelqu'un vient de se connecter à votre compte depuis :", sess_deconnecter:"Déconnecter", sess_cetait_moi:"C'était moi", sess_revoked:"Cette session a été déconnectée à distance.", sess_inconnu:"Appareil inconnu", sess_appareils:"Appareils connectés", sess_appareils_aide:"Voici les appareils connectés à votre compte. Vous pouvez déconnecter ceux que vous ne reconnaissez pas.", sess_aucun:"Aucun appareil connecté pour le moment.", sess_cet_appareil:"Cet appareil", sess_deco_confirm:"Déconnecter et retirer cet appareil ?", sess_deco_tous:"Déconnecter tous les autres", sess_deco_tous_confirm:"Déconnecter et retirer tous les autres appareils ?",
     imp_export:"⬇ Exporter Excel", imp_import:"⬆ Importer Excel", imp_titre:"Importer des élèves (Excel / CSV)", imp_word:"⬇ Exporter Word",
     imp_intro:"Choisissez la classe de destination, puis un fichier Excel (.xlsx) ou CSV. La première ligne doit contenir les intitulés de colonnes.",
     imp_choisir_fichier:"📁 Choisir un fichier", imp_detectes:"élève(s) détecté(s)", imp_importer:"Importer",
@@ -424,7 +424,7 @@ const I18N = {
     sh_bienvenue:"مرحبًا", sh_fiche:"ورقة فارغة",
     btn_new_classe:"+ فصل جديد", btn_new_matiere:"+ مادة جديدة", btn_new_prof:"+ عضو جديد",
     btn_new_user:"+ مستخدم جديد", btn_new_groupe:"+ مجموعة جديدة",
-    btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.", offline_banner:"غير متصل — عرض آخر البيانات المحفوظة", sess_new_login:"تم اكتشاف تسجيل دخول جديد", sess_new_desc:"قام شخص ما بتسجيل الدخول إلى حسابك من:", sess_deconnecter:"قطع الاتصال", sess_cetait_moi:"كان أنا", sess_revoked:"تم قطع هذه الجلسة عن بُعد.", sess_inconnu:"جهاز غير معروف", sess_appareils:"الأجهزة المتصلة", sess_appareils_aide:"هذه هي الأجهزة المتصلة بحسابك. يمكنك قطع اتصال ما لا تعرفه.", sess_aucun:"لا يوجد جهاز متصل حاليًا.", sess_cet_appareil:"هذا الجهاز", sess_deco_confirm:"قطع اتصال هذا الجهاز وإزالته؟", sess_deco_tous:"قطع اتصال جميع الأجهزة الأخرى", sess_deco_tous_confirm:"قطع اتصال جميع الأجهزة الأخرى وإزالتها؟",
+    btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.", offline_banner:"غير متصل — عرض آخر البيانات المحفوظة", sync_pending:"في انتظار المزامنة", sess_new_login:"تم اكتشاف تسجيل دخول جديد", sess_new_desc:"قام شخص ما بتسجيل الدخول إلى حسابك من:", sess_deconnecter:"قطع الاتصال", sess_cetait_moi:"كان أنا", sess_revoked:"تم قطع هذه الجلسة عن بُعد.", sess_inconnu:"جهاز غير معروف", sess_appareils:"الأجهزة المتصلة", sess_appareils_aide:"هذه هي الأجهزة المتصلة بحسابك. يمكنك قطع اتصال ما لا تعرفه.", sess_aucun:"لا يوجد جهاز متصل حاليًا.", sess_cet_appareil:"هذا الجهاز", sess_deco_confirm:"قطع اتصال هذا الجهاز وإزالته؟", sess_deco_tous:"قطع اتصال جميع الأجهزة الأخرى", sess_deco_tous_confirm:"قطع اتصال جميع الأجهزة الأخرى وإزالتها؟",
     imp_export:"⬇ تصدير إكسل", imp_import:"⬆ استيراد إكسل", imp_titre:"استيراد التلاميذ (إكسل / CSV)", imp_word:"⬇ تصدير وورد",
     imp_intro:"اختر القسم الوجهة، ثم ملف إكسل (.xlsx) أو CSV. يجب أن يحتوي السطر الأول على عناوين الأعمدة.",
     imp_choisir_fichier:"📁 اختر ملفًا", imp_detectes:"تلميذ تم اكتشافه", imp_importer:"استيراد",
@@ -1291,6 +1291,51 @@ function useSupabaseData(etablissementId) {
     return()=>channels.forEach(c=>sb.removeChannel(c));
   },[etablissementId,load]);
 
+  // --- File d'attente hors ligne (inscription + paiement) ---
+  const [pendingCount,setPendingCount]=useState(0);
+  const flushingRef=useRef(false);
+  const OUTBOX_KEY="monecole_outbox_"+etablissementId;
+  const cuidGen=()=>"c_"+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+  const readOutbox=()=>{ try{ return JSON.parse(localStorage.getItem(OUTBOX_KEY)||"[]"); }catch(_){ return []; } };
+  const writeOutbox=(arr)=>{ try{ localStorage.setItem(OUTBOX_KEY, JSON.stringify(arr)); }catch(_){} setPendingCount(arr.length); };
+  const enqueueOp=(op)=>{ const arr=readOutbox(); arr.push({...op,ts:Date.now()}); writeOutbox(arr); };
+  const applyLocal=(fn)=>{ setData(prev=>{ const next=fn(prev); try{ localStorage.setItem("monecole_cache_"+etablissementId, JSON.stringify(next)); }catch(_){} return next; }); };
+  useEffect(()=>{ setPendingCount(readOutbox().length); },[etablissementId]);
+  const flushOutbox=useCallback(async()=>{
+    if(!etablissementId) return;
+    if(typeof navigator!=="undefined" && navigator.onLine===false) return;
+    if(flushingRef.current) return;
+    let arr=readOutbox(); if(!arr.length) return;
+    flushingRef.current=true;
+    const idMap={};
+    try{
+      for(const op of [...arr]){
+        let payload={...op.payload};
+        if(op.kind==="paiement" && typeof payload.eleve_id==="number" && payload.eleve_id<0){
+          if(idMap[payload.eleve_id]) payload.eleve_id=idMap[payload.eleve_id];
+          else continue; // l'élève lié n'est pas encore synchronisé dans cette passe
+        }
+        const tbl=op.kind==="eleve"?"eleves":"paiements";
+        let exist=null;
+        try{ const r=await sb.from(tbl).select("id").eq("client_uid",op.client_uid).maybeSingle(); exist=r&&r.data; }
+        catch(_){ break; } // réseau coupé -> on réessaiera
+        let realId=null;
+        if(exist&&exist.id){ realId=exist.id; }
+        else{
+          let res;
+          try{ res=await sb.from(tbl).insert(payload).select("id").single(); }
+          catch(_){ break; } // réseau coupé -> on garde la file
+          if(res.error){ showToast("Synchro impossible — exécutez la migration client_uid","error"); break; }
+          realId=res.data.id;
+        }
+        if(op.kind==="eleve"){ idMap[op.tmpId]=realId; arr=arr.map(o=>(o.kind==="paiement"&&o.payload&&o.payload.eleve_id===op.tmpId)?{...o,payload:{...o.payload,eleve_id:realId}}:o); }
+        arr=arr.filter(o=>o.client_uid!==op.client_uid); writeOutbox(arr);
+      }
+    } finally { flushingRef.current=false; }
+    await load();
+  },[etablissementId,load]);
+  useEffect(()=>{ if(syncStatus==="online") flushOutbox(); },[syncStatus,flushOutbox]);
+
   // CRUD operations
   const ops = {
     updateEtab: async(id,form)=>{const{data:d,error}=await sb.from("etablissements").update(form).eq("id",id).select().single();if(!error){showToast("Établissement mis à jour");return d;}else{showToast(error.message,"error");return null;}},
@@ -1302,7 +1347,7 @@ function useSupabaseData(etablissementId) {
     updateMat: async(id,form)=>{const{error}=await sb.from("matieres").update(form).eq("id",id);if(!error){load();showToast("Matière modifiée");}else showToast(error.message,"error");},
     deleteMat: async(id)=>{if(!confirmSuppr())return;await sb.from("matieres").delete().eq("id",id);load();showToast("Matière supprimée");},
 
-    addEleve: async(form)=>{const count=data.eleves.length;const {prefixe,...rest}=form;["frais_annuel","frais_inscription_eleve"].forEach(k=>{if(rest[k]===""||rest[k]===undefined)rest[k]=null;});const mat=`${prefixe||"EL"}-${String(count+1).padStart(4,"0")}`;const{data:created,error}=await sb.from("eleves").insert({...rest,matricule:mat,etablissement_id:etablissementId,inscription_date:TODAY,notes:{}}).select().single();if(!error){load();showToast("Élève inscrit");return created;}else{showToast(error.message,"error");return null;}},
+    addEleve: async(form)=>{const count=data.eleves.length;const {prefixe,...rest}=form;["frais_annuel","frais_inscription_eleve"].forEach(k=>{if(rest[k]===""||rest[k]===undefined)rest[k]=null;});const mat=`${prefixe||"EL"}-${String(count+1).padStart(4,"0")}`;const base={...rest,matricule:mat,etablissement_id:etablissementId,inscription_date:TODAY,notes:{}};try{const{data:created,error}=await sb.from("eleves").insert(base).select().single();if(error){showToast(error.message,"error");return null;}load();showToast("Élève inscrit");return created;}catch(e){const cuid=cuidGen();const tmpId=-(Date.now()+Math.floor(Math.random()*1000));const optimistic={...base,id:tmpId,client_uid:cuid,_pending:true};enqueueOp({kind:"eleve",client_uid:cuid,tmpId,payload:{...base,client_uid:cuid}});applyLocal(d=>({...d,eleves:[...d.eleves,optimistic]}));showToast("Élève enregistré — en attente de synchro");return optimistic;}},
     updateEleve: async(id,form)=>{const f={...form};["frais_annuel","frais_inscription_eleve"].forEach(k=>{if(f[k]===""||f[k]===undefined)f[k]=null;});const{error}=await sb.from("eleves").update(f).eq("id",id);if(!error){load();showToast("Élève modifié");}else showToast(error.message,"error");},
     saveComiteAll: async(comiteList,annee)=>{try{
       await sb.from("etablissements").update({comite:comiteList}).eq("id",etablissementId);
@@ -1337,7 +1382,7 @@ function useSupabaseData(etablissementId) {
       load();showToast("Notes enregistrées");
     },
 
-    addPaiement: async(form)=>{const{data:created,error}=await sb.from("paiements").insert({...form,etablissement_id:etablissementId,recu:`REC-${String(data.paiements.length+1).padStart(4,"0")}`,created_at:new Date().toISOString()}).select().single();if(!error){load();showToast("Paiement enregistré");return created;}else{showToast(error.message,"error");return null;}},
+    addPaiement: async(form)=>{const base={...form,etablissement_id:etablissementId,recu:`REC-${String(data.paiements.length+1).padStart(4,"0")}`,created_at:new Date().toISOString()};try{const{data:created,error}=await sb.from("paiements").insert(base).select().single();if(error){showToast(error.message,"error");return null;}load();showToast("Paiement enregistré");return created;}catch(e){const cuid=cuidGen();const tmpId=-(Date.now()+Math.floor(Math.random()*1000));const optimistic={...base,id:tmpId,client_uid:cuid,_pending:true};enqueueOp({kind:"paiement",client_uid:cuid,tmpId,payload:{...base,client_uid:cuid}});applyLocal(d=>({...d,paiements:[optimistic,...d.paiements]}));showToast("Paiement enregistré — en attente de synchro");return optimistic;}},
     deletePaiement: async(id)=>{if(!confirmSuppr())return;await sb.from("paiements").delete().eq("id",id);load();showToast("Paiement supprimé");},
 
     addProf: async(form)=>{const{error}=await sb.from("professeurs").insert({...form,etablissement_id:etablissementId});if(!error){load();showToast("Professeur ajouté");}else showToast(error.message,"error");},
@@ -1414,7 +1459,7 @@ function useSupabaseData(etablissementId) {
     deleteUser: async(id)=>{if(!confirmSuppr())return;await sb.from("utilisateurs").delete().eq("id",id);load();showToast("Utilisateur supprimé");},
   };
 
-  return{data,syncStatus,toast,ops,reload:load,online};
+  return{data,syncStatus,toast,ops,reload:load,online,pendingCount,flushOutbox};
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
@@ -5276,7 +5321,7 @@ function App() {
   useEffect(()=>{if(!currentUser)return;try{setMsgSeen(parseInt(localStorage.getItem("monecole_msg_seen_"+currentUser.id)||"0")||0);}catch(_){}},[currentUser]);
   useEffect(()=>{if(page==="messagerie"&&currentUser){const now=Date.now();try{localStorage.setItem("monecole_msg_seen_"+currentUser.id,String(now));}catch(_){}setMsgSeen(now);}},[page,currentUser]);
 
-  const {data,syncStatus,toast,ops,online}=useSupabaseData(etab?.id);
+  const {data,syncStatus,toast,ops,online,pendingCount,flushOutbox}=useSupabaseData(etab?.id);
 
   // ── Notifications : nouveaux messages ──
   const [notifEnabled,setNotifEnabled]=useState(()=>{try{return localStorage.getItem("monecole_notifs")==="1"&&NOTIF_OK&&Notification.permission==="granted";}catch(_){return false;}});
@@ -5483,6 +5528,7 @@ body{overscroll-behavior-y:none;}
 @media print{ .me-noprint{display:none!important;} }`}</style>
       {toast&&<Toast msg={toast.msg} type={toast.type}/>}
       {!online&&<div style={{position:"fixed",left:"50%",transform:"translateX(-50%)",bottom:"calc(14px + env(safe-area-inset-bottom))",zIndex:300,background:"rgba(15,23,42,0.92)",color:"#fff",borderRadius:999,padding:"7px 15px",fontSize:12.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",display:"flex",alignItems:"center",gap:8,boxShadow:"0 6px 20px -6px rgba(0,0,0,.5)"}}><span style={{width:8,height:8,borderRadius:"50%",background:"#f59e0b",display:"inline-block"}}/>{t("offline_banner")}</div>}
+      {pendingCount>0&&<div onClick={()=>flushOutbox()} style={{position:"fixed",left:"50%",transform:"translateX(-50%)",bottom:`calc(${online?14:52}px + env(safe-area-inset-bottom))`,zIndex:300,background:"rgba(245,158,11,0.96)",color:"#fff",borderRadius:999,padding:"7px 15px",fontSize:12.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",display:"flex",alignItems:"center",gap:8,boxShadow:"0 6px 20px -6px rgba(0,0,0,.4)",cursor:"pointer"}}>⏳ {pendingCount} {t("sync_pending")}</div>}
       {isMobile&&<div style={{position:"fixed",top:0,left:0,right:0,height:"calc(50px + env(safe-area-inset-top))",background:"linear-gradient(180deg,#0f172a,#13203a)",zIndex:50,display:"flex",alignItems:"center",gap:11,padding:"env(safe-area-inset-top) 12px 0",boxShadow:"0 2px 12px rgba(0,0,0,.3)"}}>
         <button onClick={()=>setNavOpen(true)} aria-label="Menu" style={{background:"rgba(255,255,255,0.12)",border:"none",color:"#fff",borderRadius:9,width:38,height:38,fontSize:19,cursor:"pointer",lineHeight:1}}>☰</button>
         <div style={{fontWeight:800,fontSize:15,color:"#fff",fontFamily:"'Sora',sans-serif"}}>MonEcole</div>
