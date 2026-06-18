@@ -623,6 +623,7 @@ const t = (k)=> (I18N[CURRENT_LANG] && I18N[CURRENT_LANG][k]!=null) ? I18N[CURRE
 // Nom bilingue saisi par l'école : renvoie l'arabe si la langue est l'arabe ET qu'une version arabe existe, sinon le français.
 const txt = (fr, ar)=> (CURRENT_LANG==="ar" && ar!=null && String(ar).trim()!=="") ? ar : (fr||"");
 const confirmSuppr = (msg)=>{ try{ return window.confirm(msg || t("confirm_suppr")); }catch(_){ return true; } };
+const isNetworkError = (e)=>{ if(typeof navigator!=="undefined" && navigator.onLine===false) return true; if(!e) return false; if(e.code) return false; const m=((e.message||"")+" "+(e.name||"")).toLowerCase(); return m.indexOf("fetch")>=0||m.indexOf("network")>=0||m.indexOf("failed")>=0||m.indexOf("load failed")>=0||m.indexOf("timeout")>=0; };
 // Normalise un numéro pour WhatsApp : ajoute l'indicatif pays (défaut Guinée 224)
 const waNumber = (raw, etab) => {
   let d = String(raw||"").replace(/[^0-9]/g,"");
@@ -1325,7 +1326,7 @@ function useSupabaseData(etablissementId) {
           let res;
           try{ res=await sb.from(tbl).insert(payload).select("id").single(); }
           catch(_){ break; } // réseau coupé -> on garde la file
-          if(res.error){ showToast("Synchro impossible — exécutez la migration client_uid","error"); break; }
+          if(res.error){ if(isNetworkError(res.error)) break; showToast("Synchro impossible — exécutez la migration client_uid","error"); break; }
           realId=res.data.id;
         }
         if(op.kind==="eleve"){ idMap[op.tmpId]=realId; arr=arr.map(o=>(o.kind==="paiement"&&o.payload&&o.payload.eleve_id===op.tmpId)?{...o,payload:{...o.payload,eleve_id:realId}}:o); }
@@ -1335,6 +1336,7 @@ function useSupabaseData(etablissementId) {
     await load();
   },[etablissementId,load]);
   useEffect(()=>{ if(syncStatus==="online") flushOutbox(); },[syncStatus,flushOutbox]);
+  const queueOfflineInsert=(kind,base)=>{ const cuid=cuidGen(); const tmpId=-(Date.now()+Math.floor(Math.random()*1000)); const optimistic={...base,id:tmpId,client_uid:cuid,_pending:true}; enqueueOp({kind,client_uid:cuid,tmpId,payload:{...base,client_uid:cuid}}); if(kind==="eleve") applyLocal(d=>({...d,eleves:[...d.eleves,optimistic]})); else applyLocal(d=>({...d,paiements:[optimistic,...d.paiements]})); showToast(kind==="eleve"?"Élève enregistré — en attente de synchro":"Paiement enregistré — en attente de synchro"); return optimistic; };
 
   // CRUD operations
   const ops = {
@@ -1347,7 +1349,7 @@ function useSupabaseData(etablissementId) {
     updateMat: async(id,form)=>{const{error}=await sb.from("matieres").update(form).eq("id",id);if(!error){load();showToast("Matière modifiée");}else showToast(error.message,"error");},
     deleteMat: async(id)=>{if(!confirmSuppr())return;await sb.from("matieres").delete().eq("id",id);load();showToast("Matière supprimée");},
 
-    addEleve: async(form)=>{const count=data.eleves.length;const {prefixe,...rest}=form;["frais_annuel","frais_inscription_eleve"].forEach(k=>{if(rest[k]===""||rest[k]===undefined)rest[k]=null;});const mat=`${prefixe||"EL"}-${String(count+1).padStart(4,"0")}`;const base={...rest,matricule:mat,etablissement_id:etablissementId,inscription_date:TODAY,notes:{}};try{const{data:created,error}=await sb.from("eleves").insert(base).select().single();if(error){showToast(error.message,"error");return null;}load();showToast("Élève inscrit");return created;}catch(e){const cuid=cuidGen();const tmpId=-(Date.now()+Math.floor(Math.random()*1000));const optimistic={...base,id:tmpId,client_uid:cuid,_pending:true};enqueueOp({kind:"eleve",client_uid:cuid,tmpId,payload:{...base,client_uid:cuid}});applyLocal(d=>({...d,eleves:[...d.eleves,optimistic]}));showToast("Élève enregistré — en attente de synchro");return optimistic;}},
+    addEleve: async(form)=>{const count=data.eleves.length;const {prefixe,...rest}=form;["frais_annuel","frais_inscription_eleve"].forEach(k=>{if(rest[k]===""||rest[k]===undefined)rest[k]=null;});const mat=`${prefixe||"EL"}-${String(count+1).padStart(4,"0")}`;const base={...rest,matricule:mat,etablissement_id:etablissementId,inscription_date:TODAY,notes:{}};if(typeof navigator!=="undefined"&&navigator.onLine===false){return queueOfflineInsert("eleve",base);}try{const{data:created,error}=await sb.from("eleves").insert(base).select().single();if(error){if(isNetworkError(error))return queueOfflineInsert("eleve",base);showToast(error.message,"error");return null;}load();showToast("Élève inscrit");return created;}catch(e){return queueOfflineInsert("eleve",base);}},
     updateEleve: async(id,form)=>{const f={...form};["frais_annuel","frais_inscription_eleve"].forEach(k=>{if(f[k]===""||f[k]===undefined)f[k]=null;});const{error}=await sb.from("eleves").update(f).eq("id",id);if(!error){load();showToast("Élève modifié");}else showToast(error.message,"error");},
     saveComiteAll: async(comiteList,annee)=>{try{
       await sb.from("etablissements").update({comite:comiteList}).eq("id",etablissementId);
@@ -1382,7 +1384,7 @@ function useSupabaseData(etablissementId) {
       load();showToast("Notes enregistrées");
     },
 
-    addPaiement: async(form)=>{const base={...form,etablissement_id:etablissementId,recu:`REC-${String(data.paiements.length+1).padStart(4,"0")}`,created_at:new Date().toISOString()};try{const{data:created,error}=await sb.from("paiements").insert(base).select().single();if(error){showToast(error.message,"error");return null;}load();showToast("Paiement enregistré");return created;}catch(e){const cuid=cuidGen();const tmpId=-(Date.now()+Math.floor(Math.random()*1000));const optimistic={...base,id:tmpId,client_uid:cuid,_pending:true};enqueueOp({kind:"paiement",client_uid:cuid,tmpId,payload:{...base,client_uid:cuid}});applyLocal(d=>({...d,paiements:[optimistic,...d.paiements]}));showToast("Paiement enregistré — en attente de synchro");return optimistic;}},
+    addPaiement: async(form)=>{const base={...form,etablissement_id:etablissementId,recu:`REC-${String(data.paiements.length+1).padStart(4,"0")}`,created_at:new Date().toISOString()};if(typeof navigator!=="undefined"&&navigator.onLine===false){return queueOfflineInsert("paiement",base);}try{const{data:created,error}=await sb.from("paiements").insert(base).select().single();if(error){if(isNetworkError(error))return queueOfflineInsert("paiement",base);showToast(error.message,"error");return null;}load();showToast("Paiement enregistré");return created;}catch(e){return queueOfflineInsert("paiement",base);}},
     deletePaiement: async(id)=>{if(!confirmSuppr())return;await sb.from("paiements").delete().eq("id",id);load();showToast("Paiement supprimé");},
 
     addProf: async(form)=>{const{error}=await sb.from("professeurs").insert({...form,etablissement_id:etablissementId});if(!error){load();showToast("Professeur ajouté");}else showToast(error.message,"error");},
