@@ -1,55 +1,54 @@
-// MonEcole — Service Worker
-// Stratégie : "réseau d'abord" pour les pages HTML (les mises à jour
-// arrivent immédiatement), "cache d'abord" pour le reste (rapidité + hors-ligne).
-// À placer à la racine du site (même dossier que index.html).
+/* MonEcole — Service Worker (niveau 1 hors ligne)
+   - Squelette de l'app (index.html) + scripts CDN mis en cache -> l'app s'ouvre sans reseau
+   - Navigation : reseau d'abord (derniere version si en ligne), repli sur le cache si hors ligne
+   - Appels Supabase (API/temps reel) : toujours reseau (jamais mis en cache)
+   Pense a incrementer la version a chaque mise a jour importante. */
+const CACHE = "monecole-offline-v2";
+const SHELL = ["/", "/index.html"];
 
-const CACHE = "monecole-2026-06-17"; // ⬅️ change la date à chaque déploiement
-
-self.addEventListener("install", (event) => {
+self.addEventListener("install", (e) => {
   self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL).catch(() => {})));
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil((async () => {
+self.addEventListener("activate", (e) => {
+  e.waitUntil((async () => {
     const keys = await caches.keys();
     await Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)));
     await self.clients.claim();
   })());
 });
 
-self.addEventListener("fetch", (event) => {
-  const req = event.request;
+self.addEventListener("fetch", (e) => {
+  const req = e.request;
   if (req.method !== "GET") return;
+  let url;
+  try { url = new URL(req.url); } catch (_) { return; }
 
-  const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return;
+  if (url.hostname.indexOf("supabase") >= 0) return;
 
-  const isHTML =
-    req.mode === "navigate" ||
-    (req.headers.get("accept") || "").includes("text/html");
-
-  if (isHTML) {
-    event.respondWith((async () => {
+  if (req.mode === "navigate") {
+    e.respondWith((async () => {
       try {
         const fresh = await fetch(req);
-        const cache = await caches.open(CACHE);
-        cache.put(req, fresh.clone());
+        try { const c = await caches.open(CACHE); c.put("/index.html", fresh.clone()); } catch (_) {}
         return fresh;
       } catch (_) {
-        const cached = await caches.match(req);
-        return cached || (await caches.match("/index.html")) || Response.error();
+        const cached = (await caches.match("/index.html")) || (await caches.match(req));
+        return cached || Response.error();
       }
     })());
     return;
   }
 
-  event.respondWith((async () => {
+  e.respondWith((async () => {
     const cached = await caches.match(req);
     if (cached) return cached;
     try {
       const fresh = await fetch(req);
-      const cache = await caches.open(CACHE);
-      cache.put(req, fresh.clone());
+      if (fresh && (fresh.ok || fresh.type === "opaque")) {
+        try { const c = await caches.open(CACHE); c.put(req, fresh.clone()); } catch (_) {}
+      }
       return fresh;
     } catch (_) {
       return cached || Response.error();

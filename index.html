@@ -237,7 +237,7 @@ const I18N = {
     sh_bienvenue:"Bienvenue", sh_fiche:"Fiche vierge",
     btn_new_classe:"+ Nouvelle classe", btn_new_matiere:"+ Nouvelle matière", btn_new_prof:"+ Nouveau membre",
     btn_new_user:"+ Nouvel utilisateur", btn_new_groupe:"+ Nouveau groupe",
-    btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.", sess_new_login:"Nouvelle connexion détectée", sess_new_desc:"Quelqu'un vient de se connecter à votre compte depuis :", sess_deconnecter:"Déconnecter", sess_cetait_moi:"C'était moi", sess_revoked:"Cette session a été déconnectée à distance.", sess_inconnu:"Appareil inconnu", sess_appareils:"Appareils connectés", sess_appareils_aide:"Voici les appareils connectés à votre compte. Vous pouvez déconnecter ceux que vous ne reconnaissez pas.", sess_aucun:"Aucun appareil connecté pour le moment.", sess_cet_appareil:"Cet appareil", sess_deco_confirm:"Déconnecter et retirer cet appareil ?", sess_deco_tous:"Déconnecter tous les autres", sess_deco_tous_confirm:"Déconnecter et retirer tous les autres appareils ?",
+    btn_modifier:"Modifier", btn_supprimer:"Supprimer", confirm_suppr:"Supprimer cet élément ? Cette action est irréversible.", offline_banner:"Hors ligne — consultation des dernières données", sess_new_login:"Nouvelle connexion détectée", sess_new_desc:"Quelqu'un vient de se connecter à votre compte depuis :", sess_deconnecter:"Déconnecter", sess_cetait_moi:"C'était moi", sess_revoked:"Cette session a été déconnectée à distance.", sess_inconnu:"Appareil inconnu", sess_appareils:"Appareils connectés", sess_appareils_aide:"Voici les appareils connectés à votre compte. Vous pouvez déconnecter ceux que vous ne reconnaissez pas.", sess_aucun:"Aucun appareil connecté pour le moment.", sess_cet_appareil:"Cet appareil", sess_deco_confirm:"Déconnecter et retirer cet appareil ?", sess_deco_tous:"Déconnecter tous les autres", sess_deco_tous_confirm:"Déconnecter et retirer tous les autres appareils ?",
     imp_export:"⬇ Exporter Excel", imp_import:"⬆ Importer Excel", imp_titre:"Importer des élèves (Excel / CSV)", imp_word:"⬇ Exporter Word",
     imp_intro:"Choisissez la classe de destination, puis un fichier Excel (.xlsx) ou CSV. La première ligne doit contenir les intitulés de colonnes.",
     imp_choisir_fichier:"📁 Choisir un fichier", imp_detectes:"élève(s) détecté(s)", imp_importer:"Importer",
@@ -424,7 +424,7 @@ const I18N = {
     sh_bienvenue:"مرحبًا", sh_fiche:"ورقة فارغة",
     btn_new_classe:"+ فصل جديد", btn_new_matiere:"+ مادة جديدة", btn_new_prof:"+ عضو جديد",
     btn_new_user:"+ مستخدم جديد", btn_new_groupe:"+ مجموعة جديدة",
-    btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.", sess_new_login:"تم اكتشاف تسجيل دخول جديد", sess_new_desc:"قام شخص ما بتسجيل الدخول إلى حسابك من:", sess_deconnecter:"قطع الاتصال", sess_cetait_moi:"كان أنا", sess_revoked:"تم قطع هذه الجلسة عن بُعد.", sess_inconnu:"جهاز غير معروف", sess_appareils:"الأجهزة المتصلة", sess_appareils_aide:"هذه هي الأجهزة المتصلة بحسابك. يمكنك قطع اتصال ما لا تعرفه.", sess_aucun:"لا يوجد جهاز متصل حاليًا.", sess_cet_appareil:"هذا الجهاز", sess_deco_confirm:"قطع اتصال هذا الجهاز وإزالته؟", sess_deco_tous:"قطع اتصال جميع الأجهزة الأخرى", sess_deco_tous_confirm:"قطع اتصال جميع الأجهزة الأخرى وإزالتها؟",
+    btn_modifier:"تعديل", btn_supprimer:"حذف", confirm_suppr:"حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.", offline_banner:"غير متصل — عرض آخر البيانات المحفوظة", sess_new_login:"تم اكتشاف تسجيل دخول جديد", sess_new_desc:"قام شخص ما بتسجيل الدخول إلى حسابك من:", sess_deconnecter:"قطع الاتصال", sess_cetait_moi:"كان أنا", sess_revoked:"تم قطع هذه الجلسة عن بُعد.", sess_inconnu:"جهاز غير معروف", sess_appareils:"الأجهزة المتصلة", sess_appareils_aide:"هذه هي الأجهزة المتصلة بحسابك. يمكنك قطع اتصال ما لا تعرفه.", sess_aucun:"لا يوجد جهاز متصل حاليًا.", sess_cet_appareil:"هذا الجهاز", sess_deco_confirm:"قطع اتصال هذا الجهاز وإزالته؟", sess_deco_tous:"قطع اتصال جميع الأجهزة الأخرى", sess_deco_tous_confirm:"قطع اتصال جميع الأجهزة الأخرى وإزالتها؟",
     imp_export:"⬇ تصدير إكسل", imp_import:"⬆ استيراد إكسل", imp_titre:"استيراد التلاميذ (إكسل / CSV)", imp_word:"⬇ تصدير وورد",
     imp_intro:"اختر القسم الوجهة، ثم ملف إكسل (.xlsx) أو CSV. يجب أن يحتوي السطر الأول على عناوين الأعمدة.",
     imp_choisir_fichier:"📁 اختر ملفًا", imp_detectes:"تلميذ تم اكتشافه", imp_importer:"استيراد",
@@ -1236,6 +1236,7 @@ function Login({onLogin,lang,setLang,onActivate}) {
 function useSupabaseData(etablissementId) {
   const [data,setData]=useState({classes:[],matieres:[],eleves:[],utilisateurs:[],paiements:[],presences:[],messages:[],compositions:[],professeurs:[],salaires:[],absences_prof:[],emploi_temps:[],conversations:[],titres_jour:[],depenses:[]});
   const [syncStatus,setSyncStatus]=useState("online");
+  const [online,setOnline]=useState(typeof navigator==="undefined"||navigator.onLine!==false);
   const [toast,setToast]=useState(null);
 
   const showToast=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast(null),3000);};
@@ -1261,18 +1262,26 @@ function useSupabaseData(etablissementId) {
         sb.from("titres_jour").select("*").eq("etablissement_id",etablissementId).order("created_at",{ascending:false}),
         sb.from("depenses").select("*").eq("etablissement_id",etablissementId).order("date",{ascending:false}),
       ]);
-      setData({
+      const fresh={
         classes:cls.data||[],matieres:mats.data||[],eleves:elvs.data||[],
         utilisateurs:usrs.data||[],paiements:pays.data||[],presences:pres.data||[],
         messages:msgs.data||[],compositions:comps.data||[],
         professeurs:profs.data||[],salaires:sals.data||[],absences_prof:absp.data||[],
         emploi_temps:edt.data||[],conversations:convs.data||[],titres_jour:tj.data||[],depenses:deps.data||[]
-      });
+      };
+      setData(fresh);
+      try{ localStorage.setItem("monecole_cache_"+etablissementId, JSON.stringify(fresh)); }catch(_){}
       setSyncStatus("online");
-    } catch(e){setSyncStatus("offline");showToast("Erreur de synchronisation","error");}
+    } catch(e){
+      let restored=false;
+      try{ const c=localStorage.getItem("monecole_cache_"+etablissementId); if(c){ setData(JSON.parse(c)); restored=true; } }catch(_){}
+      setSyncStatus("offline");
+      if(!restored) showToast("Erreur de synchronisation","error");
+    }
   },[etablissementId]);
 
   useEffect(()=>{load();},[load]);
+  useEffect(()=>{ const on=()=>{setOnline(true);load();}, off=()=>setOnline(false); window.addEventListener("online",on); window.addEventListener("offline",off); return ()=>{window.removeEventListener("online",on);window.removeEventListener("offline",off);}; },[load]);
 
   // Realtime subscriptions
   useEffect(()=>{
@@ -1405,7 +1414,7 @@ function useSupabaseData(etablissementId) {
     deleteUser: async(id)=>{if(!confirmSuppr())return;await sb.from("utilisateurs").delete().eq("id",id);load();showToast("Utilisateur supprimé");},
   };
 
-  return{data,syncStatus,toast,ops,reload:load};
+  return{data,syncStatus,toast,ops,reload:load,online};
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
@@ -5267,7 +5276,7 @@ function App() {
   useEffect(()=>{if(!currentUser)return;try{setMsgSeen(parseInt(localStorage.getItem("monecole_msg_seen_"+currentUser.id)||"0")||0);}catch(_){}},[currentUser]);
   useEffect(()=>{if(page==="messagerie"&&currentUser){const now=Date.now();try{localStorage.setItem("monecole_msg_seen_"+currentUser.id,String(now));}catch(_){}setMsgSeen(now);}},[page,currentUser]);
 
-  const {data,syncStatus,toast,ops}=useSupabaseData(etab?.id);
+  const {data,syncStatus,toast,ops,online}=useSupabaseData(etab?.id);
 
   // ── Notifications : nouveaux messages ──
   const [notifEnabled,setNotifEnabled]=useState(()=>{try{return localStorage.getItem("monecole_notifs")==="1"&&NOTIF_OK&&Notification.permission==="granted";}catch(_){return false;}});
@@ -5360,11 +5369,16 @@ function App() {
       try{
         const {data:{session}}=await sb.auth.getSession();
         if(!session||!session.user){ try{localStorage.removeItem("monecole_uid");}catch(_){} setScreen("login"); setBooting(false); return; }
-        const {data:u,error}=await sb.from("utilisateurs").select("*,etablissements(*)").eq("auth_id",session.user.id).limit(1).maybeSingle();
-        if(error||!u) throw error||new Error("session invalide");
-        try{localStorage.setItem("monecole_uid",String(u.id));}catch(_){}
-        setCurrentUser(u); setEtab(u.etablissements||null); setScreen("app");
-      }catch(_){ try{await sb.auth.signOut();}catch(__){} try{localStorage.removeItem("monecole_uid");}catch(__){} setScreen("login"); }
+        let u=null,lastErr=null;
+        for(let i=0;i<3 && !u;i++){
+          try{ const r=await sb.from("utilisateurs").select("*,etablissements(*)").eq("auth_id",session.user.id).limit(1).maybeSingle(); if(r&&r.error){ lastErr=r.error; } else { u=r&&r.data; } }
+          catch(e){ lastErr=e; }
+          if(!u && i<2){ try{ await new Promise(r=>setTimeout(r,800)); }catch(_){} }
+        }
+        if(u){ try{localStorage.setItem("monecole_uid",String(u.id));}catch(_){} setCurrentUser(u); setEtab(u.etablissements||null); setScreen("app"); }
+        else if(lastErr){ /* erreur réseau probable : NE PAS détruire la session, on garde le jeton pour réessayer au prochain chargement */ setScreen("login"); }
+        else { /* session valide mais aucun utilisateur correspondant : session réellement invalide */ try{await sb.auth.signOut();}catch(__){} try{localStorage.removeItem("monecole_uid");}catch(__){} setScreen("login"); }
+      }catch(_){ /* erreur inattendue : on ne détruit pas la session */ setScreen("login"); }
       setBooting(false);
     })();
   },[booting]);
@@ -5386,7 +5400,7 @@ function App() {
         if(row&&row.id){ mySessionRef.current=row.id; setMySessionId(row.id); }
         chan=sb.channel("sessions-"+auth_uid)
           .on("postgres_changes",{event:"INSERT",schema:"public",table:"sessions",filter:"auth_uid=eq."+auth_uid},(p)=>{ const n=p.new; if(n&&n.id!==mySessionRef.current) setNewLogin({id:n.id,appareil:n.appareil||t("sess_inconnu")}); })
-          .on("postgres_changes",{event:"UPDATE",schema:"public",table:"sessions",filter:"auth_uid=eq."+auth_uid},(p)=>{ const n=p.new; if(n&&n.id===mySessionRef.current&&n.revoked){ try{sb.auth.signOut();}catch(_){} try{localStorage.removeItem("monecole_uid");}catch(_){} try{alert(t("sess_revoked"));}catch(_){} setCurrentUser(null); setScreen("login"); } })
+          .on("postgres_changes",{event:"UPDATE",schema:"public",table:"sessions",filter:"auth_uid=eq."+auth_uid},(p)=>{ const n=p.new; if(n&&n.id===mySessionRef.current&&n.revoked){ sb.from("sessions").select("revoked").eq("id",n.id).maybeSingle().then(({data})=>{ if(data&&data.revoked){ try{sb.auth.signOut();}catch(_){} try{localStorage.removeItem("monecole_uid");}catch(_){} try{alert(t("sess_revoked"));}catch(_){} setCurrentUser(null); setScreen("login"); } },()=>{}); } })
           .subscribe();
       }catch(_){ /* table absente / hors-ligne : fonctionnalité inactive sans gêner l'app */ }
     })();
@@ -5468,6 +5482,7 @@ body{overscroll-behavior-y:none;}
 }
 @media print{ .me-noprint{display:none!important;} }`}</style>
       {toast&&<Toast msg={toast.msg} type={toast.type}/>}
+      {!online&&<div style={{position:"fixed",left:"50%",transform:"translateX(-50%)",bottom:"calc(14px + env(safe-area-inset-bottom))",zIndex:300,background:"rgba(15,23,42,0.92)",color:"#fff",borderRadius:999,padding:"7px 15px",fontSize:12.5,fontWeight:700,fontFamily:"'Plus Jakarta Sans',sans-serif",display:"flex",alignItems:"center",gap:8,boxShadow:"0 6px 20px -6px rgba(0,0,0,.5)"}}><span style={{width:8,height:8,borderRadius:"50%",background:"#f59e0b",display:"inline-block"}}/>{t("offline_banner")}</div>}
       {isMobile&&<div style={{position:"fixed",top:0,left:0,right:0,height:"calc(50px + env(safe-area-inset-top))",background:"linear-gradient(180deg,#0f172a,#13203a)",zIndex:50,display:"flex",alignItems:"center",gap:11,padding:"env(safe-area-inset-top) 12px 0",boxShadow:"0 2px 12px rgba(0,0,0,.3)"}}>
         <button onClick={()=>setNavOpen(true)} aria-label="Menu" style={{background:"rgba(255,255,255,0.12)",border:"none",color:"#fff",borderRadius:9,width:38,height:38,fontSize:19,cursor:"pointer",lineHeight:1}}>☰</button>
         <div style={{fontWeight:800,fontSize:15,color:"#fff",fontFamily:"'Sora',sans-serif"}}>MonEcole</div>
