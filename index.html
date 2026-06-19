@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="preconnect" href="https://unpkg.com" crossorigin/>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link rel="dns-prefetch" href="https://unpkg.com"/>
   <title>MonEcole</title>
   <meta name="theme-color" content="#1a56db"/>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet"/>
@@ -43,29 +41,30 @@
 <div id="root"><div id="loading">Chargement de MonEcole...</div></div>
 
 <script>
-// Tlchargement en parallle, excution ordonne (async=false). Plus de Babel : le code est dj compil.
-function loadAll(srcs){
-  return Promise.all(srcs.map(function(src){
-    return new Promise(function(res,rej){
-      var s=document.createElement('script');
-      s.src=src; s.async=false;
-      s.onload=res; s.onerror=function(){rej(new Error('Echec chargement: '+src));};
-      document.head.appendChild(s);
-    });
-  }));
+// Charger les scripts dans l'ordre, en série, pour garantir que tout soit prêt
+function loadScript(src) {
+  return new Promise(function(resolve, reject) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = function() { reject(new Error('Echec chargement: ' + src)); };
+    document.head.appendChild(s);
+  });
 }
-async function boot(){
-  try{
-    await loadAll([
-      'https://unpkg.com/react@18/umd/react.production.min.js',
-      'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
-      'https://unpkg.com/prop-types@15.8.1/prop-types.min.js',
-      'https://unpkg.com/recharts@2.10.0/umd/Recharts.js',
-      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'
-    ]);
-    eval(document.getElementById('app-code').textContent);
-  }catch(e){
-    document.getElementById('root').innerHTML='<div style="padding:40px;color:#dc2626;font-family:sans-serif"><h2>Erreur de chargement</h2><p>'+e.message+'</p></div>';
+
+async function boot() {
+  try {
+    await loadScript('https://unpkg.com/react@18/umd/react.production.min.js');
+    await loadScript('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js');
+    await loadScript('https://unpkg.com/prop-types@15.8.1/prop-types.min.js');
+    await loadScript('https://unpkg.com/recharts@2.10.0/umd/Recharts.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js');
+    
+    // Une fois tout chargé, transformer et exécuter le code
+    var code = document.getElementById('app-code').textContent;
+    eval(code);
+  } catch(e) {
+    document.getElementById('root').innerHTML = '<div style="padding:40px;color:#dc2626;font-family:sans-serif"><h2>Erreur de chargement</h2><p>' + e.message + '</p></div>';
   }
 }
 boot();
@@ -152,7 +151,7 @@ const SERIES = ["Scientifique", "Littéraire"];
 const APPRECIATIONS_MATERNELLE = ["Acquis", "En cours d'acquisition", "Non acquis"];
 const baremeOf = niveau => (niveau === "Primaire" || niveau === "Maternelle") ? 10 : 20;
 // Mode d'évaluation de la maternelle selon l'établissement : "note" (/10) ou "appreciation"
-const modeMaternelle = etab => (etab === null || etab === void 0 ? void 0 : etab.mode_maternelle) === "appreciation" ? "appreciation" : "note";
+const modeMaternelle = etab => etab?.mode_maternelle === "appreciation" ? "appreciation" : "note";
 // Mention adaptée au barème (les seuils sont proportionnels : /10 → moitié des seuils /20)
 const MENTION = (v, bareme = 20) => {
     const n = parseFloat(v);
@@ -167,7 +166,7 @@ const MENTION = (v, bareme = 20) => {
         return { t: "Passable", c: "#f59e0b", bg: "#fef3c7" };
     return { t: "Passable", c: "#f59e0b", bg: "#fef3c7" };
 };
-const fmtMoney = (v, d = "GNF") => { var _b; return !v && v !== 0 ? "—" : Number(v).toLocaleString("fr-FR") + " " + (((_b = DEVISES[d]) === null || _b === void 0 ? void 0 : _b.symbole) || d); };
+const fmtMoney = (v, d = "GNF") => !v && v !== 0 ? "—" : Number(v).toLocaleString("fr-FR") + " " + (DEVISES[d]?.symbole || d);
 const fmtDate = (d) => { if (!d)
     return ""; const s = String(d).slice(0, 10); const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}/${m[2]}/${m[1]}` : String(d); };
 const joursAvantExpiration = (etab) => { try {
@@ -826,7 +825,7 @@ function LangToggle({ lang, setLang, dark }) {
 }
 const calcMoy = (notes, mats, periode) => {
     let tot = 0, cf = 0;
-    mats.forEach(m => { var _b; const n = periode ? (_b = notes === null || notes === void 0 ? void 0 : notes[periode]) === null || _b === void 0 ? void 0 : _b[m.id] : notes === null || notes === void 0 ? void 0 : notes[m.id]; if (n != null && n !== "") {
+    mats.forEach(m => { const n = periode ? notes?.[periode]?.[m.id] : notes?.[m.id]; if (n != null && n !== "") {
         tot += parseFloat(n) * m.coefficient;
         cf += m.coefficient;
     } });
@@ -867,7 +866,7 @@ const fraisAnnuelEleve = (eleve = {}, etab = {}, classe = null) => {
     const v = eleve.frais_annuel;
     if (v != null && v !== "")
         return parseFloat(v) || 0;
-    const fc = classe === null || classe === void 0 ? void 0 : classe.frais_annuel_classe;
+    const fc = classe?.frais_annuel_classe;
     if (fc != null && fc !== "")
         return parseFloat(fc) || 0;
     return parseFloat(etab.frais_annuel_defaut) || 0;
@@ -877,7 +876,7 @@ const fraisInscEleve = (eleve = {}, etab = {}, classe = null) => {
     const v = eleve.frais_inscription_eleve;
     if (v != null && v !== "")
         return parseFloat(v) || 0;
-    const fc = classe === null || classe === void 0 ? void 0 : classe.frais_inscription_classe;
+    const fc = classe?.frais_inscription_classe;
     if (fc != null && fc !== "")
         return parseFloat(fc) || 0;
     return parseFloat(etab.fraisInscription) || 0;
@@ -1161,7 +1160,7 @@ const Lbl = (props) => { const t = props.t, children = props.children, mb = prop
 const Inp = ({ label, invalid, ...p }) => React.createElement(Lbl, { t: label },
     React.createElement("input", { style: iSt(invalid ? { border: "1.5px solid #ef4444", background: "rgba(239,68,68,0.06)" } : undefined), ...p }));
 const Slt = ({ label, opts, invalid, ...p }) => React.createElement(Lbl, { t: label },
-    React.createElement("select", { style: iSt(invalid ? { border: "1.5px solid #ef4444", background: "rgba(239,68,68,0.06)" } : undefined), ...p }, opts.map(o => { var _b, _c, _d; return React.createElement("option", { key: (_b = o.v) !== null && _b !== void 0 ? _b : o, value: (_c = o.v) !== null && _c !== void 0 ? _c : o }, (_d = o.l) !== null && _d !== void 0 ? _d : o); })));
+    React.createElement("select", { style: iSt(invalid ? { border: "1.5px solid #ef4444", background: "rgba(239,68,68,0.06)" } : undefined), ...p }, opts.map(o => React.createElement("option", { key: o.v ?? o, value: o.v ?? o }, o.l ?? o))));
 const Btn = ({ ch, v = "primary", onClick, disabled, full, s = {} }) => {
     const vs = { primary: { background: "linear-gradient(135deg,var(--me-brand),var(--me-brand2))", color: "#fff", border: "none", boxShadow: "0 2px 8px -2px rgba(26,86,219,.5)" }, success: { background: "linear-gradient(135deg,#059669,#047857)", color: "#fff", border: "none", boxShadow: "0 2px 8px -2px rgba(5,150,105,.5)" }, danger: { background: "#fee2e2", color: "#dc2626", border: "1px solid #fecaca" }, ghost: { background: "var(--me-surface)", color: "var(--me-text-2)", border: "1px solid var(--me-border-2)" }, warn: { background: "rgba(217,119,6,0.14)", color: "#d97706", border: "1px solid #fde68a" } };
     return React.createElement("button", { className: "me-btn", disabled: disabled, onClick: onClick, style: { padding: "9px 18px", borderRadius: 10, cursor: disabled ? "not-allowed" : "pointer", fontSize: 12, fontWeight: 700, fontFamily: "'Plus Jakarta Sans',sans-serif", opacity: disabled ? 0.5 : 1, width: full ? "100%" : "auto", ...vs[v], ...s } }, ch);
@@ -1278,7 +1277,6 @@ function ActivationScreen({ onDone, onBack }) {
 }
 // ── ONBOARDING ────────────────────────────────────────────────────────────────
 function Onboarding({ codeActivation, onDone }) {
-    var _b;
     const [step, setStep] = useState(1);
     const [ecole, setEcole] = useState({ nom: "", devise: "GNF", annee: "", adresse: "", telephone: "", email: "", codeMEN: "", prefixe: "", systeme: "trimestre", devise_txt: "", fraisInscription: "", mensualite: "", formule: "basique" });
     const [admin, setAdmin] = useState({ nom: "", prenom: "", identifiant: "", password: "", confirm: "" });
@@ -1368,7 +1366,7 @@ function Onboarding({ codeActivation, onDone }) {
                             React.createElement("span", { style: { fontSize: 17 } }, "\uD83C\uDF9F\uFE0F"),
                             React.createElement("div", { style: { fontSize: 12.5, color: "var(--me-brand2)", fontWeight: 600 } },
                                 "Formule (d\u00E9finie par le code) : ",
-                                React.createElement("b", null, ((_b = FORMULES[ecole.formule]) === null || _b === void 0 ? void 0 : _b.l) || "Basique"),
+                                React.createElement("b", null, FORMULES[ecole.formule]?.l || "Basique"),
                                 FORMULES[ecole.formule] ? ` — ${FORMULES[ecole.formule].admins === Infinity ? "administrateurs illimités" : FORMULES[ecole.formule].admins + " administrateur(s)"}` : "")))))) : (React.createElement(React.Fragment, null,
                 React.createElement("div", { style: { marginBottom: 20 } },
                     React.createElement("h2", { style: { margin: "0 0 3px", fontSize: 19, fontWeight: 900, color: "var(--me-text)" } }, "Compte administrateur \uD83D\uDD10"),
@@ -1737,11 +1735,10 @@ function useSupabaseData(etablissementId) {
         deleteDepense: async (id) => { if (!confirmSuppr())
             return; await sb.from("depenses").delete().eq("id", id); load(); showToast("Dépense supprimée"); },
         saveNotes: async (eleveId, periode, matiereId, note) => {
-            var _b;
             const eleve = data.eleves.find(e => e.id === eleveId);
             if (!eleve)
                 return;
-            const notes = { ...(eleve.notes || {}), [periode]: { ...(((_b = eleve.notes) === null || _b === void 0 ? void 0 : _b[periode]) || {}), [matiereId]: parseFloat(note) || 0 } };
+            const notes = { ...(eleve.notes || {}), [periode]: { ...(eleve.notes?.[periode] || {}), [matiereId]: parseFloat(note) || 0 } };
             const { error } = await sb.from("eleves").update({ notes }).eq("id", eleveId);
             if (error)
                 showToast(error.message, "error");
@@ -1785,7 +1782,7 @@ function useSupabaseData(etablissementId) {
             showToast(error.message, "error"); },
         deleteProf: async (id) => { if (!confirmSuppr())
             return; await sb.from("professeurs").delete().eq("id", id); load(); showToast("Professeur supprimé"); },
-        addSalaire: async (form) => { var _b; const { data: created, error } = await sb.from("salaires").insert({ ...form, etablissement_id: etablissementId, recu: `SAL-${String((((_b = data.salaires) === null || _b === void 0 ? void 0 : _b.length) || 0) + 1).padStart(4, "0")}`, created_at: new Date().toISOString() }).select().single(); if (!error) {
+        addSalaire: async (form) => { const { data: created, error } = await sb.from("salaires").insert({ ...form, etablissement_id: etablissementId, recu: `SAL-${String((data.salaires?.length || 0) + 1).padStart(4, "0")}`, created_at: new Date().toISOString() }).select().single(); if (!error) {
             load();
             showToast("Versement enregistré");
             return created;
@@ -2188,17 +2185,17 @@ function Dashboard({ data, etab, setPage, currentUser }) {
     const jourNom = JOURS_FR[now.getDay()];
     const dateStr = `${jourNom} ${now.getDate()} ${MOIS_FR[now.getMonth()]} ${now.getFullYear()}`;
     const heureStr = now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-    const isProf = (currentUser === null || currentUser === void 0 ? void 0 : currentUser.role) === "Professeur";
-    const autorisees = Array.isArray(currentUser === null || currentUser === void 0 ? void 0 : currentUser.matieres_autorisees) ? currentUser.matieres_autorisees : [];
-    const classesAut = Array.isArray(currentUser === null || currentUser === void 0 ? void 0 : currentUser.classes_autorisees) ? currentUser.classes_autorisees : [];
+    const isProf = currentUser?.role === "Professeur";
+    const autorisees = Array.isArray(currentUser?.matieres_autorisees) ? currentUser.matieres_autorisees : [];
+    const classesAut = Array.isArray(currentUser?.classes_autorisees) ? currentUser.classes_autorisees : [];
     const coursDuJour = (data.emploi_temps || [])
         .filter(c => c.jour === jourNom)
         .filter(c => !isProf || autorisees.length === 0 || autorisees.includes(c.matiere_id))
         .filter(c => classesAut.length === 0 || classesAut.includes(c.classe_id))
         .sort((a, b) => (a.debut || "").localeCompare(b.debut || ""));
     const matNom = id => { const m = data.matieres.find(m => m.id === id); return m ? txt(m.nom, m.nom_ar) : "—"; };
-    const classeNom = id => { var _b; return ((_b = data.classes.find(c => c.id === id)) === null || _b === void 0 ? void 0 : _b.nom) || "—"; };
-    const profNom = id => { var _b; const p = (_b = data.professeurs) === null || _b === void 0 ? void 0 : _b.find(x => x.id === id); return p ? `${p.prenom} ${p.nom}` : ""; };
+    const classeNom = id => data.classes.find(c => c.id === id)?.nom || "—";
+    const profNom = id => { const p = data.professeurs?.find(x => x.id === id); return p ? `${p.prenom} ${p.nom}` : ""; };
     const devise = etab.devise || "GNF";
     const periodes = periodesList(etab);
     const lastP = periodes[periodes.length - 1];
@@ -2280,9 +2277,9 @@ function Dashboard({ data, etab, setPage, currentUser }) {
     const totalPaie = data.paiements.reduce((s, p) => s + (parseFloat(p.montant) || 0), 0);
     const absToday = data.presences.filter(p => p.date === TODAY && !p.present).length;
     const repartition = [{ name: "Très Bien", v: moyennes.filter(m => m >= 16).length, c: "#10b981" }, { name: "Bien", v: moyennes.filter(m => m >= 14 && m < 16).length, c: "#3b82f6" }, { name: "Assez Bien", v: moyennes.filter(m => m >= 12 && m < 14).length, c: "#8b5cf6" }, { name: "Passable", v: moyennes.filter(m => m >= 10 && m < 12).length, c: "#f59e0b" }, { name: "Insuffisant", v: moyennes.filter(m => m < 10).length, c: "#ef4444" }].filter(d => d.v > 0);
-    const matiereData = data.matieres.map(m => ({ name: m.nom.split(" ")[0].slice(0, 7), moy: +(data.eleves.reduce((acc, e) => { var _b, _c; return acc + (parseFloat((_c = (_b = e.notes) === null || _b === void 0 ? void 0 : _b[lastP]) === null || _c === void 0 ? void 0 : _c[m.id]) || 0); }, 0) / data.eleves.length).toFixed(1) }));
-    const countCycle = cyc => data.eleves.filter(e => { const c = data.classes.find(x => x.id === e.classe_id); return ((c === null || c === void 0 ? void 0 : c.niveau) || "Primaire") === cyc; }).length;
-    const genreCycle = (cyc, g) => data.eleves.filter(e => { const c = data.classes.find(x => x.id === e.classe_id); return ((c === null || c === void 0 ? void 0 : c.niveau) || "Primaire") === cyc && e.genre === g; }).length;
+    const matiereData = data.matieres.map(m => ({ name: m.nom.split(" ")[0].slice(0, 7), moy: +(data.eleves.reduce((acc, e) => acc + (parseFloat(e.notes?.[lastP]?.[m.id]) || 0), 0) / data.eleves.length).toFixed(1) }));
+    const countCycle = cyc => data.eleves.filter(e => { const c = data.classes.find(x => x.id === e.classe_id); return (c?.niveau || "Primaire") === cyc; }).length;
+    const genreCycle = (cyc, g) => data.eleves.filter(e => { const c = data.classes.find(x => x.id === e.classe_id); return (c?.niveau || "Primaire") === cyc && e.genre === g; }).length;
     const totG = data.eleves.filter(e => e.genre === "M").length;
     const totF = data.eleves.filter(e => e.genre === "F").length;
     const cycleInfoAll = [{ cyc: "Maternelle", emoji: "🟨", c: "#eab308", bg: "#fefce8" }, { cyc: "Primaire", emoji: "🟦", c: "#3b82f6", bg: "#eff6ff" }, { cyc: "Collège", emoji: "🟪", c: "#8b5cf6", bg: "#f5f3ff" }, { cyc: "Lycée", emoji: "🟩", c: "#10b981", bg: "#ecfdf5" }];
@@ -2380,7 +2377,7 @@ function Dashboard({ data, etab, setPage, currentUser }) {
                 periodeLabel(etab, lastP)),
             React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 7 } }, data.eleves.map(e => ({ ...e, moy: parseFloat(calcMoy(e.notes || {}, data.matieres, lastP)) || 0 })).sort((a, b) => b.moy - a.moy).slice(0, 5).map((e, i) => {
                 const cl = data.classes.find(c => c.id === e.classe_id);
-                const m = MENTION(e.moy, baremeOf(cl === null || cl === void 0 ? void 0 : cl.niveau));
+                const m = MENTION(e.moy, baremeOf(cl?.niveau));
                 return (React.createElement("div", { key: e.id, style: { display: "flex", alignItems: "center", gap: 11, padding: "9px 13px", borderRadius: 10, background: i === 0 ? "#fef9c3" : "#f8fafc", border: i === 0 ? "1px solid #fde047" : "1px solid #f1f5f9" } },
                     React.createElement("span", { style: { fontSize: 16 } }, ["🥇", "🥈", "🥉"][i] || `${i + 1}.`),
                     React.createElement("div", { style: { flex: 1 } },
@@ -2388,8 +2385,8 @@ function Dashboard({ data, etab, setPage, currentUser }) {
                             e.prenom,
                             " ",
                             e.nom),
-                        React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-3)" } }, cl === null || cl === void 0 ? void 0 :
-                            cl.nom,
+                        React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-3)" } },
+                            cl?.nom,
                             " \u00B7 ",
                             e.matricule)),
                     React.createElement("div", { style: { textAlign: "right" } },
@@ -2399,7 +2396,7 @@ function Dashboard({ data, etab, setPage, currentUser }) {
 }
 // ── CLASSES ───────────────────────────────────────────────────────────────────
 function Classes({ data, ops, etab, currentUser }) {
-    const isProf = (currentUser === null || currentUser === void 0 ? void 0 : currentUser.role) === "Professeur";
+    const isProf = currentUser?.role === "Professeur";
     const [modal, setModal] = useState(null);
     const [voirClasse, setVoirClasse] = useState(null);
     const [form, setForm] = useState({ nom: "", nom_ar: "", niveau: "", niveau_detail: "", serie: "", effectif: "", frais_annuel_classe: "", frais_inscription_classe: "", classe_suivante_id: "" });
@@ -2407,11 +2404,11 @@ function Classes({ data, ops, etab, currentUser }) {
     const [err, setErr] = useState("");
     const [promo, setPromo] = useState(false);
     const [promoLoading, setPromoLoading] = useState(false);
-    const devise = (etab === null || etab === void 0 ? void 0 : etab.devise) || "GNF";
+    const devise = etab?.devise || "GNF";
     // Moyenne annuelle d'un élève (moyenne des moyennes de période) + seuil d'admission
     const periodes = periodesList(etab);
     const moyAnn = (el) => { const mp = periodes.map(p => parseFloat(calcMoy(el.notes || {}, data.matieres, p))).filter(v => !isNaN(v)); return mp.length ? mp.reduce((a, b) => a + b, 0) / mp.length : null; };
-    const seuilOf = (cl) => baremeOf(cl === null || cl === void 0 ? void 0 : cl.niveau) / 2;
+    const seuilOf = (cl) => baremeOf(cl?.niveau) / 2;
     const [invalides, setInvalides] = useState({});
     const clrInv = k => setInvalides(v => v[k] ? { ...v, [k]: false } : v);
     const save = async () => {
@@ -2496,30 +2493,27 @@ function Classes({ data, ops, etab, currentUser }) {
                             "\uD83D\uDC64 ",
                             data.eleves.filter(e => e.classe_id === c.id).length),
                         React.createElement("div", { style: { display: "flex", gap: 5 } }, !isProf && React.createElement(React.Fragment, null,
-                            React.createElement("button", { onClick: () => { var _b, _c, _d; setErr(""); setForm({ nom: c.nom, nom_ar: c.nom_ar || "", niveau: c.niveau || "", niveau_detail: c.niveau_detail || "", serie: c.serie || "", effectif: c.effectif || "", frais_annuel_classe: (_b = c.frais_annuel_classe) !== null && _b !== void 0 ? _b : "", frais_inscription_classe: (_c = c.frais_inscription_classe) !== null && _c !== void 0 ? _c : "", classe_suivante_id: (_d = c.classe_suivante_id) !== null && _d !== void 0 ? _d : "" }); setModal(c.id); }, style: { background: "var(--me-surface-2,#f1f5f9)", color: "var(--me-text-2)", border: "none", borderRadius: 7, padding: "6px 11px", cursor: "pointer", fontSize: 11, fontWeight: 700, fontFamily: "'Plus Jakarta Sans',sans-serif" } }, t("btn_modifier")),
+                            React.createElement("button", { onClick: () => { setErr(""); setForm({ nom: c.nom, nom_ar: c.nom_ar || "", niveau: c.niveau || "", niveau_detail: c.niveau_detail || "", serie: c.serie || "", effectif: c.effectif || "", frais_annuel_classe: c.frais_annuel_classe ?? "", frais_inscription_classe: c.frais_inscription_classe ?? "", classe_suivante_id: c.classe_suivante_id ?? "" }); setModal(c.id); }, style: { background: "var(--me-surface-2,#f1f5f9)", color: "var(--me-text-2)", border: "none", borderRadius: 7, padding: "6px 11px", cursor: "pointer", fontSize: 11, fontWeight: 700, fontFamily: "'Plus Jakarta Sans',sans-serif" } }, t("btn_modifier")),
                             React.createElement("button", { onClick: () => ops.deleteClass(c.id), style: { background: "rgba(220,38,38,0.10)", color: "#dc2626", border: "none", borderRadius: 7, padding: "6px 11px", cursor: "pointer", fontSize: 11, fontWeight: 700, fontFamily: "'Plus Jakarta Sans',sans-serif" } }, t("btn_supprimer")))))))))));
         }))),
         voirClasse && (() => {
             const els = data.eleves.filter(e => e.classe_id === voirClasse.id).slice().sort((a, b) => `${a.nom} ${a.prenom}`.localeCompare(`${b.nom} ${b.prenom}`));
             return (React.createElement(Modal, { title: `${txt(voirClasse.nom, voirClasse.nom_ar)} · ${els.length} ${t("el_total")}`, onClose: () => setVoirClasse(null), w: 500 }, els.length === 0 ? React.createElement(Empty, { icon: "\uD83D\uDC68\u200D\uD83C\uDF93", text: t("cl_aucun_eleve") }) : (React.createElement("table", { style: { width: "100%", borderCollapse: "collapse" } },
-                React.createElement("tbody", null, els.map((e, i) => {
-                    var _b, _c;
-                    return (React.createElement("tr", { key: e.id, style: { borderTop: i > 0 ? "1px solid var(--me-border-2,#f1f5f9)" : "none" } },
-                        React.createElement("td", { style: { padding: "9px 8px", width: 30, color: "#cbd5e1", fontSize: 12 } }, i + 1),
-                        React.createElement("td", { style: { padding: "9px 8px" } },
-                            React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 9 } },
-                                React.createElement("div", { style: { width: 30, height: 30, borderRadius: 9, background: "rgba(26,86,219,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--me-brand)", fontSize: 11 } }, (_b = e.prenom) === null || _b === void 0 ? void 0 :
-                                    _b[0], (_c = e.nom) === null || _c === void 0 ? void 0 :
-                                    _c[0]),
-                                React.createElement("div", { style: { fontWeight: 700, fontSize: 13, color: "var(--me-text)" } },
-                                    e.prenom,
-                                    " ",
-                                    e.nom,
-                                    e.genre ? React.createElement("span", { style: { fontSize: 11, color: "var(--me-text-3)", fontWeight: 600 } },
-                                        " \u00B7 ",
-                                        e.genre) : null))),
-                        React.createElement("td", { style: { padding: "9px 8px", fontFamily: "monospace", fontSize: 12, color: "var(--me-text-2)", textAlign: "right" } }, e.matricule)));
-                }))))));
+                React.createElement("tbody", null, els.map((e, i) => (React.createElement("tr", { key: e.id, style: { borderTop: i > 0 ? "1px solid var(--me-border-2,#f1f5f9)" : "none" } },
+                    React.createElement("td", { style: { padding: "9px 8px", width: 30, color: "#cbd5e1", fontSize: 12 } }, i + 1),
+                    React.createElement("td", { style: { padding: "9px 8px" } },
+                        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 9 } },
+                            React.createElement("div", { style: { width: 30, height: 30, borderRadius: 9, background: "rgba(26,86,219,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--me-brand)", fontSize: 11 } },
+                                e.prenom?.[0],
+                                e.nom?.[0]),
+                            React.createElement("div", { style: { fontWeight: 700, fontSize: 13, color: "var(--me-text)" } },
+                                e.prenom,
+                                " ",
+                                e.nom,
+                                e.genre ? React.createElement("span", { style: { fontSize: 11, color: "var(--me-text-3)", fontWeight: 600 } },
+                                    " \u00B7 ",
+                                    e.genre) : null))),
+                    React.createElement("td", { style: { padding: "9px 8px", fontFamily: "monospace", fontSize: 12, color: "var(--me-text-2)", textAlign: "right" } }, e.matricule)))))))));
         })(),
         modal && React.createElement(Modal, { confirmClose: true, title: modal === "add" ? t("cl_new_titre") : t("cl_edit_titre"), onClose: () => setModal(null), w: 540 },
             React.createElement(Slt, { label: t("cl_cycle"), value: form.niveau, onChange: e => { const niveau = e.target.value; setForm(f => ({ ...f, niveau, niveau_detail: "", serie: niveau === "Lycée" ? f.serie : "" })); }, opts: [{ v: "", l: t("cl_choisir_cycle") }, ...CYCLES.map(c => ({ v: c, l: `${(({ Maternelle: t("cyc_mat"), Primaire: t("cyc_pri"), "Collège": t("cyc_col"), "Lycée": t("cyc_lyc") })[c] || c)} (${t("cl_note_sur")} ${baremeOf(c)})` }))] }),
@@ -2530,8 +2524,8 @@ function Classes({ data, ops, etab, currentUser }) {
                 React.createElement("input", { dir: "rtl", value: form.nom_ar || "", onChange: e => setForm(f => ({ ...f, nom_ar: e.target.value })), style: { ...iSt(), fontFamily: "'Traditional Arabic','Amiri',serif", fontSize: 15 }, placeholder: "\u0627\u0644\u0642\u0633\u0645" })),
             err && React.createElement("div", { style: { background: "rgba(220,38,38,0.10)", border: "1px solid #fecaca", borderRadius: 9, padding: "9px 13px", color: "#dc2626", fontSize: 12, margin: "4px 0" } }, err),
             React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 13px" } },
-                React.createElement(Inp, { label: `${t("cl_frais_an")} (${devise})`, type: "number", value: form.frais_annuel_classe, onChange: e => setForm(f => ({ ...f, frais_annuel_classe: e.target.value })), placeholder: (etab === null || etab === void 0 ? void 0 : etab.frais_annuel_defaut) ? `Défaut: ${etab.frais_annuel_defaut}` : t("cl_defaut") }),
-                React.createElement(Inp, { label: `${t("cl_frais_insc")} (${devise})`, type: "number", value: form.frais_inscription_classe, onChange: e => setForm(f => ({ ...f, frais_inscription_classe: e.target.value })), placeholder: (etab === null || etab === void 0 ? void 0 : etab.fraisInscription) ? `Défaut: ${etab.fraisInscription}` : t("cl_defaut") })),
+                React.createElement(Inp, { label: `${t("cl_frais_an")} (${devise})`, type: "number", value: form.frais_annuel_classe, onChange: e => setForm(f => ({ ...f, frais_annuel_classe: e.target.value })), placeholder: etab?.frais_annuel_defaut ? `Défaut: ${etab.frais_annuel_defaut}` : t("cl_defaut") }),
+                React.createElement(Inp, { label: `${t("cl_frais_insc")} (${devise})`, type: "number", value: form.frais_inscription_classe, onChange: e => setForm(f => ({ ...f, frais_inscription_classe: e.target.value })), placeholder: etab?.fraisInscription ? `Défaut: ${etab.fraisInscription}` : t("cl_defaut") })),
             React.createElement(Inp, { label: t("cl_effectif"), type: "number", value: form.effectif, onChange: e => setForm(f => ({ ...f, effectif: e.target.value })) }),
             React.createElement(Slt, { label: t("cl_suivante"), value: form.classe_suivante_id, onChange: e => setForm(f => ({ ...f, classe_suivante_id: e.target.value })), opts: [{ v: "", l: t("cl_aucune_suivante") }, ...data.classes.filter(c => c.id !== modal).map(c => ({ v: String(c.id), l: txt(c.nom, c.nom_ar) }))] }),
             React.createElement("div", { style: { display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 6 } },
@@ -2540,28 +2534,25 @@ function Classes({ data, ops, etab, currentUser }) {
         promo && React.createElement(Modal, { title: t("cl_passage_titre"), onClose: () => setPromo(false), w: 560 },
             React.createElement("div", { style: { fontSize: 12, color: "var(--me-text-2)", marginBottom: 14 } }, t("cl_passage_intro")),
             promoInfos.length === 0 ? React.createElement("div", { style: { fontSize: 12, color: "var(--me-text-3)", background: "rgba(217,119,6,0.12)", border: "1px solid #fde68a", borderRadius: 9, padding: "11px 13px" } }, t("cl_passage_aucune_def")) : (React.createElement(React.Fragment, null,
-                React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8 } }, promoInfos.map(p => {
-                    var _b, _c;
-                    return (React.createElement("div", { key: p.cl.id, style: { background: "var(--me-surface-2,#f8fafc)", borderRadius: 10, padding: "10px 13px" } },
-                        React.createElement("div", { style: { fontWeight: 700, fontSize: 13, color: "var(--me-text)" } },
-                            txt(p.cl.nom, p.cl.nom_ar),
+                React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8 } }, promoInfos.map(p => (React.createElement("div", { key: p.cl.id, style: { background: "var(--me-surface-2,#f8fafc)", borderRadius: 10, padding: "10px 13px" } },
+                    React.createElement("div", { style: { fontWeight: 700, fontSize: 13, color: "var(--me-text)" } },
+                        txt(p.cl.nom, p.cl.nom_ar),
+                        " ",
+                        React.createElement("span", { style: { color: "var(--me-text-3)", fontWeight: 600 } },
+                            t("cl_vers"),
                             " ",
-                            React.createElement("span", { style: { color: "var(--me-text-3)", fontWeight: 600 } },
-                                t("cl_vers"),
-                                " ",
-                                txt((_b = p.suiv) === null || _b === void 0 ? void 0 : _b.nom, (_c = p.suiv) === null || _c === void 0 ? void 0 : _c.nom_ar))),
-                        React.createElement("div", { style: { fontSize: 12, marginTop: 3 } },
-                            React.createElement("span", { style: { color: "#059669", fontWeight: 700 } },
-                                p.admis,
-                                " ",
-                                t("cl_admis")),
-                            " \u00B7 ",
-                            React.createElement("span", { style: { color: "#dc2626" } },
-                                p.redouble,
-                                " ",
-                                t("cl_redoublants")),
-                            p.sansNote > 0 ? ` · ${p.sansNote} ${t("cl_sans_notes")}` : "")));
-                })),
+                            txt(p.suiv?.nom, p.suiv?.nom_ar))),
+                    React.createElement("div", { style: { fontSize: 12, marginTop: 3 } },
+                        React.createElement("span", { style: { color: "#059669", fontWeight: 700 } },
+                            p.admis,
+                            " ",
+                            t("cl_admis")),
+                        " \u00B7 ",
+                        React.createElement("span", { style: { color: "#dc2626" } },
+                            p.redouble,
+                            " ",
+                            t("cl_redoublants")),
+                        p.sansNote > 0 ? ` · ${p.sansNote} ${t("cl_sans_notes")}` : ""))))),
                 React.createElement("div", { style: { fontSize: 14, fontWeight: 800, color: "#047857", marginTop: 14, textAlign: "center" } },
                     totalAdmis,
                     " ",
@@ -2572,7 +2563,7 @@ function Classes({ data, ops, etab, currentUser }) {
 }
 // ── MATIÈRES ──────────────────────────────────────────────────────────────────
 function Matieres({ data, ops, currentUser }) {
-    const isProf = (currentUser === null || currentUser === void 0 ? void 0 : currentUser.role) === "Professeur";
+    const isProf = currentUser?.role === "Professeur";
     const [modal, setModal] = useState(null);
     const [form, setForm] = useState({ nom: "", nom_ar: "", coefficient: 1, enseignant: "", cycles: [] });
     const [loading, setLoading] = useState(false);
@@ -2666,8 +2657,8 @@ const genderRole = (role, genre, lang) => { const fem = genre === "F"; const ar 
 const fonctionLabel = (v, genre) => { const f = FONCTIONS.find(x => x.v === v); if (!f)
     return v || ""; const fem = genre === "F"; return CURRENT_LANG === "ar" ? (fem ? f.arF : f.ar) : (fem ? f.frF : f.fr); };
 function Professeurs({ data, ops, etab }) {
-    const devise = (etab === null || etab === void 0 ? void 0 : etab.devise) || "GNF";
-    const [recapAnnee, setRecapAnnee] = useState((etab === null || etab === void 0 ? void 0 : etab.annee) || "");
+    const devise = etab?.devise || "GNF";
+    const [recapAnnee, setRecapAnnee] = useState(etab?.annee || "");
     const [moisAn, setMoisAn] = useState(12);
     const [modal, setModal] = useState(null);
     const [sel, setSel] = useState(null);
@@ -2705,9 +2696,9 @@ function Professeurs({ data, ops, etab }) {
     const anneeScolaire = (d) => { if (!d)
         return ""; const dt = new Date(d); if (isNaN(dt))
         return ""; const y = dt.getFullYear(); return (dt.getMonth() + 1) >= 9 ? `${y}-${y + 1}` : `${y - 1}-${y}`; };
-    const salAnnee = sx => sx.annee || anneeScolaire(sx.date) || ((etab === null || etab === void 0 ? void 0 : etab.annee) || "");
+    const salAnnee = sx => sx.annee || anneeScolaire(sx.date) || (etab?.annee || "");
     const _anSet = new Set((data.salaires || []).map(salAnnee).filter(Boolean));
-    if (etab === null || etab === void 0 ? void 0 : etab.annee)
+    if (etab?.annee)
         _anSet.add(etab.annee);
     const anneesDispo = [..._anSet].sort().reverse();
     const salAnSel = (data.salaires || []).filter(x => salAnnee(x) === recapAnnee);
@@ -2715,10 +2706,10 @@ function Professeurs({ data, ops, etab }) {
     const masseMensuelle = (data.professeurs || []).filter(p => (p.type_salaire || "mensuel") === "mensuel").reduce((a, p) => a + (Number(p.salaire) || 0), 0);
     const prevuAnnee = masseMensuelle * (Number(moisAn) || 0);
     const restePrevu = prevuAnnee - verseAnnee;
-    const estAnneeCourante = recapAnnee === ((etab === null || etab === void 0 ? void 0 : etab.annee) || "");
+    const estAnneeCourante = recapAnnee === (etab?.annee || "");
     const moisAgg = (() => { const m = {}; salAnSel.forEach(x => { const k = x.mois || "—"; m[k] = (m[k] || 0) + (Number(x.montant) || 0); }); return Object.entries(m); })();
     const histoAnnees = anneesDispo.map(an => ({ an, total: (data.salaires || []).filter(x => salAnnee(x) === an).reduce((a, x) => a + (Number(x.montant) || 0), 0) })).filter(x => x.total > 0);
-    const openEdit = p => { var _b, _c; setErr(""); const _known = FONCTIONS.some(x => x.v === (p.fonction || "Enseignant")); setForm({ nom: p.nom, prenom: p.prenom, genre: p.genre || "", fonction: _known ? (p.fonction || "Enseignant") : "Autre", fonctionAutre: _known ? "" : (p.fonction || ""), telephone: p.telephone || "", email: p.email || "", matieres_txt: p.matieres_txt || "", date_embauche: p.date_embauche || "", type_salaire: p.type_salaire || "mensuel", salaire: (_b = p.salaire) !== null && _b !== void 0 ? _b : "", taux_horaire: (_c = p.taux_horaire) !== null && _c !== void 0 ? _c : "" }); setModal(p.id); };
+    const openEdit = p => { setErr(""); const _known = FONCTIONS.some(x => x.v === (p.fonction || "Enseignant")); setForm({ nom: p.nom, prenom: p.prenom, genre: p.genre || "", fonction: _known ? (p.fonction || "Enseignant") : "Autre", fonctionAutre: _known ? "" : (p.fonction || ""), telephone: p.telephone || "", email: p.email || "", matieres_txt: p.matieres_txt || "", date_embauche: p.date_embauche || "", type_salaire: p.type_salaire || "mensuel", salaire: p.salaire ?? "", taux_horaire: p.taux_horaire ?? "" }); setModal(p.id); };
     // Vue détail d'un professeur (salaires + absences)
     if (sel) {
         const p = (data.professeurs || []).find(x => x.id === sel);
@@ -2775,14 +2766,13 @@ function Professeurs({ data, ops, etab }) {
                 " \u00B7 ",
                 g.membres.length),
             React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(250px,1fr))", gap: 13 } }, g.membres.map(p => {
-                var _b, _c;
                 const abs = (data.absences_prof || []).filter(a => a.prof_id === p.id).length;
                 return (React.createElement(Card, { key: p.id, s: { cursor: "pointer" } },
                     React.createElement("div", { onClick: () => setSel(p.id) },
                         React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 11, marginBottom: 10 } },
-                            React.createElement("div", { style: { width: 42, height: 42, borderRadius: 11, background: "rgba(26,86,219,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--me-brand)", fontSize: 15 } }, (_b = p.prenom) === null || _b === void 0 ? void 0 :
-                                _b[0], (_c = p.nom) === null || _c === void 0 ? void 0 :
-                                _c[0]),
+                            React.createElement("div", { style: { width: 42, height: 42, borderRadius: 11, background: "rgba(26,86,219,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--me-brand)", fontSize: 15 } },
+                                p.prenom?.[0],
+                                p.nom?.[0]),
                             React.createElement("div", { style: { flex: 1 } },
                                 React.createElement("div", { style: { fontWeight: 800, fontSize: 14, color: "var(--me-text)" } },
                                     p.prenom,
@@ -2830,7 +2820,6 @@ function Professeurs({ data, ops, etab }) {
 }
 // Détail d'un professeur : salaires versés + absences
 function ProfDetail({ prof, data, ops, etab, devise, onBack }) {
-    var _b, _c;
     const [modalSal, setModalSal] = useState(false);
     const [loading, setLoading] = useState(false);
     const MOIS = ["Septembre", "Octobre", "Novembre", "Décembre", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet"];
@@ -2846,7 +2835,7 @@ function ProfDetail({ prof, data, ops, etab, devise, onBack }) {
             return;
         setLoading(true);
         const montant = salForm.heures && prof.type_salaire === "horaire" ? (parseFloat(salForm.heures) * parseFloat(prof.taux_horaire || 0)) : parseFloat(salForm.montant);
-        await ops.addSalaire({ prof_id: prof.id, prof_nom: `${prof.prenom} ${prof.nom}`, mois: salForm.mois, montant, date: salForm.date, heures: salForm.heures ? parseFloat(salForm.heures) : null, note: salForm.note, annee: (etab === null || etab === void 0 ? void 0 : etab.annee) || null });
+        await ops.addSalaire({ prof_id: prof.id, prof_nom: `${prof.prenom} ${prof.nom}`, mois: salForm.mois, montant, date: salForm.date, heures: salForm.heures ? parseFloat(salForm.heures) : null, note: salForm.note, annee: etab?.annee || null });
         setLoading(false);
         setModalSal(false);
         setSalForm(blankSal);
@@ -2857,9 +2846,9 @@ function ProfDetail({ prof, data, ops, etab, devise, onBack }) {
         React.createElement("button", { onClick: onBack, style: { background: "none", border: "none", color: "var(--me-brand)", cursor: "pointer", fontSize: 13, fontWeight: 700, marginBottom: 14, padding: 0 } }, t("pf_retour")),
         React.createElement(Card, { s: { marginBottom: 16 } },
             React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 14 } },
-                React.createElement("div", { style: { width: 54, height: 54, borderRadius: 14, background: "rgba(26,86,219,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--me-brand)", fontSize: 19 } }, (_b = prof.prenom) === null || _b === void 0 ? void 0 :
-                    _b[0], (_c = prof.nom) === null || _c === void 0 ? void 0 :
-                    _c[0]),
+                React.createElement("div", { style: { width: 54, height: 54, borderRadius: 14, background: "rgba(26,86,219,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--me-brand)", fontSize: 19 } },
+                    prof.prenom?.[0],
+                    prof.nom?.[0]),
                 React.createElement("div", { style: { flex: 1 } },
                     React.createElement("div", { style: { fontWeight: 800, fontSize: 18, color: "var(--me-text)" } },
                         prof.prenom,
@@ -2912,11 +2901,10 @@ function ProfDetail({ prof, data, ops, etab, devise, onBack }) {
                 React.createElement(Btn, { ch: loading ? "..." : t("no_save"), v: "success", onClick: saveSal, disabled: loading })))));
 }
 function EmploiTemps({ data, ops, etab, currentUser }) {
-    var _b;
     const JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
     const JLAB = { Lundi: t("edt_lundi"), Mardi: t("edt_mardi"), Mercredi: t("edt_mercredi"), Jeudi: t("edt_jeudi"), Vendredi: t("edt_vendredi"), Samedi: t("edt_samedi") };
     const jourLabel = j => JLAB[j] || j;
-    const [classeId, setClasseId] = useState(((_b = data.classes[0]) === null || _b === void 0 ? void 0 : _b.id) || "");
+    const [classeId, setClasseId] = useState(data.classes[0]?.id || "");
     const [modal, setModal] = useState(null);
     const [loading, setLoading] = useState(false);
     const blank = { jour: "Lundi", debut: "08:00", fin: "09:00", matiere_id: "", prof_id: "", salle: "" };
@@ -2925,7 +2913,7 @@ function EmploiTemps({ data, ops, etab, currentUser }) {
     const [ctTitre, setCtTitre] = useState("");
     const classe = data.classes.find(c => c.id === parseInt(classeId));
     const creneaux = (data.emploi_temps || []).filter(c => c.classe_id === parseInt(classeId)).sort((a, b) => (a.debut || "").localeCompare(b.debut || ""));
-    const matsClasse = data.matieres.filter(m => !m.cycles || m.cycles.length === 0 || m.cycles.includes(classe === null || classe === void 0 ? void 0 : classe.niveau));
+    const matsClasse = data.matieres.filter(m => !m.cycles || m.cycles.length === 0 || m.cycles.includes(classe?.niveau));
     const save = async () => {
         if (!form.matiere_id) {
             return;
@@ -2941,7 +2929,7 @@ function EmploiTemps({ data, ops, etab, currentUser }) {
     };
     const openNew = (jour) => { setForm({ ...blank, jour: jour || "Lundi" }); setModal("add"); };
     const matNom = id => { const m = data.matieres.find(m => m.id === id); return m ? txt(m.nom, m.nom_ar) : "—"; };
-    const profNom = id => { var _b; const p = (_b = data.professeurs) === null || _b === void 0 ? void 0 : _b.find(x => x.id === id); return p ? `${p.prenom} ${p.nom}` : ""; };
+    const profNom = id => { const p = data.professeurs?.find(x => x.id === id); return p ? `${p.prenom} ${p.nom}` : ""; };
     const printEDT = () => {
         if (!classe)
             return;
@@ -3007,7 +2995,7 @@ function EmploiTemps({ data, ops, etab, currentUser }) {
                 React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-2)", marginBottom: 14 } },
                     t("edt_cahier_note_a"),
                     " ",
-                    txt(classe === null || classe === void 0 ? void 0 : classe.nom, classe === null || classe === void 0 ? void 0 : classe.nom_ar),
+                    txt(classe?.nom, classe?.nom_ar),
                     " ",
                     t("edt_cahier_note_b")),
                 React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "flex-end", flexWrap: "wrap", marginBottom: 14 } },
@@ -3016,13 +3004,12 @@ function EmploiTemps({ data, ops, etab, currentUser }) {
                     React.createElement("div", { style: { flex: 1, minWidth: 220 } },
                         React.createElement(Inp, { label: t("edt_lecon"), value: ctTitre, onChange: e => setCtTitre(e.target.value), placeholder: t("edt_lecon_ph") })),
                     React.createElement(Btn, { ch: t("edt_save_lecon"), v: "success", onClick: () => { if (ctTitre.trim()) {
-                            ops.setTitreJour(parseInt(classeId), ctDate, ctTitre, `${(currentUser === null || currentUser === void 0 ? void 0 : currentUser.prenom) || ""} ${(currentUser === null || currentUser === void 0 ? void 0 : currentUser.nom) || ""}`.trim());
+                            ops.setTitreJour(parseInt(classeId), ctDate, ctTitre, `${currentUser?.prenom || ""} ${currentUser?.nom || ""}`.trim());
                             setCtTitre("");
                         } }, disabled: !ctTitre.trim() })),
                 (() => {
-                    var _b;
                     const list = (data.titres_jour || []).filter(t => t.classe_id === parseInt(classeId));
-                    return list.length === 0 ? React.createElement("div", { style: { fontSize: 12, color: "var(--me-text-3)" } }, ((_b = I18N[CURRENT_LANG]) === null || _b === void 0 ? void 0 : _b.edt_aucune_lecon) || I18N.fr.edt_aucune_lecon) : (React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8 } }, list.slice(0, 12).map(tj => (React.createElement("div", { key: tj.id, style: { display: "flex", alignItems: "center", gap: 12, padding: "10px 13px", background: "var(--me-surface-2,#f8fafc)", borderRadius: 10, borderLeft: "3px solid var(--me-brand)" } },
+                    return list.length === 0 ? React.createElement("div", { style: { fontSize: 12, color: "var(--me-text-3)" } }, I18N[CURRENT_LANG]?.edt_aucune_lecon || I18N.fr.edt_aucune_lecon) : (React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8 } }, list.slice(0, 12).map(tj => (React.createElement("div", { key: tj.id, style: { display: "flex", alignItems: "center", gap: 12, padding: "10px 13px", background: "var(--me-surface-2,#f8fafc)", borderRadius: 10, borderLeft: "3px solid var(--me-brand)" } },
                         React.createElement("div", { style: { fontSize: 11, fontWeight: 800, color: "var(--me-brand)", minWidth: 88 } }, fmtDate(tj.date)),
                         React.createElement("div", { style: { flex: 1 } },
                             React.createElement("div", { style: { fontSize: 13, color: "var(--me-text)", fontWeight: 600 } }, tj.titre),
@@ -3044,7 +3031,6 @@ function EmploiTemps({ data, ops, etab, currentUser }) {
                 React.createElement(Btn, { ch: loading ? "..." : t("btn_save"), v: "success", onClick: save, disabled: loading })))));
 }
 function FicheNotes({ data, ops, etab, onEtabUpdate }) {
-    var _b;
     const ALIGNS = [{ v: "left", l: t("fn_align_g") }, { v: "center", l: t("fn_align_c") }, { v: "right", l: t("fn_align_d") }];
     const COULEURS = ["#1a56db", "#0f766e", "#7c3aed", "#b91c1c", "#c2410c", "#475569", "#0f172a"];
     const colDefaut = () => ([
@@ -3057,7 +3043,7 @@ function FicheNotes({ data, ops, etab, onEtabUpdate }) {
         { nom: "Moyenne", largeur: 80, couleur: "#b91c1c", align: "center" },
         { nom: "Observations", largeur: 150, couleur: "#475569", align: "left" },
     ]);
-    const [classeId, setClasseId] = useState(((_b = data.classes[0]) === null || _b === void 0 ? void 0 : _b.id) || "");
+    const [classeId, setClasseId] = useState(data.classes[0]?.id || "");
     const fnPeriodes = periodesList(etab);
     const [fnPeriode, setFnPeriode] = useState(fnPeriodes[0]);
     const [cols, setCols] = useState(colDefaut());
@@ -3143,7 +3129,7 @@ function FicheNotes({ data, ops, etab, onEtabUpdate }) {
             setModeleNom("");
         }
     };
-    const chargerModele = m => { var _b; setCols(m.cols || colDefaut()); setLignesVides((_b = m.lignesVides) !== null && _b !== void 0 ? _b : 3); setTitre(m.titre || "FICHE DE NOTES"); };
+    const chargerModele = m => { setCols(m.cols || colDefaut()); setLignesVides(m.lignesVides ?? 3); setTitre(m.titre || "FICHE DE NOTES"); };
     const supprModele = async (nom) => {
         const updated = await ops.updateEtab(etab.id, { fiche_modeles: modeles.filter(m => m.nom !== nom) });
         if (updated)
@@ -3392,7 +3378,6 @@ function FicheNotes({ data, ops, etab, onEtabUpdate }) {
                 React.createElement(Btn, { ch: t("fn_stat_ligne"), v: "ghost", s: { padding: "6px 12px", fontSize: 12, marginTop: 9 }, onClick: addStatRow })))))));
 }
 function FicheEleve({ eleve, data, etab, canPaie, onClose }) {
-    var _b, _c;
     const [apercu, setApercu] = useState(null);
     const cl = data.classes.find(c => c.id === eleve.classe_id);
     const periodes = periodesList(etab);
@@ -3418,7 +3403,7 @@ function FicheEleve({ eleve, data, etab, canPaie, onClose }) {
         const admin = [[t("el_acte"), eleve.acte_naissance ? t("el_oui") : t("el_non")], [t("el_certificat"), eleve.certificat_transfert ? t("el_oui") : t("el_non")], [t("el_dossier"), eleve.dossier_complet ? t("el_oui") : t("el_non")]];
         const hasMed = med.some(x => x[1] != null && x[1] !== "");
         const rows = arr => arr.filter(x => x[1] != null && x[1] !== "").map(x => `<tr><td style="padding:4px 8px;color:#64748b;width:45%">${esc(x[0])}</td><td style="padding:4px 8px;font-weight:700">${esc(x[1])}</td></tr>`).join("");
-        const moyTable = `<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px"><thead><tr style="color:#64748b"><th style="text-align:left;padding:5px 8px">${esc(t("fe_matiere"))}</th>${periodes.map(p => `<th style="padding:5px 8px;text-align:center">${esc(periodeLabel(etab, p))}</th>`).join("")}</tr></thead><tbody>${mats.map(m => `<tr style="border-top:1px solid #eef2f7"><td style="padding:4px 8px">${esc(txt(m.nom, m.nom_ar))}</td>${periodes.map(per => { var _b, _c; const nv = (_c = (_b = eleve.notes) === null || _b === void 0 ? void 0 : _b[per]) === null || _c === void 0 ? void 0 : _c[m.id]; return `<td style="padding:4px 8px;text-align:center;font-weight:700">${nv != null && nv !== "" ? esc(nv) : "—"}</td>`; }).join("")}</tr>`).join("")}<tr style="border-top:2px solid #1a56db;font-weight:800"><td style="padding:5px 8px">${esc(t("fe_moyenne"))}</td>${moys.map(mm => `<td style="padding:5px 8px;text-align:center;color:#1a56db">${esc(mm)}</td>`).join("")}</tr></tbody></table>`;
+        const moyTable = `<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px"><thead><tr style="color:#64748b"><th style="text-align:left;padding:5px 8px">${esc(t("fe_matiere"))}</th>${periodes.map(p => `<th style="padding:5px 8px;text-align:center">${esc(periodeLabel(etab, p))}</th>`).join("")}</tr></thead><tbody>${mats.map(m => `<tr style="border-top:1px solid #eef2f7"><td style="padding:4px 8px">${esc(txt(m.nom, m.nom_ar))}</td>${periodes.map(per => { const nv = eleve.notes?.[per]?.[m.id]; return `<td style="padding:4px 8px;text-align:center;font-weight:700">${nv != null && nv !== "" ? esc(nv) : "—"}</td>`; }).join("")}</tr>`).join("")}<tr style="border-top:2px solid #1a56db;font-weight:800"><td style="padding:5px 8px">${esc(t("fe_moyenne"))}</td>${moys.map(mm => `<td style="padding:5px 8px;text-align:center;color:#1a56db">${esc(mm)}</td>`).join("")}</tr></tbody></table>`;
         const payTable = paies.length ? `<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px"><thead><tr style="color:#64748b"><th style="text-align:left;padding:5px 8px">${esc(t("fe_date"))}</th><th style="text-align:left;padding:5px 8px">${esc(t("fe_type"))}</th><th style="text-align:right;padding:5px 8px">${esc(t("fe_montant"))}</th></tr></thead><tbody>${paies.map(p => `<tr style="border-top:1px solid #eef2f7"><td style="padding:4px 8px">${esc(fmtDate(p.date))}</td><td style="padding:4px 8px">${esc(p.type)}${p.mois ? " — " + esc(p.mois) : ""}</td><td style="padding:4px 8px;text-align:right;font-weight:700">${esc(fmtMoney(p.montant, devise))}</td></tr>`).join("")}</tbody></table>` : `<div style="font-size:12px;color:#94a3b8;padding:6px 8px">${esc(t("fe_aucun_paiement"))}</div>`;
         const html = `<div style="font-family:Arial,sans-serif;max-width:680px;margin:0 auto;color:#0f172a">
       ${officialHeader(etab, { docTitle: t("fe_titre"), docTitleAr: "بطاقة التلميذ" })}
@@ -3442,10 +3427,10 @@ function FicheEleve({ eleve, data, etab, canPaie, onClose }) {
         printHTML(html, `${eleve.prenom || ""} ${eleve.nom || ""}`, { etab });
     };
     const releveNotes = () => {
-        const bareme = baremeOf(cl === null || cl === void 0 ? void 0 : cl.niveau);
+        const bareme = baremeOf(cl?.niveau);
         const fmt = v => v == null ? "—" : (Math.round(v * 100) / 100).toFixed(2);
         const subj = mats.map(m => {
-            const cells = periodes.map(per => { var _b, _c; const nv = (_c = (_b = eleve.notes) === null || _b === void 0 ? void 0 : _b[per]) === null || _c === void 0 ? void 0 : _c[m.id]; return (nv != null && nv !== "") ? parseFloat(nv) : null; });
+            const cells = periodes.map(per => { const nv = eleve.notes?.[per]?.[m.id]; return (nv != null && nv !== "") ? parseFloat(nv) : null; });
             const got = cells.filter(v => v != null);
             const annual = got.length ? (got.reduce((a, b) => a + b, 0) / got.length) : null;
             return { m, cells, annual, has: got.length > 0 };
@@ -3478,9 +3463,9 @@ function FicheEleve({ eleve, data, etab, canPaie, onClose }) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Modal, { title: t("fe_titre"), onClose: onClose, w: 580 },
             React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 14, marginBottom: 6 } },
-                eleve.photo ? React.createElement("img", { src: eleve.photo, alt: "", style: { width: 54, height: 54, borderRadius: 14, objectFit: "cover", flexShrink: 0 } }) : React.createElement("div", { style: { width: 54, height: 54, borderRadius: 14, background: "linear-gradient(135deg,var(--me-brand),var(--me-brand2))", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 18, fontFamily: "'Sora',sans-serif" } }, (_b = eleve.prenom) === null || _b === void 0 ? void 0 :
-                    _b[0], (_c = eleve.nom) === null || _c === void 0 ? void 0 :
-                    _c[0]),
+                eleve.photo ? React.createElement("img", { src: eleve.photo, alt: "", style: { width: 54, height: 54, borderRadius: 14, objectFit: "cover", flexShrink: 0 } }) : React.createElement("div", { style: { width: 54, height: 54, borderRadius: 14, background: "linear-gradient(135deg,var(--me-brand),var(--me-brand2))", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 18, fontFamily: "'Sora',sans-serif" } },
+                    eleve.prenom?.[0],
+                    eleve.nom?.[0]),
                 React.createElement("div", { style: { flex: 1, minWidth: 0 } },
                     React.createElement("div", { style: { fontWeight: 800, fontSize: 18, color: "var(--me-text)", fontFamily: "'Sora',sans-serif" } },
                         eleve.prenom,
@@ -3570,7 +3555,7 @@ function FicheEleve({ eleve, data, etab, canPaie, onClose }) {
                             periodes.map(per => React.createElement("th", { key: per, style: { padding: "6px 8px", fontWeight: 700, textAlign: "center" } }, periodeLabel(etab, per))))),
                     React.createElement("tbody", null, mats.map(m => (React.createElement("tr", { key: m.id, style: { borderTop: "1px solid var(--me-border-2,#eef2f7)" } },
                         React.createElement("td", { style: { padding: "6px 8px", fontWeight: 600, color: "var(--me-text)" } }, txt(m.nom, m.nom_ar)),
-                        periodes.map(per => { var _b, _c; const nv = (_c = (_b = eleve.notes) === null || _b === void 0 ? void 0 : _b[per]) === null || _c === void 0 ? void 0 : _c[m.id]; const has = nv != null && nv !== ""; return React.createElement("td", { key: per, style: { padding: "6px 8px", textAlign: "center", color: has ? "var(--me-text)" : "#cbd5e1", fontWeight: 700 } }, has ? nv : "—"); })))))))),
+                        periodes.map(per => { const nv = eleve.notes?.[per]?.[m.id]; const has = nv != null && nv !== ""; return React.createElement("td", { key: per, style: { padding: "6px 8px", textAlign: "center", color: has ? "var(--me-text)" : "#cbd5e1", fontWeight: 700 } }, has ? nv : "—"); })))))))),
             canPaie && React.createElement(React.Fragment, null,
                 sect(t("fe_paiements")),
                 React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 } },
@@ -3603,9 +3588,9 @@ function FicheEleve({ eleve, data, etab, canPaie, onClose }) {
                 React.createElement(Btn, { ch: t("fe_imprimer"), v: "primary", onClick: () => printHTML(apercu, `${t("fe_releve")} ${eleve.prenom || ""} ${eleve.nom || ""}`, { etab }) })))));
 }
 function Eleves({ data, ops, etab, currentUser }) {
-    const isProf = (currentUser === null || currentUser === void 0 ? void 0 : currentUser.role) === "Professeur";
-    const canFiche = (currentUser === null || currentUser === void 0 ? void 0 : currentUser.role) === "Administrateur" || (Array.isArray(currentUser === null || currentUser === void 0 ? void 0 : currentUser.pages_autorisees) && currentUser.pages_autorisees.includes("fiche_eleve"));
-    const canPaie = (currentUser === null || currentUser === void 0 ? void 0 : currentUser.role) === "Administrateur" || (Array.isArray(currentUser === null || currentUser === void 0 ? void 0 : currentUser.pages_autorisees) && currentUser.pages_autorisees.includes("fiche_paiements"));
+    const isProf = currentUser?.role === "Professeur";
+    const canFiche = currentUser?.role === "Administrateur" || (Array.isArray(currentUser?.pages_autorisees) && currentUser.pages_autorisees.includes("fiche_eleve"));
+    const canPaie = currentUser?.role === "Administrateur" || (Array.isArray(currentUser?.pages_autorisees) && currentUser.pages_autorisees.includes("fiche_paiements"));
     const [modal, setModal] = useState(null);
     const [search, setSearch] = useState("");
     const [filterCl, setFilterCl] = useState("");
@@ -3798,8 +3783,7 @@ function Eleves({ data, ops, etab, currentUser }) {
     };
     const saveComite = async () => { setComSaving(true); await ops.saveComiteAll(comiteDraft, etab.annee || ""); setComite(comiteDraft); setComSaving(false); setComiteOpen(false); };
     const pickImport = async (ev) => {
-        var _b;
-        const file = (_b = ev.target.files) === null || _b === void 0 ? void 0 : _b[0];
+        const file = ev.target.files?.[0];
         if (!file)
             return;
         setImpErr("");
@@ -3817,8 +3801,7 @@ function Eleves({ data, ops, etab, currentUser }) {
             impFileRef.current.value = "";
     };
     const confirmImport = async () => {
-        var _b;
-        const cid = parseInt(impClasse) || ((_b = data.classes[0]) === null || _b === void 0 ? void 0 : _b.id);
+        const cid = parseInt(impClasse) || data.classes[0]?.id;
         if (!cid)
             return;
         const norm = s => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -3837,14 +3820,13 @@ function Eleves({ data, ops, etab, currentUser }) {
     const [invalides, setInvalides] = useState({});
     const clrInv = k => setInvalides(v => v[k] ? { ...v, [k]: false } : v);
     const save = async () => {
-        var _b;
         const inv = { nom: !String(form.nom).trim(), prenom: !String(form.prenom).trim() };
         setInvalides(inv);
         if (inv.nom || inv.prenom)
             return;
         // Anti-doublon : même nom+prénom dans la même classe
         const norm = s => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
-        const cid = parseInt(form.classe_id) || ((_b = data.classes[0]) === null || _b === void 0 ? void 0 : _b.id);
+        const cid = parseInt(form.classe_id) || data.classes[0]?.id;
         const doublon = data.eleves.find(e => e.id !== modal && norm(e.nom) === norm(form.nom) && norm(e.prenom) === norm(form.prenom) && e.classe_id === cid);
         if (doublon) {
             setErr(`${t("el_doublon_a")} "${form.prenom} ${form.nom}" ${t("el_doublon_b")}`);
@@ -3897,9 +3879,9 @@ function Eleves({ data, ops, etab, currentUser }) {
     const showNumeroEleve = !!_selClasse && (_selClasse.niveau === "Collège" || _selClasse.niveau === "Lycée");
     const _bilingue = etab.langue === "fr_ar" || etab.langue === "ar";
     const classesCycle = data.classes.filter(c => (c.niveau || "Primaire") === cycle);
-    const countCycle = cyc => data.eleves.filter(e => { const c = data.classes.find(x => x.id === e.classe_id); return ((c === null || c === void 0 ? void 0 : c.niveau) || "Primaire") === cyc; }).length;
+    const countCycle = cyc => data.eleves.filter(e => { const c = data.classes.find(x => x.id === e.classe_id); return (c?.niveau || "Primaire") === cyc; }).length;
     const matchSearch = e => `${e.prenom} ${e.nom} ${e.matricule}`.toLowerCase().includes(search.toLowerCase());
-    const openInscrire = () => { var _b, _c; setErr(""); setForm({ nom: "", prenom: "", genre: "", classe_id: ((_b = classesCycle[0]) === null || _b === void 0 ? void 0 : _b.id) || ((_c = data.classes[0]) === null || _c === void 0 ? void 0 : _c.id) || "", date_naissance: "", lieu_naissance: "", tuteur: "", pere: "", tel_pere: "", mere: "", tel_mere: "", telephone: "", frais_annuel: "", frais_inscription_eleve: "", photo: "", documents: [], nationalite: "", adresse: "", email: "", profession_pere: "", profession_mere: "", groupe_sanguin: "", allergies: "", urgence_nom: "", urgence_tel: "", acte_naissance: false, certificat_transfert: false, dossier_complet: false, observations: "", numero_eleve: "", inscPayee: false }); setModal("add"); };
+    const openInscrire = () => { setErr(""); setForm({ nom: "", prenom: "", genre: "", classe_id: classesCycle[0]?.id || data.classes[0]?.id || "", date_naissance: "", lieu_naissance: "", tuteur: "", pere: "", tel_pere: "", mere: "", tel_mere: "", telephone: "", frais_annuel: "", frais_inscription_eleve: "", photo: "", documents: [], nationalite: "", adresse: "", email: "", profession_pere: "", profession_mere: "", groupe_sanguin: "", allergies: "", urgence_nom: "", urgence_tel: "", acte_naissance: false, certificat_transfert: false, dossier_complet: false, observations: "", numero_eleve: "", inscPayee: false }); setModal("add"); };
     useEffect(() => { try {
         if (localStorage.getItem("monecole_quick") === "inscrire") {
             localStorage.removeItem("monecole_quick");
@@ -3915,7 +3897,7 @@ function Eleves({ data, ops, etab, currentUser }) {
         React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 } },
             React.createElement(Btn, { ch: t("imp_export"), v: "ghost", onClick: doExport }),
             React.createElement(Btn, { ch: t("imp_word"), v: "ghost", onClick: doExportWord }),
-            !isProf && React.createElement(Btn, { ch: t("imp_import"), v: "ghost", onClick: () => { var _b, _c; setImpErr(""); setImpRows([]); setImpClasse(((_b = classesCycle[0]) === null || _b === void 0 ? void 0 : _b.id) || ((_c = data.classes[0]) === null || _c === void 0 ? void 0 : _c.id) || ""); setImpOpen(true); } }),
+            !isProf && React.createElement(Btn, { ch: t("imp_import"), v: "ghost", onClick: () => { setImpErr(""); setImpRows([]); setImpClasse(classesCycle[0]?.id || data.classes[0]?.id || ""); setImpOpen(true); } }),
             React.createElement(Btn, { ch: t("cartes_btn"), v: "ghost", onClick: printCartes }),
             !isProf && React.createElement(Btn, { ch: t("comite_btn"), v: "ghost", onClick: () => { setComiteDraft(Array.isArray(comite) ? comite : []); setComEleve(""); setComFonction(""); setComiteOpen(true); } })),
         React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 18 } }, CYCLES.map(cyc => {
@@ -3953,29 +3935,26 @@ function Eleves({ data, ops, etab, currentUser }) {
                             " ",
                             t("db_eleves")))),
                 elevesClasse.length === 0 ? React.createElement("div", { style: { padding: "18px", textAlign: "center", color: "var(--me-text-3)", fontSize: 12 } }, search ? t("el_aucun_resultat") : t("el_aucun_eleve")) : (React.createElement("table", { style: { width: "100%", borderCollapse: "collapse" } },
-                    React.createElement("tbody", null, elevesClasse.map((e, i) => {
-                        var _b, _c;
-                        return (React.createElement("tr", { key: e.id, style: { borderTop: i > 0 ? "1px solid #f8fafc" : "none" } },
-                            React.createElement("td", { style: { padding: "10px 18px", width: 36, color: "#cbd5e1", fontSize: 12 } }, i + 1),
-                            React.createElement("td", { style: { padding: "10px 6px" } },
-                                React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 9 } },
-                                    e.photo ? React.createElement("img", { src: e.photo, alt: "", style: { width: 31, height: 31, borderRadius: 9, objectFit: "cover" } }) : React.createElement("div", { style: { width: 31, height: 31, borderRadius: 9, background: "rgba(26,86,219,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--me-brand)", fontSize: 11 } }, (_b = e.prenom) === null || _b === void 0 ? void 0 :
-                                        _b[0], (_c = e.nom) === null || _c === void 0 ? void 0 :
-                                        _c[0]),
-                                    React.createElement("div", null,
-                                        React.createElement("div", { onClick: canFiche ? () => setFiche(e) : undefined, title: canFiche ? t("fe_voir") : undefined, style: { fontWeight: 700, fontSize: 13, color: canFiche ? "var(--me-brand)" : "var(--me-text)", cursor: canFiche ? "pointer" : "default" } },
-                                            e.prenom,
-                                            " ",
-                                            e.nom),
-                                        e.tuteur && React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-3)" } },
-                                            "\uD83D\uDC64 ",
-                                            e.tuteur)))),
-                            React.createElement("td", { style: { padding: "10px 6px", fontFamily: "monospace", fontSize: 12, color: "var(--me-text-2)" } }, e.matricule),
-                            React.createElement("td", { style: { padding: "10px 18px", textAlign: "right" } },
-                                React.createElement("div", { style: { display: "inline-flex", gap: 6 } }, !isProf && React.createElement(React.Fragment, null,
-                                    React.createElement("button", { onClick: () => { var _b, _c; setErr(""); setForm({ nom: e.nom, prenom: e.prenom, genre: e.genre || "", classe_id: e.classe_id, date_naissance: e.date_naissance || "", lieu_naissance: e.lieu_naissance || "", tuteur: e.tuteur || "", pere: e.pere || "", tel_pere: e.tel_pere || "", mere: e.mere || "", tel_mere: e.tel_mere || "", telephone: e.telephone || "", frais_annuel: (_b = e.frais_annuel) !== null && _b !== void 0 ? _b : "", frais_inscription_eleve: (_c = e.frais_inscription_eleve) !== null && _c !== void 0 ? _c : "", photo: e.photo || "", documents: Array.isArray(e.documents) ? e.documents : [], nationalite: e.nationalite || "", adresse: e.adresse || "", email: e.email || "", profession_pere: e.profession_pere || "", profession_mere: e.profession_mere || "", groupe_sanguin: e.groupe_sanguin || "", allergies: e.allergies || "", urgence_nom: e.urgence_nom || "", urgence_tel: e.urgence_tel || "", acte_naissance: !!e.acte_naissance, certificat_transfert: !!e.certificat_transfert, dossier_complet: !!e.dossier_complet, observations: e.observations || "", numero_eleve: e.numero_eleve || "", inscPayee: false }); setModal(e.id); }, style: { background: "var(--me-surface-2,#f1f5f9)", border: "none", borderRadius: 7, padding: "5px 9px", cursor: "pointer", fontSize: 11, fontWeight: 700 } }, t("btn_modifier")),
-                                    React.createElement("button", { onClick: () => ops.deleteEleve(e.id), style: { background: "rgba(220,38,38,0.10)", color: "#dc2626", border: "none", borderRadius: 7, padding: "5px 9px", cursor: "pointer", fontSize: 11, fontWeight: 700 } }, t("btn_supprimer")))))));
-                    }))))));
+                    React.createElement("tbody", null, elevesClasse.map((e, i) => (React.createElement("tr", { key: e.id, style: { borderTop: i > 0 ? "1px solid #f8fafc" : "none" } },
+                        React.createElement("td", { style: { padding: "10px 18px", width: 36, color: "#cbd5e1", fontSize: 12 } }, i + 1),
+                        React.createElement("td", { style: { padding: "10px 6px" } },
+                            React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 9 } },
+                                e.photo ? React.createElement("img", { src: e.photo, alt: "", style: { width: 31, height: 31, borderRadius: 9, objectFit: "cover" } }) : React.createElement("div", { style: { width: 31, height: 31, borderRadius: 9, background: "rgba(26,86,219,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--me-brand)", fontSize: 11 } },
+                                    e.prenom?.[0],
+                                    e.nom?.[0]),
+                                React.createElement("div", null,
+                                    React.createElement("div", { onClick: canFiche ? () => setFiche(e) : undefined, title: canFiche ? t("fe_voir") : undefined, style: { fontWeight: 700, fontSize: 13, color: canFiche ? "var(--me-brand)" : "var(--me-text)", cursor: canFiche ? "pointer" : "default" } },
+                                        e.prenom,
+                                        " ",
+                                        e.nom),
+                                    e.tuteur && React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-3)" } },
+                                        "\uD83D\uDC64 ",
+                                        e.tuteur)))),
+                        React.createElement("td", { style: { padding: "10px 6px", fontFamily: "monospace", fontSize: 12, color: "var(--me-text-2)" } }, e.matricule),
+                        React.createElement("td", { style: { padding: "10px 18px", textAlign: "right" } },
+                            React.createElement("div", { style: { display: "inline-flex", gap: 6 } }, !isProf && React.createElement(React.Fragment, null,
+                                React.createElement("button", { onClick: () => { setErr(""); setForm({ nom: e.nom, prenom: e.prenom, genre: e.genre || "", classe_id: e.classe_id, date_naissance: e.date_naissance || "", lieu_naissance: e.lieu_naissance || "", tuteur: e.tuteur || "", pere: e.pere || "", tel_pere: e.tel_pere || "", mere: e.mere || "", tel_mere: e.tel_mere || "", telephone: e.telephone || "", frais_annuel: e.frais_annuel ?? "", frais_inscription_eleve: e.frais_inscription_eleve ?? "", photo: e.photo || "", documents: Array.isArray(e.documents) ? e.documents : [], nationalite: e.nationalite || "", adresse: e.adresse || "", email: e.email || "", profession_pere: e.profession_pere || "", profession_mere: e.profession_mere || "", groupe_sanguin: e.groupe_sanguin || "", allergies: e.allergies || "", urgence_nom: e.urgence_nom || "", urgence_tel: e.urgence_tel || "", acte_naissance: !!e.acte_naissance, certificat_transfert: !!e.certificat_transfert, dossier_complet: !!e.dossier_complet, observations: e.observations || "", numero_eleve: e.numero_eleve || "", inscPayee: false }); setModal(e.id); }, style: { background: "var(--me-surface-2,#f1f5f9)", border: "none", borderRadius: 7, padding: "5px 9px", cursor: "pointer", fontSize: 11, fontWeight: 700 } }, t("btn_modifier")),
+                                React.createElement("button", { onClick: () => ops.deleteEleve(e.id), style: { background: "rgba(220,38,38,0.10)", color: "#dc2626", border: "none", borderRadius: 7, padding: "5px 9px", cursor: "pointer", fontSize: 11, fontWeight: 700 } }, t("btn_supprimer")))))))))))));
         }))),
         fiche && canFiche && React.createElement(FicheEleve, { eleve: fiche, data: data, etab: etab, canPaie: canPaie, onClose: () => setFiche(null) }),
         modal && React.createElement(Modal, { confirmClose: true, title: modal === "add" ? t("el_inscrire_titre") : t("el_modifier"), onClose: () => setModal(null), w: 540 },
@@ -4090,7 +4069,7 @@ function Eleves({ data, ops, etab, currentUser }) {
                                 " \u00B7 ",
                                 txt(c.nom, c.nom_ar)) : null),
                         React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: "var(--me-brand)" } },
-                            genderRole(m.fonction, el === null || el === void 0 ? void 0 : el.genre, "fr"),
+                            genderRole(m.fonction, el?.genre, "fr"),
                             m.fin ? React.createElement("span", { style: { color: "var(--me-text-3)", fontWeight: 600 } },
                                 " \u00B7 ",
                                 t("comite_fin"),
@@ -4138,10 +4117,9 @@ function Eleves({ data, ops, etab, currentUser }) {
 }
 // ── NOTES ─────────────────────────────────────────────────────────────────────
 function Notes({ data, ops, etab, currentUser }) {
-    var _b, _c;
     const periodes = periodesList(etab);
     const [periode, setPeriode] = useState(periodes[0]);
-    const [classeId, setClasseId] = useState(((_b = data.classes[0]) === null || _b === void 0 ? void 0 : _b.id) || "");
+    const [classeId, setClasseId] = useState(data.classes[0]?.id || "");
     const [localNotes, setLocalNotes] = useState({});
     const [localAppr, setLocalAppr] = useState({});
     const [saving, setSaving] = useState(false);
@@ -4160,16 +4138,16 @@ function Notes({ data, ops, etab, currentUser }) {
     const [impNotesErr, setImpNotesErr] = useState("");
     const impNotesRef = useRef(null);
     const classeSel = data.classes.find(c => c.id === parseInt(classeId));
-    const bareme = baremeOf(classeSel === null || classeSel === void 0 ? void 0 : classeSel.niveau);
+    const bareme = baremeOf(classeSel?.niveau);
     // Restriction matières : un Professeur ne voit que ses matières autorisées
-    const isProf = (currentUser === null || currentUser === void 0 ? void 0 : currentUser.role) === "Professeur";
-    const autorisees = Array.isArray(currentUser === null || currentUser === void 0 ? void 0 : currentUser.matieres_autorisees) ? currentUser.matieres_autorisees : [];
+    const isProf = currentUser?.role === "Professeur";
+    const autorisees = Array.isArray(currentUser?.matieres_autorisees) ? currentUser.matieres_autorisees : [];
     // Matières du cycle de la classe + filtrage prof
-    const matieresCycle = data.matieres.filter(m => (!m.cycles || m.cycles.length === 0 || m.cycles.includes(classeSel === null || classeSel === void 0 ? void 0 : classeSel.niveau)) && (!isProf || autorisees.includes(m.id)));
-    const [matiereId, setMatiereId] = useState(((_c = matieresCycle[0]) === null || _c === void 0 ? void 0 : _c.id) || "");
+    const matieresCycle = data.matieres.filter(m => (!m.cycles || m.cycles.length === 0 || m.cycles.includes(classeSel?.niveau)) && (!isProf || autorisees.includes(m.id)));
+    const [matiereId, setMatiereId] = useState(matieresCycle[0]?.id || "");
     // Si la matière courante n'est plus valide (changement de classe), réajuster
-    useEffect(() => { var _b; if (!matieresCycle.find(m => m.id === parseInt(matiereId))) {
-        setMatiereId(((_b = matieresCycle[0]) === null || _b === void 0 ? void 0 : _b.id) || "");
+    useEffect(() => { if (!matieresCycle.find(m => m.id === parseInt(matiereId))) {
+        setMatiereId(matieresCycle[0]?.id || "");
     } }, [classeId, data.matieres]);
     const matiere = data.matieres.find(m => m.id === parseInt(matiereId));
     const classeElevesAll = data.eleves.filter(e => e.classe_id === parseInt(classeId));
@@ -4193,7 +4171,7 @@ function Notes({ data, ops, etab, currentUser }) {
         ];
     };
     const classeEleves = classeElevesAll.filter(e => `${e.prenom} ${e.nom} ${e.matricule}`.toLowerCase().includes(search.toLowerCase()));
-    useEffect(() => { const n = {}; const ap = {}; classeElevesAll.forEach(e => { var _b, _c, _d, _e, _f, _g; n[e.id] = (_d = (_c = (_b = e.notes) === null || _b === void 0 ? void 0 : _b[periode]) === null || _c === void 0 ? void 0 : _c[matiereId]) !== null && _d !== void 0 ? _d : ""; ap[e.id] = (_g = (_f = (_e = e.appreciations) === null || _e === void 0 ? void 0 : _e[periode]) === null || _f === void 0 ? void 0 : _f[matiereId]) !== null && _g !== void 0 ? _g : ""; }); setLocalNotes(n); setLocalAppr(ap); setApprMissing(new Set()); setDirty(false); }, [periode, classeId, matiereId, data.eleves]);
+    useEffect(() => { const n = {}; const ap = {}; classeElevesAll.forEach(e => { n[e.id] = e.notes?.[periode]?.[matiereId] ?? ""; ap[e.id] = e.appreciations?.[periode]?.[matiereId] ?? ""; }); setLocalNotes(n); setLocalAppr(ap); setApprMissing(new Set()); setDirty(false); }, [periode, classeId, matiereId, data.eleves]);
     const setNote = (id, val) => { setLocalNotes(n => ({ ...n, [id]: val })); setDirty(true); };
     const setAppr = (id, val) => { setLocalAppr(a => ({ ...a, [id]: val })); setApprMissing(s => { if (!s.has(id))
         return s; const nx = new Set(s); nx.delete(id); return nx; }); setDirty(true); };
@@ -4208,7 +4186,7 @@ function Notes({ data, ops, etab, currentUser }) {
         }
         setApprMissing(new Set());
         setSaving(true);
-        const updates = classeElevesAll.map(e => { var _b, _c; return ({ id: e.id, notes: { ...(e.notes || {}), [periode]: { ...(((_b = e.notes) === null || _b === void 0 ? void 0 : _b[periode]) || {}), [matiereId]: localNotes[e.id] === "" || localNotes[e.id] == null ? null : parseFloat(localNotes[e.id]) } }, appreciations: { ...(e.appreciations || {}), [periode]: { ...(((_c = e.appreciations) === null || _c === void 0 ? void 0 : _c[periode]) || {}), [matiereId]: (localAppr[e.id] || "").trim() || null } } }); });
+        const updates = classeElevesAll.map(e => ({ id: e.id, notes: { ...(e.notes || {}), [periode]: { ...(e.notes?.[periode] || {}), [matiereId]: localNotes[e.id] === "" || localNotes[e.id] == null ? null : parseFloat(localNotes[e.id]) } }, appreciations: { ...(e.appreciations || {}), [periode]: { ...(e.appreciations?.[periode] || {}), [matiereId]: (localAppr[e.id] || "").trim() || null } } }));
         await ops.saveAllNotes(updates);
         setSaving(false);
         setDirty(false);
@@ -4229,8 +4207,7 @@ function Notes({ data, ops, etab, currentUser }) {
     const nbRemplies = notesValides.length;
     const totalEleves = classeElevesAll.length;
     const pickNotesFile = async (ev) => {
-        var _b;
-        const file = (_b = ev.target.files) === null || _b === void 0 ? void 0 : _b[0];
+        const file = ev.target.files?.[0];
         if (!file)
             return;
         setImpNotesErr("");
@@ -4246,7 +4223,6 @@ function Notes({ data, ops, etab, currentUser }) {
             let matched = 0, noteCount = 0;
             const upMap = {};
             raw.forEach(row => {
-                var _b, _c;
                 const matr = String(row.Matricule || row.matricule || "").trim();
                 let stu = matr ? classeElevesAll.find(e => norm(e.matricule) === norm(matr)) : null;
                 if (!stu) {
@@ -4257,13 +4233,13 @@ function Notes({ data, ops, etab, currentUser }) {
                 if (!stu)
                     return;
                 matched++;
-                const pNotes = { ...(((_b = stu.notes) === null || _b === void 0 ? void 0 : _b[periode]) || {}) };
+                const pNotes = { ...(stu.notes?.[periode] || {}) };
                 let changed = false;
                 Object.entries(subjCols).forEach(([h, mid]) => { const v = row[h]; if (v === "" || v == null)
                     return; const num = parseFloat(String(v).replace(",", ".")); if (isNaN(num))
                     return; pNotes[mid] = num; noteCount++; changed = true; });
                 if (changed) {
-                    const all = ((_c = upMap[stu.id]) === null || _c === void 0 ? void 0 : _c.notes) || { ...(stu.notes || {}) };
+                    const all = upMap[stu.id]?.notes || { ...(stu.notes || {}) };
                     all[periode] = pNotes;
                     upMap[stu.id] = { id: stu.id, notes: all };
                 }
@@ -4278,7 +4254,7 @@ function Notes({ data, ops, etab, currentUser }) {
         if (impNotesRef.current)
             impNotesRef.current.value = "";
     };
-    const confirmNotesImport = async () => { var _b; if (!((_b = impNotesData === null || impNotesData === void 0 ? void 0 : impNotesData.updates) === null || _b === void 0 ? void 0 : _b.length))
+    const confirmNotesImport = async () => { if (!impNotesData?.updates?.length)
         return; setImpNotesLoading(true); await ops.saveAllNotes(impNotesData.updates); setImpNotesLoading(false); setImpNotesOpen(false); setImpNotesData(null); };
     const printFiche = () => {
         const cl = classeSel;
@@ -4295,11 +4271,11 @@ function Notes({ data, ops, etab, currentUser }) {
       <tbody>${sr.map(r => `<tr><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;font-weight:600">${esc(r.label)}</td><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;text-align:center">${esc(r.total)}</td><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;text-align:center">${esc(r.filles)}</td></tr>`).join("")}</tbody>
     </table></div>` : "";
         const hSty = enteteCouleur ? "" : ' style="background:#ffffff;color:#000;border:1px solid #94a3b8"';
-        printHTML(`${officialHeader(etab, { classe: cl === null || cl === void 0 ? void 0 : cl.nom, docTitle: `Fiche de notes — ${matiere === null || matiere === void 0 ? void 0 : matiere.nom}`, docTitleAr: `بطاقة العلامات ${(matiere === null || matiere === void 0 ? void 0 : matiere.nom_ar) || (matiere === null || matiere === void 0 ? void 0 : matiere.nom) || ""}` })}
-    <p style="font-size:12px;color:#475569">Période : <b>${periode}</b> · Coefficient : <b>${matiere === null || matiere === void 0 ? void 0 : matiere.coefficient}</b> · Enseignant : <b>${(matiere === null || matiere === void 0 ? void 0 : matiere.enseignant) || "—"}</b></p>
+        printHTML(`${officialHeader(etab, { classe: cl?.nom, docTitle: `Fiche de notes — ${matiere?.nom}`, docTitleAr: `بطاقة العلامات ${matiere?.nom_ar || matiere?.nom || ""}` })}
+    <p style="font-size:12px;color:#475569">Période : <b>${periode}</b> · Coefficient : <b>${matiere?.coefficient}</b> · Enseignant : <b>${matiere?.enseignant || "—"}</b></p>
     <table><tr><th${hSty}>N°</th><th${hSty}>${t("fi_eleve")}</th><th${hSty}>${t("fi_matricule")}</th><th${hSty}>${t("fi_note")} /${bareme}</th><th${hSty}>${t("fi_appreciation")}</th></tr>${rows}</table>
     ${statHTML}
-    <div class="sign"><span>Le/La titulaire : ____________________</span><span>Date : ____________</span></div>`, `Fiche Notes - ${matiere === null || matiere === void 0 ? void 0 : matiere.nom}`, { etab });
+    <div class="sign"><span>Le/La titulaire : ____________________</span><span>Date : ____________</span></div>`, `Fiche Notes - ${matiere?.nom}`, { etab });
     };
     if (data.classes.length === 0 || data.matieres.length === 0)
         return React.createElement(Card, null,
@@ -4310,7 +4286,7 @@ function Notes({ data, ops, etab, currentUser }) {
     return (React.createElement("div", null,
         React.createElement(SHdr, { title: t("nav_notes") + " 📝", sub: t("no_sub"), action: React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" } },
                 dirty && React.createElement("span", { style: { fontSize: 11, color: "#c2410c", fontWeight: 700, background: "#fff7ed", padding: "5px 11px", borderRadius: 8, border: "1px solid #fed7aa" } }, t("no_unsaved")),
-                React.createElement(ExportBar, { name: `notes_${((classeSel === null || classeSel === void 0 ? void 0 : classeSel.nom) || "classe")}_${periode}`.replace(/\s+/g, "_"), title: `${t("nav_notes")} — ${(classeSel === null || classeSel === void 0 ? void 0 : classeSel.nom) || ""} — ${periode}`, getRows: () => classeElevesAll.map((e, i) => { const row = { "N°": i + 1, "Élève": `${e.prenom} ${e.nom}`, Matricule: e.matricule }; matieresCycle.forEach(m => { var _b, _c; const n = (_c = (_b = e.notes) === null || _b === void 0 ? void 0 : _b[periode]) === null || _c === void 0 ? void 0 : _c[m.id]; row[m.nom] = (n != null && n !== "") ? n : ""; }); row["Moyenne"] = calcMoy(e.notes || {}, data.matieres, periode); return row; }) }),
+                React.createElement(ExportBar, { name: `notes_${(classeSel?.nom || "classe")}_${periode}`.replace(/\s+/g, "_"), title: `${t("nav_notes")} — ${classeSel?.nom || ""} — ${periode}`, getRows: () => classeElevesAll.map((e, i) => { const row = { "N°": i + 1, "Élève": `${e.prenom} ${e.nom}`, Matricule: e.matricule }; matieresCycle.forEach(m => { const n = e.notes?.[periode]?.[m.id]; row[m.nom] = (n != null && n !== "") ? n : ""; }); row["Moyenne"] = calcMoy(e.notes || {}, data.matieres, periode); return row; }) }),
                 React.createElement("label", { style: { display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 600, color: "var(--me-text-2)", cursor: "pointer" }, title: t("fn_entete_couleur") },
                     React.createElement("input", { type: "checkbox", checked: enteteCouleur, onChange: e => setEnteteCouleur(e.target.checked) }),
                     "\uD83C\uDFA8 ",
@@ -4364,7 +4340,7 @@ function Notes({ data, ops, etab, currentUser }) {
                     React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 } },
                         React.createElement("div", { style: { fontWeight: 700, fontSize: 13, color: "var(--me-text)" } },
                             "\uD83D\uDCCB ",
-                            txt(matiere === null || matiere === void 0 ? void 0 : matiere.nom, matiere === null || matiere === void 0 ? void 0 : matiere.nom_ar),
+                            txt(matiere?.nom, matiere?.nom_ar),
                             " \u2014 ",
                             periodeLabel(etab, periode)),
                         React.createElement("input", { value: search, onChange: e => setSearch(e.target.value), placeholder: t("no_search"), style: { padding: "7px 12px", borderRadius: 9, border: "1.5px solid #e2e8f0", fontSize: 12, outline: "none", fontFamily: "'Plus Jakarta Sans',sans-serif", width: 210 } })),
@@ -4372,8 +4348,7 @@ function Notes({ data, ops, etab, currentUser }) {
                         React.createElement("thead", null,
                             React.createElement("tr", { style: { background: "var(--me-surface-2,#f8fafc)" } }, ["N°", t("no_eleve"), `${t("no_note")} /${bareme}`, t("no_appreciation"), t("no_commentaire")].map(h => React.createElement("th", { key: h, style: { padding: "10px 13px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "var(--me-text-3)", textTransform: "uppercase" } }, h)))),
                         React.createElement("tbody", null, classeEleves.map((e, i) => {
-                            var _b;
-                            const note = (_b = localNotes[e.id]) !== null && _b !== void 0 ? _b : "";
+                            const note = localNotes[e.id] ?? "";
                             const m = note !== "" ? MENTION(note, bareme) : null;
                             return (React.createElement("tr", { key: e.id, className: "me-row", style: { borderTop: "1px solid #f4f7fb" } },
                                 React.createElement("td", { style: { padding: "9px 13px", fontSize: 12, color: "var(--me-text-3)" } }, i + 1),
@@ -4384,7 +4359,7 @@ function Notes({ data, ops, etab, currentUser }) {
                                         e.nom),
                                     React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-3)" } }, e.matricule)),
                                 React.createElement("td", { style: { padding: "7px 13px" } },
-                                    React.createElement("input", { ref: el => inputsRef.current[i] = el, onKeyDown: ev => onKey(ev, i), type: "number", min: "0", max: bareme, step: "0.25", value: note, onChange: ev => setNote(e.id, ev.target.value), style: { width: 80, padding: "8px 10px", borderRadius: 9, border: `2px solid ${note !== "" && parseFloat(note) < bareme / 2 ? "#fca5a5" : "#e2e8f0"}`, fontSize: 14, fontWeight: 700, textAlign: "center", outline: "none", fontFamily: "'Plus Jakarta Sans',sans-serif", color: (m === null || m === void 0 ? void 0 : m.c) || "var(--me-text)" } })),
+                                    React.createElement("input", { ref: el => inputsRef.current[i] = el, onKeyDown: ev => onKey(ev, i), type: "number", min: "0", max: bareme, step: "0.25", value: note, onChange: ev => setNote(e.id, ev.target.value), style: { width: 80, padding: "8px 10px", borderRadius: 9, border: `2px solid ${note !== "" && parseFloat(note) < bareme / 2 ? "#fca5a5" : "#e2e8f0"}`, fontSize: 14, fontWeight: 700, textAlign: "center", outline: "none", fontFamily: "'Plus Jakarta Sans',sans-serif", color: m?.c || "var(--me-text)" } })),
                                 React.createElement("td", { style: { padding: "9px 13px" } }, m && React.createElement("span", { style: { background: m.bg, color: m.c, borderRadius: 7, padding: "3px 9px", fontSize: 11, fontWeight: 700 } }, m.t)),
                                 React.createElement("td", { style: { padding: "7px 13px" } },
                                     React.createElement("input", { value: localAppr[e.id] || "", onChange: ev => setAppr(e.id, ev.target.value), placeholder: t("no_commentaire_ph"), style: { width: "100%", minWidth: 160, padding: "8px 10px", borderRadius: 9, border: `1.5px solid ${apprMissing.has(e.id) ? "#fca5a5" : "#e2e8f0"}`, background: apprMissing.has(e.id) ? "#fef2f2" : "transparent", fontSize: 12.5, outline: "none", fontFamily: "'Plus Jakarta Sans',sans-serif", color: "var(--me-text)" } }))));
@@ -4400,7 +4375,7 @@ function Notes({ data, ops, etab, currentUser }) {
                             React.createElement("div", { style: { display: "flex", gap: 5 } },
                                 React.createElement(Seg, { v: "matiere", lbl: t("stat_mode_matiere") }),
                                 React.createElement(Seg, { v: "generale", lbl: t("stat_mode_generale") }))),
-                        React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-3)", marginBottom: 11 } }, statBase === "generale" ? periodeLabel(etab, periode) : `${txt(matiere === null || matiere === void 0 ? void 0 : matiere.nom, matiere === null || matiere === void 0 ? void 0 : matiere.nom_ar)} — ${periodeLabel(etab, periode)}`),
+                        React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-3)", marginBottom: 11 } }, statBase === "generale" ? periodeLabel(etab, periode) : `${txt(matiere?.nom, matiere?.nom_ar)} — ${periodeLabel(etab, periode)}`),
                         React.createElement("div", { style: { display: "flex", gap: 7, flexWrap: "wrap", alignItems: "center", marginBottom: 11 } },
                             React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: "var(--me-text-3)" } }, t("fn_stat_pos")),
                             React.createElement("select", { value: statPos, onChange: e => setStatPos(e.target.value), style: selSt },
@@ -4426,7 +4401,7 @@ function Notes({ data, ops, etab, currentUser }) {
                 " \u00B7 ",
                 t("no_classe"),
                 " : ",
-                txt(classeSel === null || classeSel === void 0 ? void 0 : classeSel.nom, classeSel === null || classeSel === void 0 ? void 0 : classeSel.nom_ar)),
+                txt(classeSel?.nom, classeSel?.nom_ar)),
             React.createElement("label", { style: { display: "inline-block", padding: "9px 14px", background: "var(--me-brand)", color: "#fff", borderRadius: 9, fontSize: 12, fontWeight: 700, cursor: "pointer" } },
                 t("imp_choisir_fichier"),
                 React.createElement("input", { ref: impNotesRef, type: "file", accept: ".xlsx,.xls,.csv", style: { display: "none" }, onChange: pickNotesFile })),
@@ -4461,12 +4436,12 @@ function Bulletins({ data, etab }) {
     const bulletinAnnuelHTML = (e, persInput) => {
         const pers = persInput && persInput.length ? persInput : periodes;
         const cl = data.classes.find(c => c.id === e.classe_id);
-        const bareme = baremeOf(cl === null || cl === void 0 ? void 0 : cl.niveau);
+        const bareme = baremeOf(cl?.niveau);
         const methodeAnn = (etab.methode_annuelle === "matiere") ? "matiere" : "trimestres";
         const moyGenAnn = (notes) => {
             if (methodeAnn === "matiere") {
                 let sum = 0, cs = 0;
-                data.matieres.forEach(mat => { const vs = pers.map(p => { var _b; return (_b = notes === null || notes === void 0 ? void 0 : notes[p]) === null || _b === void 0 ? void 0 : _b[mat.id]; }).filter(nn => nn != null && nn !== "").map(parseFloat); if (vs.length) {
+                data.matieres.forEach(mat => { const vs = pers.map(p => notes?.[p]?.[mat.id]).filter(nn => nn != null && nn !== "").map(parseFloat); if (vs.length) {
                     const mm = vs.reduce((a, b) => a + b, 0) / vs.length;
                     const c = Number(mat.coefficient) || 1;
                     sum += mm * c;
@@ -4481,7 +4456,7 @@ function Bulletins({ data, etab }) {
         const moyAnnuelle = moyGenAnn(e.notes);
         const mAnn = moyAnnuelle != null ? MENTION(moyAnnuelle, bareme) : { t: "—", c: "#94a3b8", bg: "#f8fafc" };
         const classmates = data.eleves.filter(x => x.classe_id === e.classe_id);
-        const rangAnn = classmates.map(x => { var _b; return ({ id: x.id, moy: (_b = moyGenAnn(x.notes)) !== null && _b !== void 0 ? _b : 0 }); }).sort((a, b) => b.moy - a.moy).findIndex(x => x.id === e.id) + 1;
+        const rangAnn = classmates.map(x => ({ id: x.id, moy: moyGenAnn(x.notes) ?? 0 })).sort((a, b) => b.moy - a.moy).findIndex(x => x.id === e.id) + 1;
         const rangP = pers.map(p => { const arr = classmates.map(x => ({ id: x.id, v: parseFloat(calcMoy(x.notes || {}, data.matieres, p)) })).filter(x => !isNaN(x.v)).sort((a, b) => b.v - a.v); const idx = arr.findIndex(x => x.id === e.id); return { rang: idx >= 0 ? idx + 1 : null, total: arr.length }; });
         const estAnnuel = pers.length === periodes.length;
         const single = pers.length === 1; // une seule période : pas de colonne Moy. redondante
@@ -4517,14 +4492,14 @@ function Bulletins({ data, etab }) {
         const nm = (fr, ar) => arD ? (ar ? arS(ar) : (fr || "")) : (bilD && ar ? `${fr} <span style="color:#94a3b8;font-weight:400">/</span> ${arS(ar)}` : (fr || ""));
         const moyClasse = (() => { const arr = classmates.map(x => moyGenAnn(x.notes)).filter(v => v != null); return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null; })();
         const _escB = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        const faibles = data.matieres.map(mat => { const vals = pers.map(p => { var _b, _c; return (_c = (_b = e.notes) === null || _b === void 0 ? void 0 : _b[p]) === null || _c === void 0 ? void 0 : _c[mat.id]; }).filter(nn => nn != null && nn !== "").map(parseFloat); const mm = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null; const cs = pers.map(p => { var _b, _c; return (_c = (_b = e.appreciations) === null || _b === void 0 ? void 0 : _b[p]) === null || _c === void 0 ? void 0 : _c[mat.id]; }).filter(c => c && String(c).trim()); return { nom: nm(mat.nom, mat.nom_ar), m: mm, appr: cs.length ? String(cs[cs.length - 1]).trim() : "" }; }).filter(x => x.m != null && x.m < bareme / 2);
+        const faibles = data.matieres.map(mat => { const vals = pers.map(p => e.notes?.[p]?.[mat.id]).filter(nn => nn != null && nn !== "").map(parseFloat); const mm = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null; const cs = pers.map(p => e.appreciations?.[p]?.[mat.id]).filter(c => c && String(c).trim()); return { nom: nm(mat.nom, mat.nom_ar), m: mm, appr: cs.length ? String(cs[cs.length - 1]).trim() : "" }; }).filter(x => x.m != null && x.m < bareme / 2);
         const perAr = p => { const it = periodeItems(etab).find(x => x.n === p); return it && it.ar; };
         const titreDoc = estAnnuel ? `Bulletin annuel — ${etab.annee || ""}` : `Bulletin de notes — ${pers[pers.length - 1]}`;
         const titreDocAr = (bilD || arD) ? (estAnnuel ? `الكشف السنوي — ${etab.annee || ""}` : `كشف الدرجات — ${perAr(pers[pers.length - 1]) || ""}`) : "";
         const entetesP = pers.map(p => `<th style="text-align:center">${dl(p, perAr(p))}</th>`).join("");
         const lignes = data.matieres.map((mat, i) => {
-            const cells = pers.map(p => { var _b, _c; const note = (_c = (_b = e.notes) === null || _b === void 0 ? void 0 : _b[p]) === null || _c === void 0 ? void 0 : _c[mat.id]; return `<td style="text-align:center;font-weight:700;color:${note != null && note !== "" ? "#0f172a" : "#cbd5e1"}">${note != null && note !== "" ? note : "—"}</td>`; }).join("");
-            const vals = pers.map(p => { var _b, _c; return (_c = (_b = e.notes) === null || _b === void 0 ? void 0 : _b[p]) === null || _c === void 0 ? void 0 : _c[mat.id]; }).filter(n => n != null && n !== "").map(parseFloat);
+            const cells = pers.map(p => { const note = e.notes?.[p]?.[mat.id]; return `<td style="text-align:center;font-weight:700;color:${note != null && note !== "" ? "#0f172a" : "#cbd5e1"}">${note != null && note !== "" ? note : "—"}</td>`; }).join("");
+            const vals = pers.map(p => e.notes?.[p]?.[mat.id]).filter(n => n != null && n !== "").map(parseFloat);
             const moyMat = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2) : "—";
             const moyMatNum = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length) : null;
             const aMat = appr(moyMatNum);
@@ -4533,8 +4508,8 @@ function Bulletins({ data, etab }) {
         const moyRow = `<tr style="background:#eff6ff;font-weight:800"><td colspan="2">${dl("Moyenne", "المعدل")}</td>${moyP.map(v => `<td style="text-align:center;color:${v != null && v >= bareme / 2 ? "#059669" : v != null ? "#dc2626" : "#cbd5e1"}">${v != null ? v.toFixed(2) : "—"}</td>`).join("")}${single ? "" : `<td style="text-align:center;color:${etab.theme_couleur || "#1a56db"}">${moyAnnuelle != null ? moyAnnuelle.toFixed(2) : "—"}</td>`}<td style="text-align:center;color:${apprGen.fr ? (etab.theme_couleur || "#1a56db") : "#1a56db"}">${moyAnnuelle != null ? dl(apprGen.fr, apprGen.ar) : "—"}</td></tr>`;
         const rangRow = `<tr style="background:#f8fafc;font-weight:700"><td colspan="2">${dl("Rang", "الرتبة")}</td>${rangP.map(r => `<td style="text-align:center;color:#475569">${r.rang ? `${r.rang}/${r.total}` : "—"}</td>`).join("")}${single ? "" : `<td style="text-align:center;font-weight:800;color:${etab.theme_couleur || "#1a56db"}">${rangAnn}/${classmates.length}</td>`}<td></td></tr>`;
         const labelMoyGen = single ? dl("Moyenne", "المعدل") : (estAnnuel ? dl("Moyenne annuelle", "المعدل السنوي") : dl("Moyenne cumulée", "المعدل التراكمي"));
-        return `${officialHeader(etab, { classe: nm(cl === null || cl === void 0 ? void 0 : cl.nom, cl === null || cl === void 0 ? void 0 : cl.nom_ar), docTitle: titreDoc, docTitleAr: titreDocAr, shared: true })}
-    <div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr"><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Élève", "التلميذ")}</div><b>${e.prenom} ${e.nom}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Matricule", "رقم التسجيل")}</div><b style="font-family:monospace">${e.matricule}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Classe", "القسم")}</div><b>${nm(cl === null || cl === void 0 ? void 0 : cl.nom, cl === null || cl === void 0 ? void 0 : cl.nom_ar)}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Année", "السنة")}</div><b>${etab.annee || ""}</b></div></div>
+        return `${officialHeader(etab, { classe: nm(cl?.nom, cl?.nom_ar), docTitle: titreDoc, docTitleAr: titreDocAr, shared: true })}
+    <div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr"><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Élève", "التلميذ")}</div><b>${e.prenom} ${e.nom}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Matricule", "رقم التسجيل")}</div><b style="font-family:monospace">${e.matricule}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Classe", "القسم")}</div><b>${nm(cl?.nom, cl?.nom_ar)}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Année", "السنة")}</div><b>${etab.annee || ""}</b></div></div>
     ${(e.pere || e.mere || e.tuteur) ? `<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:-6px">${e.pere ? `<div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Père", "الأب")}</div><b>${e.pere}</b></div>` : ""}${e.mere ? `<div><div style="font-size:10px;color:#666;text-transform:uppercase">${dl("Mère", "الأم")}</div><b>${e.mere}</b></div>` : ""}</div>` : ""}
     <table><tr><th>${dl("Matière", "المادة")}</th><th>${dl("Coeff.", "المعامل")}</th>${entetesP}${single ? "" : `<th style="text-align:center">${dl("Moy.", "المعدل")}</th>`}<th>${dl("Appréciation", "الملاحظة")}</th></tr>${lignes}${moyRow}${rangRow}</table>
     <div class="result" style="grid-template-columns:repeat(4,1fr);background:${mAnn.bg};border:2px solid ${mAnn.c}40"><div class="stat"><div class="stat-val" style="color:${mAnn.c}">${moyAnnuelle != null ? moyAnnuelle.toFixed(2) : "—"}</div><div class="stat-lbl">${labelMoyGen} /${bareme}</div></div><div class="stat"><div class="stat-val" style="color:${mAnn.c};font-size:18px">${mAnn.t}</div><div class="stat-lbl">${dl("Mention", "التقدير")}</div></div><div class="stat"><div class="stat-val">${rangAnn}/${classmates.length}</div><div class="stat-lbl">${dl("Rang", "الرتبة")}</div></div><div class="stat"><div class="stat-val" style="font-size:20px">${moyClasse != null ? moyClasse.toFixed(2) : "—"}</div><div class="stat-lbl">${dl("Moyenne classe", "معدل القسم")}</div></div></div>
@@ -4549,14 +4524,14 @@ function Bulletins({ data, etab }) {
     const bulletinHTML = (e, p) => {
         const moy = calcMoy(e.notes || {}, data.matieres, p);
         const cl = data.classes.find(c => c.id === e.classe_id);
-        const bareme = baremeOf(cl === null || cl === void 0 ? void 0 : cl.niveau);
+        const bareme = baremeOf(cl?.niveau);
         const m = MENTION(moy, bareme);
         const classmates = data.eleves.filter(x => x.classe_id === e.classe_id);
         const rang = classmates.map(x => ({ id: x.id, moy: parseFloat(calcMoy(x.notes || {}, data.matieres, p)) || 0 })).sort((a, b) => b.moy - a.moy).findIndex(x => x.id === e.id) + 1;
-        const lignes = data.matieres.map((mat, i) => { var _b, _c; const note = (_c = (_b = e.notes) === null || _b === void 0 ? void 0 : _b[p]) === null || _c === void 0 ? void 0 : _c[mat.id]; const app = note != null && note !== "" ? MENTION(note, bareme) : { t: "Non noté", c: "#94a3b8", bg: "#f8fafc" }; return `<tr style="background:${i % 2 === 0 ? "#f8fafc" : "#fff"}"><td>${txt(mat.nom, mat.nom_ar)}</td><td style="text-align:center">×${mat.coefficient}</td><td style="text-align:center;font-weight:900;font-size:16px;color:${app.c}">${note != null && note !== "" ? note : "—"}</td><td style="text-align:center">${note != null && note !== "" ? (parseFloat(note) * mat.coefficient).toFixed(2) : "—"}</td><td style="text-align:center"><span style="background:${app.bg};color:${app.c};padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700">${app.t}</span></td></tr>`; }).join("");
-        return `${officialHeader(etab, { classe: cl === null || cl === void 0 ? void 0 : cl.nom, docTitle: `Bulletin de notes — ${p}`, shared: true })}
+        const lignes = data.matieres.map((mat, i) => { const note = e.notes?.[p]?.[mat.id]; const app = note != null && note !== "" ? MENTION(note, bareme) : { t: "Non noté", c: "#94a3b8", bg: "#f8fafc" }; return `<tr style="background:${i % 2 === 0 ? "#f8fafc" : "#fff"}"><td>${txt(mat.nom, mat.nom_ar)}</td><td style="text-align:center">×${mat.coefficient}</td><td style="text-align:center;font-weight:900;font-size:16px;color:${app.c}">${note != null && note !== "" ? note : "—"}</td><td style="text-align:center">${note != null && note !== "" ? (parseFloat(note) * mat.coefficient).toFixed(2) : "—"}</td><td style="text-align:center"><span style="background:${app.bg};color:${app.c};padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700">${app.t}</span></td></tr>`; }).join("");
+        return `${officialHeader(etab, { classe: cl?.nom, docTitle: `Bulletin de notes — ${p}`, shared: true })}
     ${etab.devise_txt ? `<p style="text-align:center;font-style:italic;color:#64748b;margin:0 0 10px">${etab.devise_txt}</p>` : ""}
-    <div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr"><div><div style="font-size:10px;color:#666;text-transform:uppercase">Élève</div><b>${e.prenom} ${e.nom}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">Matricule</div><b style="font-family:monospace">${e.matricule}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">Classe</div><b>${txt(cl === null || cl === void 0 ? void 0 : cl.nom, cl === null || cl === void 0 ? void 0 : cl.nom_ar)}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">Année</div><b>${etab.annee || ""}</b></div></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr"><div><div style="font-size:10px;color:#666;text-transform:uppercase">Élève</div><b>${e.prenom} ${e.nom}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">Matricule</div><b style="font-family:monospace">${e.matricule}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">Classe</div><b>${txt(cl?.nom, cl?.nom_ar)}</b></div><div><div style="font-size:10px;color:#666;text-transform:uppercase">Année</div><b>${etab.annee || ""}</b></div></div>
     ${(e.pere || e.mere || e.tuteur) ? `<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:-6px">${e.pere ? `<div><div style="font-size:10px;color:#666;text-transform:uppercase">Père</div><b>${e.pere}</b></div>` : ""}${e.mere ? `<div><div style="font-size:10px;color:#666;text-transform:uppercase">Mère</div><b>${e.mere}</b></div>` : ""}${e.tuteur ? `<div><div style="font-size:10px;color:#666;text-transform:uppercase">Tuteur</div><b>${e.tuteur}</b></div>` : ""}</div>` : ""}
     <table><tr><th>Matière</th><th>Coeff.</th><th>Note /${bareme}</th><th>Points</th><th>Appréciation</th></tr>${lignes}</table>
     <div class="result" style="background:${m.bg};border:2px solid ${m.c}40"><div class="stat"><div class="stat-val" style="color:${m.c}">${moy}</div><div class="stat-lbl">Moyenne /${bareme}</div></div><div class="stat"><div class="stat-val" style="color:${m.c};font-size:18px">${m.t}</div><div class="stat-lbl">Mention</div></div><div class="stat"><div class="stat-val">${rang}/${classmates.length}</div><div class="stat-lbl">Rang</div></div></div>
@@ -4567,7 +4542,7 @@ function Bulletins({ data, etab }) {
         const e = selected;
         const moy = calcMoy(e.notes || {}, data.matieres, periode);
         const cl = data.classes.find(c => c.id === e.classe_id);
-        const bareme = baremeOf(cl === null || cl === void 0 ? void 0 : cl.niveau);
+        const bareme = baremeOf(cl?.niveau);
         const m = MENTION(moy, bareme);
         const classmates = data.eleves.filter(x => x.classe_id === e.classe_id);
         const rang = classmates.map(x => ({ id: x.id, moy: parseFloat(calcMoy(x.notes || {}, data.matieres, periode)) || 0 })).sort((a, b) => b.moy - a.moy).findIndex(x => x.id === e.id) + 1;
@@ -4590,7 +4565,7 @@ function Bulletins({ data, etab }) {
                 React.createElement("select", { value: filterCl, onChange: e => setFilterCl(e.target.value), style: { padding: "8px 11px", borderRadius: 9, border: "1.5px solid #e2e8f0", fontSize: 12, outline: "none", fontFamily: "'Plus Jakarta Sans',sans-serif" } },
                     React.createElement("option", { value: "" }, t("bu_toutes_classes")),
                     data.classes.map(c => React.createElement("option", { key: c.id, value: c.id }, txt(c.nom, c.nom_ar)))),
-                React.createElement(Btn, { ch: t("imp_export"), v: "ghost", onClick: async () => { const rows = filtered.map(e => { const cl = data.classes.find(c => c.id === e.classe_id); const bareme = baremeOf(cl === null || cl === void 0 ? void 0 : cl.niveau); const moy = parseFloat(calcMoy(e.notes || {}, data.matieres, periode)); const m = MENTION(isNaN(moy) ? 0 : moy, bareme); const mates = data.eleves.filter(x => x.classe_id === e.classe_id).map(x => ({ id: x.id, v: parseFloat(calcMoy(x.notes || {}, data.matieres, periode)) || 0 })).sort((a, b) => b.v - a.v); const rang = mates.findIndex(x => x.id === e.id) + 1; return { "Élève": `${e.prenom} ${e.nom}`, Matricule: e.matricule, Classe: cl ? cl.nom : "", "Moyenne": isNaN(moy) ? "" : moy.toFixed(2), "Mention": m.t, "Rang": `${rang}/${mates.length}` }; }); if (!rows.length) {
+                React.createElement(Btn, { ch: t("imp_export"), v: "ghost", onClick: async () => { const rows = filtered.map(e => { const cl = data.classes.find(c => c.id === e.classe_id); const bareme = baremeOf(cl?.niveau); const moy = parseFloat(calcMoy(e.notes || {}, data.matieres, periode)); const m = MENTION(isNaN(moy) ? 0 : moy, bareme); const mates = data.eleves.filter(x => x.classe_id === e.classe_id).map(x => ({ id: x.id, v: parseFloat(calcMoy(x.notes || {}, data.matieres, periode)) || 0 })).sort((a, b) => b.v - a.v); const rang = mates.findIndex(x => x.id === e.id) + 1; return { "Élève": `${e.prenom} ${e.nom}`, Matricule: e.matricule, Classe: cl ? cl.nom : "", "Moyenne": isNaN(moy) ? "" : moy.toFixed(2), "Mention": m.t, "Rang": `${rang}/${mates.length}` }; }); if (!rows.length) {
                         alert(t("imp_rien_exporter"));
                         return;
                     } try {
@@ -4607,23 +4582,22 @@ function Bulletins({ data, etab }) {
                         return; const idx = periodes.indexOf(periode); const persCumul = periodes.slice(0, idx + 1); const html = filtered.map((e, i) => `${bulletinAnnuelHTML(e, persCumul)}${i < filtered.length - 1 ? '<div class="page-break"></div>' : ""}`).join(""); printHTML(html, "Bulletins — " + periode, { etab }); } })) }),
         data.eleves.length === 0 ? React.createElement(Card, null,
             React.createElement(Empty, { icon: "\uD83D\uDCC4", text: t("bu_aucun_eleve") })) : (React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8 } }, filtered.map(e => {
-            var _b, _c;
             const moy = calcMoy(e.notes || {}, data.matieres, periode);
             const cl = data.classes.find(c => c.id === e.classe_id);
-            const bareme = baremeOf(cl === null || cl === void 0 ? void 0 : cl.niveau);
+            const bareme = baremeOf(cl?.niveau);
             const m = MENTION(moy, bareme);
             return (React.createElement("div", { key: e.id, onClick: () => setSelected(e), style: { background: "var(--me-surface,#fff)", borderRadius: 12, padding: "13px 17px", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", border: "1.5px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", transition: "all 0.15s" }, onMouseOver: ev => { ev.currentTarget.style.borderColor = "#1a56db"; }, onMouseOut: ev => { ev.currentTarget.style.borderColor = "#f1f5f9"; } },
                 React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 11 } },
-                    React.createElement("div", { style: { width: 36, height: 36, borderRadius: 10, background: "rgba(26,86,219,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--me-brand)", fontSize: 12 } }, (_b = e.prenom) === null || _b === void 0 ? void 0 :
-                        _b[0], (_c = e.nom) === null || _c === void 0 ? void 0 :
-                        _c[0]),
+                    React.createElement("div", { style: { width: 36, height: 36, borderRadius: 10, background: "rgba(26,86,219,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--me-brand)", fontSize: 12 } },
+                        e.prenom?.[0],
+                        e.nom?.[0]),
                     React.createElement("div", null,
                         React.createElement("div", { style: { fontWeight: 700, fontSize: 13, color: "var(--me-text)" } },
                             e.prenom,
                             " ",
                             e.nom),
                         React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-3)" } },
-                            txt(cl === null || cl === void 0 ? void 0 : cl.nom, cl === null || cl === void 0 ? void 0 : cl.nom_ar),
+                            txt(cl?.nom, cl?.nom_ar),
                             " \u00B7 ",
                             e.matricule))),
                 React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 13 } },
@@ -4655,7 +4629,7 @@ function Paiements({ data, ops, etab }) {
             return;
         setLoading(true);
         const el = data.eleves.find(e => e.id === parseInt(form.eleve_id));
-        const created = await ops.addPaiement({ ...form, eleve_id: parseInt(form.eleve_id), montant: parseFloat(form.montant), eleve_nom: `${el === null || el === void 0 ? void 0 : el.prenom} ${el === null || el === void 0 ? void 0 : el.nom}`, matricule: el === null || el === void 0 ? void 0 : el.matricule });
+        const created = await ops.addPaiement({ ...form, eleve_id: parseInt(form.eleve_id), montant: parseFloat(form.montant), eleve_nom: `${el?.prenom} ${el?.nom}`, matricule: el?.matricule });
         setLoading(false);
         setModal(null);
         if (created)
@@ -4664,12 +4638,12 @@ function Paiements({ data, ops, etab }) {
     // Construit le HTML du reçu (réutilisé pour impression, PDF, aperçu)
     const recuHTML = (p) => {
         const el = data.eleves.find(e => e.id === p.eleve_id);
-        const cl = data.classes.find(c => c.id === (el === null || el === void 0 ? void 0 : el.classe_id));
+        const cl = data.classes.find(c => c.id === el?.classe_id);
         const annuel = fraisAnnuelEleve(el, etab, cl);
         const payeTot = totalPayeEleve(p.eleve_id);
         const resteAn = Math.max(0, annuel - payeTot);
         const payeEch = p.mois ? payeEcheance(p.eleve_id, p.mois) : 0;
-        const partEch = isTranche ? (annuel / echeances.length) : (parseFloat(cl === null || cl === void 0 ? void 0 : cl.mensualite_classe) || parseFloat(etab.mensualite) || (annuel > 0 ? annuel / echeances.length : 0));
+        const partEch = isTranche ? (annuel / echeances.length) : (parseFloat(cl?.mensualite_classe) || parseFloat(etab.mensualite) || (annuel > 0 ? annuel / echeances.length : 0));
         const resteEch = p.mois && partEch ? Math.max(0, partEch - payeEch) : null;
         const row = (k, v, hi) => `<div style="display:flex;justify-content:space-between;padding:3px 0;${hi ? "color:#c2410c;font-weight:700" : "color:#334155"}"><span style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:.3px">${k}</span><span style="font-weight:600">${v}</span></div>`;
         const arD = etab.langue === "ar";
@@ -4693,9 +4667,9 @@ function Paiements({ data, ops, etab }) {
       </div>
       <div class="recu-num"><span>N° <b style="font-family:monospace">${p.recu}</b></span><span>${fmtDate(p.date)}</span></div>
       <div class="recu-grid">
-        ${row(dl("Élève", "التلميذ"), `${(el === null || el === void 0 ? void 0 : el.prenom) || ""} ${(el === null || el === void 0 ? void 0 : el.nom) || ""}`)}
-        ${row(dl("Matricule", "رقم التسجيل"), (el === null || el === void 0 ? void 0 : el.matricule) || "—")}
-        ${row(dl("Classe", "القسم"), (cl === null || cl === void 0 ? void 0 : cl.nom) || "—")}
+        ${row(dl("Élève", "التلميذ"), `${el?.prenom || ""} ${el?.nom || ""}`)}
+        ${row(dl("Matricule", "رقم التسجيل"), el?.matricule || "—")}
+        ${row(dl("Classe", "القسم"), cl?.nom || "—")}
         ${row(dl("Type", "النوع"), p.type)}
         ${p.moyen ? row(dl("Moyen", "وسيلة الدفع"), p.moyen) : ""}
         ${p.mois ? row(isTranche ? dl("Tranche", "القسط") : dl("Mois", "الشهر"), p.mois) : ""}
@@ -4712,7 +4686,7 @@ function Paiements({ data, ops, etab }) {
     // Texte récapitulatif pour WhatsApp / Mail
     const recuTexte = (p) => {
         const el = data.eleves.find(e => e.id === p.eleve_id);
-        const cl = data.classes.find(c => c.id === (el === null || el === void 0 ? void 0 : el.classe_id));
+        const cl = data.classes.find(c => c.id === el?.classe_id);
         const annuel = fraisAnnuelEleve(el, etab, cl);
         const resteAn = Math.max(0, annuel - totalPayeEleve(p.eleve_id));
         const ar = etab.langue === "ar";
@@ -4722,9 +4696,9 @@ function Paiements({ data, ops, etab }) {
             `*${etab.nom || "MonEcole"}*`,
             `*${L("REÇU DE PAIEMENT", "وصل دفع")}*   N° ${p.recu}`,
             sep,
-            `*${L("Élève", "التلميذ")}* : ${(el === null || el === void 0 ? void 0 : el.prenom) || ""} ${(el === null || el === void 0 ? void 0 : el.nom) || ""}`,
-            `*${L("Matricule", "رقم التسجيل")}* : ${(el === null || el === void 0 ? void 0 : el.matricule) || "—"}`,
-            `*${L("Classe", "القسم")}* : ${(cl === null || cl === void 0 ? void 0 : cl.nom) || "—"}`,
+            `*${L("Élève", "التلميذ")}* : ${el?.prenom || ""} ${el?.nom || ""}`,
+            `*${L("Matricule", "رقم التسجيل")}* : ${el?.matricule || "—"}`,
+            `*${L("Classe", "القسم")}* : ${cl?.nom || "—"}`,
             `*${L("Type", "النوع")}* : ${p.type}${p.mois ? " — " + p.mois : ""}`,
             p.moyen ? `*${L("Moyen", "وسيلة الدفع")}* : ${p.moyen}` : null,
             sep,
@@ -4768,15 +4742,15 @@ function Paiements({ data, ops, etab }) {
         const el = data.eleves.find(e => e.id === p.eleve_id);
         const sujet = encodeURIComponent(`${etab.langue === "ar" ? "وصل" : "Reçu"} ${p.recu} — ${etab.nom || "MonEcole"}`);
         const corps = encodeURIComponent(recuTexte(p).replace(/\*/g, ""));
-        window.open(`mailto:${(el === null || el === void 0 ? void 0 : el.email) || ""}?subject=${sujet}&body=${corps}`, "_blank");
+        window.open(`mailto:${el?.email || ""}?subject=${sujet}&body=${corps}`, "_blank");
     };
     const totalEncaisse = data.paiements.reduce((s, p) => s + (p.montant || 0), 0);
     // Vue détail d'un élève
     if (selEleve) {
         const el = data.eleves.find(e => e.id === parseInt(selEleve));
-        const cl = data.classes.find(c => c.id === (el === null || el === void 0 ? void 0 : el.classe_id));
+        const cl = data.classes.find(c => c.id === el?.classe_id);
         const annuel = fraisAnnuelEleve(el, etab, cl);
-        const mensuelCl = parseFloat(cl === null || cl === void 0 ? void 0 : cl.mensualite_classe) || 0;
+        const mensuelCl = parseFloat(cl?.mensualite_classe) || 0;
         const partEch = isTranche ? (annuel > 0 ? annuel / echeances.length : 0) : (mensuelCl || (annuel > 0 ? annuel / echeances.length : 0));
         const payeScol = totalPayeEleve(el.id);
         const insc = fraisInscEleve(el, etab, cl);
@@ -4795,7 +4769,7 @@ function Paiements({ data, ops, etab }) {
                         " ",
                         el.nom),
                     React.createElement("div", { style: { fontSize: 12, color: "var(--me-text-3)" } },
-                        txt(cl === null || cl === void 0 ? void 0 : cl.nom, cl === null || cl === void 0 ? void 0 : cl.nom_ar),
+                        txt(cl?.nom, cl?.nom_ar),
                         " \u00B7 ",
                         el.matricule)),
                 React.createElement(Btn, { ch: t("pa_encaisser"), v: "primary", onClick: () => { setForm({ eleve_id: el.id, type: "Scolarité", montant: "", date: TODAY, mois: echeances[0] || "", note: "" }); setModal("add"); } })),
@@ -4907,7 +4881,7 @@ function Paiements({ data, ops, etab }) {
             React.createElement("td", { style: { padding: "10px 14px", color: "#cbd5e1", fontSize: 16, textAlign: "right" } }, "\u203A")));
     };
     const classesCycle = data.classes.filter(c => (c.niveau || "Primaire") === payCycle);
-    const paieRows = () => data.paiements.map(p => { const el = data.eleves.find(e => e.id === p.eleve_id); const cl = el && data.classes.find(c => c.id === el.classe_id); return { "Reçu": p.id, "Élève": el ? `${el.prenom} ${el.nom}` : "", Matricule: (el === null || el === void 0 ? void 0 : el.matricule) || "", Classe: cl ? cl.nom : "", Type: p.type || "", "Tranche/Mois": p.mois || "", Montant: p.montant || 0, Moyen: p.moyen || "", Date: p.date || "", Note: p.note || "" }; });
+    const paieRows = () => data.paiements.map(p => { const el = data.eleves.find(e => e.id === p.eleve_id); const cl = el && data.classes.find(c => c.id === el.classe_id); return { "Reçu": p.id, "Élève": el ? `${el.prenom} ${el.nom}` : "", Matricule: el?.matricule || "", Classe: cl ? cl.nom : "", Type: p.type || "", "Tranche/Mois": p.mois || "", Montant: p.montant || 0, Moyen: p.moyen || "", Date: p.date || "", Note: p.note || "" }; });
     const doExportPaie = async () => { const rows = paieRows(); if (!rows.length) {
         alert(t("imp_rien_exporter"));
         return;
@@ -4929,7 +4903,7 @@ function Paiements({ data, ops, etab }) {
             React.createElement(Empty, { icon: "\uD83D\uDCB0", text: t("pa_inscrivez") })) : (React.createElement(React.Fragment, null,
             React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 18, flexWrap: "wrap" } }, CYCLES.map(cyc => {
                 const actif = payCycle === cyc;
-                const n = data.eleves.filter(e => { const c = data.classes.find(x => x.id === e.classe_id); return ((c === null || c === void 0 ? void 0 : c.niveau) || "Primaire") === cyc; }).length;
+                const n = data.eleves.filter(e => { const c = data.classes.find(x => x.id === e.classe_id); return (c?.niveau || "Primaire") === cyc; }).length;
                 return (React.createElement("button", { key: cyc, onClick: () => setPayCycle(cyc), style: { padding: "9px 16px", borderRadius: 11, border: actif ? "2px solid var(--me-brand)" : "1.5px solid #e2e8f0", background: actif ? "#eff6ff" : "#fff", cursor: "pointer", fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 13, fontWeight: 800, color: actif ? "#1a56db" : "#64748b" } },
                     cyc === "Maternelle" ? "🟨" : cyc === "Primaire" ? "🟦" : cyc === "Collège" ? "🟪" : "🟩",
                     " ",
@@ -5016,19 +4990,18 @@ function PaiementModal({ form, setForm, echeances, isTranche, devise, loading, s
 }
 // ── PRÉSENCES ─────────────────────────────────────────────────────────────────
 function Presences({ data, ops, etab }) {
-    var _b, _c;
     const [date, setDate] = useState(TODAY);
-    const [classeId, setClasseId] = useState(((_b = data.classes[0]) === null || _b === void 0 ? void 0 : _b.id) || "");
+    const [classeId, setClasseId] = useState(data.classes[0]?.id || "");
     const eleves = data.eleves.filter(e => e.classe_id === parseInt(classeId));
     const getRec = (eleveId) => data.presences.find(p => p.eleve_id === eleveId && p.date === date && p.classe_id === parseInt(classeId));
-    const getP = (eleveId) => { var _b; const p = getRec(eleveId); return (_b = p === null || p === void 0 ? void 0 : p.present) !== null && _b !== void 0 ? _b : true; };
-    const getMotif = (eleveId) => { const p = getRec(eleveId); return (p === null || p === void 0 ? void 0 : p.motif) || ""; };
+    const getP = (eleveId) => { const p = getRec(eleveId); return p?.present ?? true; };
+    const getMotif = (eleveId) => { const p = getRec(eleveId); return p?.motif || ""; };
     const absents = eleves.filter(e => !getP(e.id));
     const absHist = eleves.map(e => ({ ...e, tot: data.presences.filter(p => p.eleve_id === e.id && p.classe_id === parseInt(classeId) && !p.present).length })).filter(e => e.tot > 0).sort((a, b) => b.tot - a.tot);
     // Statistiques mensuelles d'absences (toutes classes visibles), avec part des filles
     const eleveById = {};
     data.eleves.forEach(e => { eleveById[e.id] = e; });
-    const estFille = el => ((el === null || el === void 0 ? void 0 : el.genre) || "").toLowerCase().startsWith("f");
+    const estFille = el => (el?.genre || "").toLowerCase().startsWith("f");
     const moisMap = {};
     data.presences.forEach(p => { const mk = (p.date || "").slice(0, 7); if (!mk)
         return; if (!moisMap[mk])
@@ -5054,7 +5027,7 @@ function Presences({ data, ops, etab }) {
     const regJours = [...new Set(monthRecs.map(p => p.date))].sort();
     const [joursManuel, setJoursManuel] = useState("");
     const regJoursCours = joursManuel !== "" ? (parseInt(joursManuel) || 0) : regJours.length;
-    const regEstFille = el => ((el === null || el === void 0 ? void 0 : el.genre) || "").toLowerCase().startsWith("f");
+    const regEstFille = el => (el?.genre || "").toLowerCase().startsWith("f");
     const regElMap = {};
     eleves.forEach(e => { regElMap[e.id] = e; });
     const regNbF = eleves.filter(regEstFille).length, regNbG = eleves.length - regNbF, regEff = eleves.length;
@@ -5080,7 +5053,7 @@ function Presences({ data, ops, etab }) {
         return selMonth;
     } })();
     return (React.createElement("div", null,
-        React.createElement(SHdr, { title: t("nav_presences") + " 📅", sub: t("pr_sub"), action: eleves.length > 0 ? React.createElement(ExportBar, { name: `presences_${(((_c = data.classes.find(c => c.id === parseInt(classeId))) === null || _c === void 0 ? void 0 : _c.nom) || "classe")}_${date}`.replace(/\s+/g, "_"), title: `${t("nav_presences")} — ${date}`, getRows: () => eleves.map(e => ({ "Élève": `${e.prenom} ${e.nom}`, Matricule: e.matricule, Statut: absents.some(a => a.id === e.id) ? "Absent" : "Présent" })) }) : null }),
+        React.createElement(SHdr, { title: t("nav_presences") + " 📅", sub: t("pr_sub"), action: eleves.length > 0 ? React.createElement(ExportBar, { name: `presences_${(data.classes.find(c => c.id === parseInt(classeId))?.nom || "classe")}_${date}`.replace(/\s+/g, "_"), title: `${t("nav_presences")} — ${date}`, getRows: () => eleves.map(e => ({ "Élève": `${e.prenom} ${e.nom}`, Matricule: e.matricule, Statut: absents.some(a => a.id === e.id) ? "Absent" : "Présent" })) }) : null }),
         React.createElement(Card, { s: { marginBottom: 14 } },
             React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 13 } },
                 React.createElement(Inp, { label: t("pa_th_date"), type: "date", value: date, max: TODAY, onChange: e => setDate(e.target.value) }),
@@ -5104,14 +5077,13 @@ function Presences({ data, ops, etab }) {
                 " ",
                 t("pr_futur")),
             React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, opacity: date > TODAY ? 0.55 : 1 } }, eleves.map(e => {
-                var _b, _c;
                 const present = getP(e.id);
                 const futur = date > TODAY;
                 return (React.createElement("div", { key: e.id, onClick: futur ? undefined : () => ops.togglePresence(e.id, parseInt(classeId), !present, date), style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "11px 15px", borderRadius: 10, background: present ? "#f0fdf4" : "#fef2f2", border: `1.5px solid ${present ? "#bbf7d0" : "#fecaca"}`, cursor: futur ? "not-allowed" : "pointer", transition: "all 0.15s" } },
                     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 9 } },
-                        React.createElement("div", { style: { width: 30, height: 30, borderRadius: 8, background: present ? "#dcfce7" : "#fee2e2", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: present ? "#059669" : "#dc2626", fontSize: 11 } }, (_b = e.prenom) === null || _b === void 0 ? void 0 :
-                            _b[0], (_c = e.nom) === null || _c === void 0 ? void 0 :
-                            _c[0]),
+                        React.createElement("div", { style: { width: 30, height: 30, borderRadius: 8, background: present ? "#dcfce7" : "#fee2e2", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: present ? "#059669" : "#dc2626", fontSize: 11 } },
+                            e.prenom?.[0],
+                            e.nom?.[0]),
                         React.createElement("div", { style: { fontWeight: 700, fontSize: 13, color: "var(--me-text)" } },
                             e.prenom,
                             " ",
@@ -5128,7 +5100,7 @@ function Presences({ data, ops, etab }) {
                         e.prenom,
                         " ",
                         e.nom),
-                    React.createElement(TD, null, txt(cl === null || cl === void 0 ? void 0 : cl.nom, cl === null || cl === void 0 ? void 0 : cl.nom_ar)),
+                    React.createElement(TD, null, txt(cl?.nom, cl?.nom_ar)),
                     React.createElement(TD, null,
                         React.createElement("span", { style: { background: e.tot >= 5 ? "#fee2e2" : "#fef3c7", color: e.tot >= 5 ? "#dc2626" : "#d97706", borderRadius: 7, padding: "2px 10px", fontSize: 12, fontWeight: 700 } },
                             e.tot,
@@ -5371,7 +5343,7 @@ function Messagerie({ data, ops, currentUser }) {
         clearInterval(recTimerRef.current); cleanupStream(); }, []);
     // Messages de la conversation active
     const msgs = (data.messages || []).filter(m => (m.conversation || "general") === active);
-    useEffect(() => { var _b; (_b = endRef.current) === null || _b === void 0 ? void 0 : _b.scrollIntoView({ behavior: "smooth" }); }, [data.messages, active]);
+    useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [data.messages, active]);
     const fmtTime = (d) => { try {
         return new Date(d).toLocaleTimeString(CURRENT_LANG === "ar" ? "ar" : "fr-FR", { hour: "2-digit", minute: "2-digit" });
     }
@@ -5383,7 +5355,7 @@ function Messagerie({ data, ops, currentUser }) {
             return autres.map(u => u.id);
         if (conv.startsWith("group:")) {
             const g = groupes.find(x => "group:" + x.id === conv);
-            return ((g === null || g === void 0 ? void 0 : g.membres) || []).filter(id => id !== me.id);
+            return (g?.membres || []).filter(id => id !== me.id);
         }
         if (conv.startsWith("dm:")) {
             const ids = conv.slice(3).split("-").map(Number);
@@ -5443,7 +5415,7 @@ function Messagerie({ data, ops, currentUser }) {
             return t("msg_general_full");
         if (active.startsWith("group:")) {
             const g = groupes.find(x => "group:" + x.id === active);
-            return "👥 " + ((g === null || g === void 0 ? void 0 : g.nom) || t("msg_groupe"));
+            return "👥 " + (g?.nom || t("msg_groupe"));
         }
         if (active.startsWith("dm:")) {
             const ids = active.slice(3).split("-").map(Number);
@@ -5458,7 +5430,7 @@ function Messagerie({ data, ops, currentUser }) {
             return t("msg_tout_le_monde");
         if (active.startsWith("group:")) {
             const g = groupes.find(x => "group:" + x.id === active);
-            return `${((g === null || g === void 0 ? void 0 : g.membres) || []).length} ${t("msg_membres")}`;
+            return `${(g?.membres || []).length} ${t("msg_membres")}`;
         }
         if (active.startsWith("dm:")) {
             const ids = active.slice(3).split("-").map(Number);
@@ -5552,9 +5524,9 @@ function Messagerie({ data, ops, currentUser }) {
                             React.createElement("button", { className: "me-btn", onClick: stopAndSend, disabled: uploading, title: t("msg_voc_envoyer"), style: { padding: "10px 18px", borderRadius: 11, border: "none", background: "linear-gradient(135deg,var(--me-brand),var(--me-brand2))", color: "#fff", cursor: uploading ? "not-allowed" : "pointer", fontSize: 13, fontWeight: 700, fontFamily: "'Plus Jakarta Sans',sans-serif", opacity: uploading ? 0.6 : 1 } }, uploading ? "⏳" : "➤ " + t("msg_voc_envoyer")))) : (React.createElement("div", { style: { padding: "8px 8px 14px", display: "flex", gap: 3, alignItems: "center" } },
                             React.createElement("input", { ref: fileRef, type: "file", multiple: true, onChange: pickFiles, style: { display: "none" } }),
                             React.createElement("input", { ref: camRef, type: "file", accept: "image/*", capture: "environment", onChange: pickFiles, style: { display: "none" } }),
-                            React.createElement("button", { onClick: () => { var _b; return (_b = fileRef.current) === null || _b === void 0 ? void 0 : _b.click(); }, disabled: uploading, title: t("msg_joindre"), style: { background: "none", border: "none", cursor: "pointer", color: "var(--me-text-2)", padding: 6, display: "flex", alignItems: "center", flexShrink: 0 } },
+                            React.createElement("button", { onClick: () => fileRef.current?.click(), disabled: uploading, title: t("msg_joindre"), style: { background: "none", border: "none", cursor: "pointer", color: "var(--me-text-2)", padding: 6, display: "flex", alignItems: "center", flexShrink: 0 } },
                                 React.createElement(IcAttach, null)),
-                            React.createElement("button", { onClick: () => { var _b; return (_b = camRef.current) === null || _b === void 0 ? void 0 : _b.click(); }, disabled: uploading, title: "Photo", style: { background: "none", border: "none", cursor: "pointer", color: "var(--me-text-2)", padding: 6, display: "flex", alignItems: "center", flexShrink: 0 } },
+                            React.createElement("button", { onClick: () => camRef.current?.click(), disabled: uploading, title: "Photo", style: { background: "none", border: "none", cursor: "pointer", color: "var(--me-text-2)", padding: 6, display: "flex", alignItems: "center", flexShrink: 0 } },
                                 React.createElement(IcCam, null)),
                             React.createElement("input", { value: msg, onChange: e => setMsg(e.target.value), onKeyDown: e => e.key === "Enter" && send(), placeholder: t("msg_ecrire_ph"), style: { flex: 1, minWidth: 0, padding: "11px 15px", borderRadius: 22, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", fontFamily: "'Plus Jakarta Sans',sans-serif", background: "var(--me-surface-2,#f8fafc)" } }),
                             (msg.trim() || pending.length) ? (React.createElement("button", { onClick: send, disabled: uploading, title: "Envoyer", style: { width: 42, height: 42, borderRadius: "50%", border: "none", background: "linear-gradient(135deg,var(--me-brand),var(--me-brand2))", color: "#fff", cursor: uploading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, opacity: uploading ? 0.6 : 1 } },
@@ -5631,30 +5603,27 @@ function Utilisateurs({ data, ops, currentUser, etab = {} }) {
     };
     return (React.createElement("div", null,
         React.createElement(SHdr, { title: t("nav_utilisateurs") + " 👤", sub: t("us_sub"), action: currentUser.role === "Administrateur" ? React.createElement(Btn, { ch: t("btn_new_user"), v: "primary", onClick: () => { setForm({ nom: "", prenom: "", genre: "", identifiant: "", password: "", role: "Professeur", matieres_autorisees: [], classes_autorisees: [], pages_autorisees: roleBase("Professeur"), sections_etab: ["apparence", "documents"], sections_etab_modif: ["apparence", "documents"] }); setModal("add"); } }) : null }),
-        React.createElement(Tbl, { cols: [t("us_th_user"), t("us_th_ident"), t("us_th_role"), t("us_th_actions")], empty: React.createElement(Empty, { icon: "\uD83D\uDC64", text: t("us_empty") }), rows: data.utilisateurs.map(u => {
-                var _b;
-                return (React.createElement(TR, { key: u.id },
-                    React.createElement(TD, null,
-                        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 9 } },
-                            React.createElement("div", { style: { width: 32, height: 32, borderRadius: 9, background: (ROLE_CLR[u.role] || "#6b7280") + "20", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: ROLE_CLR[u.role] || "#6b7280", fontSize: 11 } }, (_b = u.prenom) === null || _b === void 0 ? void 0 :
-                                _b[0],
-                                u.nom[0]),
-                            React.createElement("div", null,
-                                React.createElement("div", { style: { fontWeight: 700, fontSize: 13, color: "var(--me-text)" } },
-                                    u.prenom,
-                                    " ",
-                                    u.nom,
-                                    isFounder(u) && React.createElement("span", { style: { marginLeft: 6, fontSize: 9, fontWeight: 800, color: "#b45309", background: "rgba(217,119,6,0.14)", padding: "1px 6px", borderRadius: 20, verticalAlign: "middle" } }, t("us_fondateur"))),
-                                React.createElement("div", { style: { fontSize: 10.5, color: "var(--me-text-3)", marginTop: 2, lineHeight: 1.35 } }, accessOf(u).map(n => t("nav_" + n.id)).join(" · "))))),
-                    React.createElement(TD, { mono: true }, u.identifiant),
-                    React.createElement(TD, null,
-                        React.createElement(Badge, { role: u.role })),
-                    React.createElement(TD, null, currentUser.role === "Administrateur" && ((isFounder(u) && u.id !== currentUser.id) ? React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: "var(--me-text-3)", display: "inline-flex", alignItems: "center", gap: 5 } },
-                        "\uD83D\uDD12 ",
-                        t("us_fondateur")) : React.createElement("div", { style: { display: "flex", gap: 6 } },
-                        React.createElement("button", { onClick: () => { setForm({ nom: u.nom, prenom: u.prenom || "", genre: u.genre || "", identifiant: u.identifiant, password: "", role: u.role, matieres_autorisees: Array.isArray(u.matieres_autorisees) ? u.matieres_autorisees : [], classes_autorisees: Array.isArray(u.classes_autorisees) ? u.classes_autorisees : [], pages_autorisees: (Array.isArray(u.pages_autorisees) && u.pages_autorisees.length) ? u.pages_autorisees : roleBase(u.role), sections_etab: Array.isArray(u.sections_etab) ? u.sections_etab : ["apparence", "documents"], sections_etab_modif: Array.isArray(u.sections_etab_modif) ? u.sections_etab_modif : (Array.isArray(u.sections_etab) ? u.sections_etab : ["apparence", "documents"]) }); setModal(u.id); }, style: { background: "var(--me-surface-2,#f1f5f9)", color: "var(--me-text-2)", border: "none", borderRadius: 7, padding: "6px 12px", cursor: "pointer", fontSize: 11.5, fontWeight: 700, fontFamily: "'Plus Jakarta Sans',sans-serif" } }, t("btn_modifier")),
-                        u.id !== currentUser.id && !isFounder(u) && React.createElement("button", { onClick: () => ops.deleteUser(u.id), style: { background: "rgba(220,38,38,0.10)", color: "#dc2626", border: "none", borderRadius: 7, padding: "6px 12px", cursor: "pointer", fontSize: 11.5, fontWeight: 700, fontFamily: "'Plus Jakarta Sans',sans-serif" } }, t("btn_supprimer")))))));
-            }) }),
+        React.createElement(Tbl, { cols: [t("us_th_user"), t("us_th_ident"), t("us_th_role"), t("us_th_actions")], empty: React.createElement(Empty, { icon: "\uD83D\uDC64", text: t("us_empty") }), rows: data.utilisateurs.map(u => (React.createElement(TR, { key: u.id },
+                React.createElement(TD, null,
+                    React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 9 } },
+                        React.createElement("div", { style: { width: 32, height: 32, borderRadius: 9, background: (ROLE_CLR[u.role] || "#6b7280") + "20", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: ROLE_CLR[u.role] || "#6b7280", fontSize: 11 } },
+                            u.prenom?.[0],
+                            u.nom[0]),
+                        React.createElement("div", null,
+                            React.createElement("div", { style: { fontWeight: 700, fontSize: 13, color: "var(--me-text)" } },
+                                u.prenom,
+                                " ",
+                                u.nom,
+                                isFounder(u) && React.createElement("span", { style: { marginLeft: 6, fontSize: 9, fontWeight: 800, color: "#b45309", background: "rgba(217,119,6,0.14)", padding: "1px 6px", borderRadius: 20, verticalAlign: "middle" } }, t("us_fondateur"))),
+                            React.createElement("div", { style: { fontSize: 10.5, color: "var(--me-text-3)", marginTop: 2, lineHeight: 1.35 } }, accessOf(u).map(n => t("nav_" + n.id)).join(" · "))))),
+                React.createElement(TD, { mono: true }, u.identifiant),
+                React.createElement(TD, null,
+                    React.createElement(Badge, { role: u.role })),
+                React.createElement(TD, null, currentUser.role === "Administrateur" && ((isFounder(u) && u.id !== currentUser.id) ? React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: "var(--me-text-3)", display: "inline-flex", alignItems: "center", gap: 5 } },
+                    "\uD83D\uDD12 ",
+                    t("us_fondateur")) : React.createElement("div", { style: { display: "flex", gap: 6 } },
+                    React.createElement("button", { onClick: () => { setForm({ nom: u.nom, prenom: u.prenom || "", genre: u.genre || "", identifiant: u.identifiant, password: "", role: u.role, matieres_autorisees: Array.isArray(u.matieres_autorisees) ? u.matieres_autorisees : [], classes_autorisees: Array.isArray(u.classes_autorisees) ? u.classes_autorisees : [], pages_autorisees: (Array.isArray(u.pages_autorisees) && u.pages_autorisees.length) ? u.pages_autorisees : roleBase(u.role), sections_etab: Array.isArray(u.sections_etab) ? u.sections_etab : ["apparence", "documents"], sections_etab_modif: Array.isArray(u.sections_etab_modif) ? u.sections_etab_modif : (Array.isArray(u.sections_etab) ? u.sections_etab : ["apparence", "documents"]) }); setModal(u.id); }, style: { background: "var(--me-surface-2,#f1f5f9)", color: "var(--me-text-2)", border: "none", borderRadius: 7, padding: "6px 12px", cursor: "pointer", fontSize: 11.5, fontWeight: 700, fontFamily: "'Plus Jakarta Sans',sans-serif" } }, t("btn_modifier")),
+                    u.id !== currentUser.id && !isFounder(u) && React.createElement("button", { onClick: () => ops.deleteUser(u.id), style: { background: "rgba(220,38,38,0.10)", color: "#dc2626", border: "none", borderRadius: 7, padding: "6px 12px", cursor: "pointer", fontSize: 11.5, fontWeight: 700, fontFamily: "'Plus Jakarta Sans',sans-serif" } }, t("btn_supprimer")))))))) }),
         modal && React.createElement(Modal, { confirmClose: true, title: modal === "add" ? t("us_new_titre") : t("us_edit_titre"), onClose: () => { setErr(""); setModal(null); } },
             err && React.createElement("div", { style: { background: "rgba(220,38,38,0.10)", border: "1px solid #fecaca", color: "#dc2626", borderRadius: 10, padding: "10px 13px", fontSize: 12, fontWeight: 600, marginBottom: 13, lineHeight: 1.45 } },
                 "\u26A0\uFE0F ",
@@ -5763,7 +5732,7 @@ function Depenses({ data, ops, etab, currentUser }) {
             return;
         setLoading(true);
         const payload = { date: form.date || TODAY, categorie: form.categorie, libelle: form.libelle, montant: parseFloat(form.montant) || 0, fournisseur: form.fournisseur, mode_paiement: form.mode_paiement, note: form.note };
-        const _a = `${(currentUser === null || currentUser === void 0 ? void 0 : currentUser.prenom) || ""} ${(currentUser === null || currentUser === void 0 ? void 0 : currentUser.nom) || ""}`.trim() || (currentUser === null || currentUser === void 0 ? void 0 : currentUser.identifiant) || "";
+        const _a = `${currentUser?.prenom || ""} ${currentUser?.nom || ""}`.trim() || currentUser?.identifiant || "";
         if (modal === "add") {
             if (_a)
                 payload.auteur = _a;
@@ -5772,7 +5741,7 @@ function Depenses({ data, ops, etab, currentUser }) {
             const _cur = (data.depenses || []).find(d => d.id === modal) || {};
             const _h = Array.isArray(_cur.historique) ? _cur.historique : [];
             const _ch = [];
-            ["date", "categorie", "libelle", "fournisseur", "montant", "mode_paiement", "note"].forEach(k => { var _b, _c; const av = (_b = _cur[k]) !== null && _b !== void 0 ? _b : ""; const ap = (_c = payload[k]) !== null && _c !== void 0 ? _c : ""; if (String(av) !== String(ap))
+            ["date", "categorie", "libelle", "fournisseur", "montant", "mode_paiement", "note"].forEach(k => { const av = _cur[k] ?? ""; const ap = payload[k] ?? ""; if (String(av) !== String(ap))
                 _ch.push({ champ: k, avant: av, apres: ap }); });
             payload.historique = [..._h, { par: _a, date: TODAY, changements: _ch }];
         }
@@ -5784,7 +5753,7 @@ function Depenses({ data, ops, etab, currentUser }) {
         setModal(null);
     };
     const openNew = () => { setForm(blank); setModal("add"); };
-    const openEdit = (d) => { var _b; setForm({ date: d.date || TODAY, categorie: d.categorie || "Matériel", libelle: d.libelle || "", montant: (_b = d.montant) !== null && _b !== void 0 ? _b : "", fournisseur: d.fournisseur || "", mode_paiement: d.mode_paiement || moyens[0] || "Espèces", note: d.note || "" }); setModal(d.id); };
+    const openEdit = (d) => { setForm({ date: d.date || TODAY, categorie: d.categorie || "Matériel", libelle: d.libelle || "", montant: d.montant ?? "", fournisseur: d.fournisseur || "", mode_paiement: d.mode_paiement || moyens[0] || "Espèces", note: d.note || "" }); setModal(d.id); };
     return (React.createElement("div", null,
         React.createElement(SHdr, { title: t("nav_depenses") + " 💸", sub: t("dp_sub"), action: React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" } },
                 React.createElement(ExportBar, { name: "depenses", title: t("nav_depenses"), getRows: () => filtered.map(d => ({ Date: d.date || "", "Catégorie": catLabel(d.categorie), "Libellé": d.libelle || "", Montant: d.montant || 0, Fournisseur: d.fournisseur || "", Moyen: d.mode_paiement || "", Note: d.note || "", "Enregistré par": d.auteur || "" })) }),
@@ -5928,7 +5897,6 @@ function AppareilsConnectes({ currentSessionId }) {
         }));
 }
 function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setTheme, brand, setBrand, uiZoom, setUiZoom, lang, setLang, notifEnabled, setNotifEnabled, currentSessionId, onLogout }) {
-    var _b, _c, _d, _e, _f, _g, _j, _k, _l, _m;
     const toggleNotif = async () => { if (notifEnabled) {
         try {
             localStorage.setItem("monecole_notifs", "0");
@@ -5981,15 +5949,15 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
     }
     catch (_) { } };
     // Admin : toutes les sections. Sinon : uniquement ce qui concerne les documents.
-    const isAdminP = (currentUser === null || currentUser === void 0 ? void 0 : currentUser.role) === "Administrateur";
-    const sectionsDispo = isAdminP ? ["ecole", "apparence", "documents", "paiement", "compte"] : [...(Array.isArray(currentUser === null || currentUser === void 0 ? void 0 : currentUser.sections_etab) ? currentUser.sections_etab : ["apparence", "documents"]), "compte"];
+    const isAdminP = currentUser?.role === "Administrateur";
+    const sectionsDispo = isAdminP ? ["ecole", "apparence", "documents", "paiement", "compte"] : [...(Array.isArray(currentUser?.sections_etab) ? currentUser.sections_etab : ["apparence", "documents"]), "compte"];
     const [section, setSection] = useState(isAdminP ? "ecole" : (sectionsDispo[0] || "compte"));
-    const myModif = Array.isArray(currentUser === null || currentUser === void 0 ? void 0 : currentUser.sections_etab_modif) ? currentUser.sections_etab_modif : null;
+    const myModif = Array.isArray(currentUser?.sections_etab_modif) ? currentUser.sections_etab_modif : null;
     const roSection = !isAdminP && section !== "compte" && myModif !== null && !myModif.includes(section);
     // Frais par classe (édition groupée)
     const [fraisClasses, setFraisClasses] = useState(() => {
         const o = {};
-        ((data === null || data === void 0 ? void 0 : data.classes) || []).forEach(c => { var _b, _c, _d; o[c.id] = { mensuel: (_b = c.mensualite_classe) !== null && _b !== void 0 ? _b : "", annuel: (_c = c.frais_annuel_classe) !== null && _c !== void 0 ? _c : "", insc: (_d = c.frais_inscription_classe) !== null && _d !== void 0 ? _d : "" }; });
+        (data?.classes || []).forEach(c => { o[c.id] = { mensuel: c.mensualite_classe ?? "", annuel: c.frais_annuel_classe ?? "", insc: c.frais_inscription_classe ?? "" }; });
         return o;
     });
     const [savingFrais, setSavingFrais] = useState(false);
@@ -6008,7 +5976,7 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
     };
     const saveFrais = async () => {
         setSavingFrais(true);
-        for (const c of ((data === null || data === void 0 ? void 0 : data.classes) || [])) {
+        for (const c of (data?.classes || [])) {
             const f = fraisClasses[c.id] || {};
             await ops.updateClass(c.id, { nom: c.nom, niveau: c.niveau, niveau_detail: c.niveau_detail, serie: c.serie, effectif: c.effectif, mensualite_classe: f.mensuel, frais_annuel_classe: f.annuel, frais_inscription_classe: f.insc });
         }
@@ -6027,7 +5995,7 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
     const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
     // Aperçu live de la devise colorée (miroir de officialHeader)
     const FLAG_GN = ["#ce1126", "#fcd116", "#009460"]; // drapeau guinéen : rouge · jaune · vert
-    const dvMode = ((_b = form.devise_mots) === null || _b === void 0 ? void 0 : _b.mode) || ((((_c = form.devise_mots) === null || _c === void 0 ? void 0 : _c.m1) || ((_d = form.devise_mots) === null || _d === void 0 ? void 0 : _d.m2) || ((_e = form.devise_mots) === null || _e === void 0 ? void 0 : _e.m3)) ? "manuel" : "");
+    const dvMode = form.devise_mots?.mode || ((form.devise_mots?.m1 || form.devise_mots?.m2 || form.devise_mots?.m3) ? "manuel" : "");
     const setDv = (k, v) => setForm(f => ({ ...f, devise_mots: { ...f.devise_mots, [k]: v } }));
     const splitDv = t => (t || "").split(/\s*[·\-–—|/]\s*/).map(s => s.trim()).filter(Boolean);
     const devisePreview = () => {
@@ -6091,12 +6059,12 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
                             React.createElement("div", { style: { flex: 1 } },
                                 React.createElement("label", { style: { display: "inline-block", padding: "7px 13px", background: "var(--me-brand)", color: "#fff", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer", marginBottom: 7 } },
                                     t("st_televerser"),
-                                    React.createElement("input", { type: "file", accept: "image/*", style: { display: "none" }, onChange: e => { var _b; const f = (_b = e.target.files) === null || _b === void 0 ? void 0 : _b[0]; if (!f)
+                                    React.createElement("input", { type: "file", accept: "image/*", style: { display: "none" }, onChange: e => { const f = e.target.files?.[0]; if (!f)
                                             return; if (f.size > 500000) {
                                             alert(t("st_img_lourde"));
                                             return;
                                         } const r = new FileReader(); r.onload = () => setForm(ff => ({ ...ff, logo: r.result })); r.readAsDataURL(f); } })),
-                                React.createElement(Inp, { label: t("st_ou_url"), value: ((_f = form.logo) === null || _f === void 0 ? void 0 : _f.startsWith("data:")) ? "" : form.logo, onChange: set("logo"), placeholder: "https://..." }),
+                                React.createElement(Inp, { label: t("st_ou_url"), value: form.logo?.startsWith("data:") ? "" : form.logo, onChange: set("logo"), placeholder: "https://..." }),
                                 form.logo && React.createElement("button", { onClick: () => setForm(f => ({ ...f, logo: "" })), style: { marginTop: 5, background: "rgba(220,38,38,0.10)", color: "#dc2626", border: "none", borderRadius: 6, padding: "4px 9px", cursor: "pointer", fontSize: 10, fontWeight: 700 } }, t("st_retirer"))))),
                     React.createElement("div", null,
                         React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: "var(--me-text)", marginBottom: 8 } }, t("st_armoiries")),
@@ -6105,12 +6073,12 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
                             React.createElement("div", { style: { flex: 1 } },
                                 React.createElement("label", { style: { display: "inline-block", padding: "7px 13px", background: "var(--me-brand)", color: "#fff", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer", marginBottom: 7 } },
                                     t("st_televerser"),
-                                    React.createElement("input", { type: "file", accept: "image/*", style: { display: "none" }, onChange: e => { var _b; const f = (_b = e.target.files) === null || _b === void 0 ? void 0 : _b[0]; if (!f)
+                                    React.createElement("input", { type: "file", accept: "image/*", style: { display: "none" }, onChange: e => { const f = e.target.files?.[0]; if (!f)
                                             return; if (f.size > 500000) {
                                             alert(t("st_img_lourde"));
                                             return;
                                         } const r = new FileReader(); r.onload = () => setForm(ff => ({ ...ff, logo2: r.result })); r.readAsDataURL(f); } })),
-                                React.createElement(Inp, { label: t("st_ou_url"), value: ((_g = form.logo2) === null || _g === void 0 ? void 0 : _g.startsWith("data:")) ? "" : form.logo2, onChange: set("logo2"), placeholder: "https://..." }),
+                                React.createElement(Inp, { label: t("st_ou_url"), value: form.logo2?.startsWith("data:") ? "" : form.logo2, onChange: set("logo2"), placeholder: "https://..." }),
                                 form.logo2 && React.createElement("button", { onClick: () => setForm(f => ({ ...f, logo2: "" })), style: { marginTop: 5, background: "rgba(220,38,38,0.10)", color: "#dc2626", border: "none", borderRadius: 6, padding: "4px 9px", cursor: "pointer", fontSize: 10, fontWeight: 700 } }, t("st_retirer")))))),
                 React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: "var(--me-text)", margin: "16px 0 9px" } }, t("st_dispo")),
                 React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", gap: 10 } }, [
@@ -6163,12 +6131,9 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
                 React.createElement(Slt, { label: t("st_langue"), value: form.langue, onChange: set("langue"), opts: [{ v: "fr", l: t("st_langue_fr") }, { v: "fr_ar", l: t("st_langue_frar") }, { v: "ar", l: t("st_langue_ar") }].filter(o => !allowedLangs || allowedLangs.includes(o.v)) }),
                 (form.langue === "fr_ar" || form.langue === "ar") && React.createElement("div", { style: { marginTop: 14, background: "var(--me-surface-2,#f8fafc)", borderRadius: 11, padding: 14 } },
                     React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: "var(--me-text)", marginBottom: 10 } }, "\u0627\u0644\u062A\u0631\u062C\u0645\u0629 \u0627\u0644\u0639\u0631\u0628\u064A\u0629 \u00B7 Traductions arabes (modifiables)"),
-                    React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 11 } }, [["pays", t("st_ar_pays")], ["devise", t("st_ar_devise")], ["ministere", t("st_ar_ministere")], ["ecole", t("st_ar_ecole")], ["ire", t("st_ar_ire")], ["dpe", t("st_ar_dpe")], ["dsee", t("st_ar_dsee")], ["bulletin", t("st_ar_bulletin")]].map(([k, lbl]) => {
-                        var _b;
-                        return (React.createElement("div", { key: k },
-                            React.createElement(Lbl, { t: lbl },
-                                React.createElement("input", { dir: "rtl", value: ((_b = form.ar) === null || _b === void 0 ? void 0 : _b[k]) || "", onChange: e => setForm(f => ({ ...f, ar: { ...f.ar, [k]: e.target.value } })), style: { ...iSt(), fontFamily: "'Traditional Arabic',serif", fontSize: 15 } }))));
-                    })))),
+                    React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 11 } }, [["pays", t("st_ar_pays")], ["devise", t("st_ar_devise")], ["ministere", t("st_ar_ministere")], ["ecole", t("st_ar_ecole")], ["ire", t("st_ar_ire")], ["dpe", t("st_ar_dpe")], ["dsee", t("st_ar_dsee")], ["bulletin", t("st_ar_bulletin")]].map(([k, lbl]) => (React.createElement("div", { key: k },
+                        React.createElement(Lbl, { t: lbl },
+                            React.createElement("input", { dir: "rtl", value: form.ar?.[k] || "", onChange: e => setForm(f => ({ ...f, ar: { ...f.ar, [k]: e.target.value } })), style: { ...iSt(), fontFamily: "'Traditional Arabic',serif", fontSize: 15 } })))))))),
             section === "documents" && React.createElement(Card, { s: { marginBottom: 14 } },
                 React.createElement("div", { style: { fontWeight: 800, fontSize: 13, color: "var(--me-text)", marginBottom: 6 } },
                     "\uD83E\uDEAA ",
@@ -6179,7 +6144,7 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
                         docPrefs.logo ? React.createElement("img", { src: docPrefs.logo, style: { height: 42, borderRadius: 8, background: "#fff", border: "1px solid #e2e8f0" } }) : null,
                         React.createElement("label", { style: { cursor: "pointer", background: "#eff6ff", color: "#1a56db", borderRadius: 8, padding: "7px 12px", fontSize: 12, fontWeight: 700 } },
                             t("st_perso_choisir"),
-                            React.createElement("input", { type: "file", accept: "image/*", style: { display: "none" }, onChange: e => { var _b; const f = (_b = e.target.files) === null || _b === void 0 ? void 0 : _b[0]; if (!f)
+                            React.createElement("input", { type: "file", accept: "image/*", style: { display: "none" }, onChange: e => { const f = e.target.files?.[0]; if (!f)
                                     return; if (f.size > 500000) {
                                     alert(t("st_img_lourde"));
                                     return;
@@ -6191,7 +6156,7 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
                             docPrefs.logo2 ? React.createElement("img", { src: docPrefs.logo2, style: { height: 42, borderRadius: 8, background: "#fff", border: "1px solid #e2e8f0" } }) : null,
                             React.createElement("label", { style: { cursor: "pointer", background: "#eff6ff", color: "#1a56db", borderRadius: 8, padding: "7px 12px", fontSize: 12, fontWeight: 700 } },
                                 t("st_perso_choisir"),
-                                React.createElement("input", { type: "file", accept: "image/*", style: { display: "none" }, onChange: e => { var _b; const f = (_b = e.target.files) === null || _b === void 0 ? void 0 : _b[0]; if (!f)
+                                React.createElement("input", { type: "file", accept: "image/*", style: { display: "none" }, onChange: e => { const f = e.target.files?.[0]; if (!f)
                                         return; if (f.size > 500000) {
                                         alert(t("st_img_lourde"));
                                         return;
@@ -6269,14 +6234,11 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
                             t("st_dv_note_b")),
                         dvMode === "uni" && React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
                             React.createElement("span", { style: { fontSize: 12, color: "var(--me-text)", fontWeight: 600 } }, t("st_couleur_lbl")),
-                            React.createElement("input", { type: "color", value: ((_j = form.devise_mots) === null || _j === void 0 ? void 0 : _j.couleur) || form.theme_couleur || "#1a56db", onChange: e => setDv("couleur", e.target.value), style: { width: 34, height: 30, border: "none", borderRadius: 7, cursor: "pointer", background: "none", padding: 0 } }),
-                            React.createElement("input", { value: ((_k = form.devise_mots) === null || _k === void 0 ? void 0 : _k.couleur) || "", onChange: e => setDv("couleur", e.target.value), placeholder: form.theme_couleur || "#1a56db", style: { ...iSt(), width: 120, fontFamily: "monospace" } })),
-                        dvMode === "manuel" && React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap" } }, [["m1", "c1", t("st_mot") + " 1"], ["m2", "c2", t("st_mot") + " 2"], ["m3", "c3", t("st_mot") + " 3"]].map(([mk, ck, lbl]) => {
-                            var _b, _c, _d;
-                            return (React.createElement("div", { key: mk, style: { display: "flex", alignItems: "center", gap: 6, background: "var(--me-surface,#fff)", border: "1.5px solid #e2e8f0", borderRadius: 9, padding: "5px 8px" } },
-                                React.createElement("input", { value: ((_b = form.devise_mots) === null || _b === void 0 ? void 0 : _b[mk]) || "", onChange: e => setDv(mk, e.target.value), placeholder: lbl, style: { border: "none", outline: "none", fontSize: 13, fontWeight: 700, width: 95, fontFamily: "'Plus Jakarta Sans',sans-serif", color: ((_c = form.devise_mots) === null || _c === void 0 ? void 0 : _c[ck]) || "var(--me-text)" } }),
-                                React.createElement("input", { type: "color", value: ((_d = form.devise_mots) === null || _d === void 0 ? void 0 : _d[ck]) || "#334155", onChange: e => setDv(ck, e.target.value), style: { width: 28, height: 28, border: "none", borderRadius: 6, cursor: "pointer", background: "none", padding: 0 } })));
-                        })),
+                            React.createElement("input", { type: "color", value: form.devise_mots?.couleur || form.theme_couleur || "#1a56db", onChange: e => setDv("couleur", e.target.value), style: { width: 34, height: 30, border: "none", borderRadius: 7, cursor: "pointer", background: "none", padding: 0 } }),
+                            React.createElement("input", { value: form.devise_mots?.couleur || "", onChange: e => setDv("couleur", e.target.value), placeholder: form.theme_couleur || "#1a56db", style: { ...iSt(), width: 120, fontFamily: "monospace" } })),
+                        dvMode === "manuel" && React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap" } }, [["m1", "c1", t("st_mot") + " 1"], ["m2", "c2", t("st_mot") + " 2"], ["m3", "c3", t("st_mot") + " 3"]].map(([mk, ck, lbl]) => (React.createElement("div", { key: mk, style: { display: "flex", alignItems: "center", gap: 6, background: "var(--me-surface,#fff)", border: "1.5px solid #e2e8f0", borderRadius: 9, padding: "5px 8px" } },
+                            React.createElement("input", { value: form.devise_mots?.[mk] || "", onChange: e => setDv(mk, e.target.value), placeholder: lbl, style: { border: "none", outline: "none", fontSize: 13, fontWeight: 700, width: 95, fontFamily: "'Plus Jakarta Sans',sans-serif", color: form.devise_mots?.[ck] || "var(--me-text)" } }),
+                            React.createElement("input", { type: "color", value: form.devise_mots?.[ck] || "#334155", onChange: e => setDv(ck, e.target.value), style: { width: 28, height: 28, border: "none", borderRadius: 6, cursor: "pointer", background: "none", padding: 0 } }))))),
                         React.createElement("div", { style: { marginTop: 12, paddingTop: 10, borderTop: "1px solid #eef2f7", textAlign: "center" } },
                             React.createElement("div", { style: { fontSize: 9.5, color: "var(--me-text-3)", textTransform: "uppercase", fontWeight: 700, letterSpacing: .4, marginBottom: 4 } }, t("st_apercu_doc")),
                             React.createElement("div", { style: { fontSize: 14, fontWeight: 700, fontStyle: "italic" } }, devisePreview()))),
@@ -6313,12 +6275,12 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
                         React.createElement("div", { style: { flex: 1 } },
                             React.createElement("label", { style: { display: "inline-block", padding: "7px 13px", background: "var(--me-brand)", color: "#fff", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer", marginBottom: 7 } },
                                 t("st_televerser"),
-                                React.createElement("input", { type: "file", accept: "image/*", style: { display: "none" }, onChange: e => { var _b; const f = (_b = e.target.files) === null || _b === void 0 ? void 0 : _b[0]; if (!f)
+                                React.createElement("input", { type: "file", accept: "image/*", style: { display: "none" }, onChange: e => { const f = e.target.files?.[0]; if (!f)
                                         return; if (f.size > 500000) {
                                         alert(t("st_img_lourde"));
                                         return;
                                     } const r = new FileReader(); r.onload = () => setForm(ff => ({ ...ff, logo_app: r.result })); r.readAsDataURL(f); } })),
-                            React.createElement(Inp, { label: t("st_ou_url"), value: ((_l = form.logo_app) === null || _l === void 0 ? void 0 : _l.startsWith("data:")) ? "" : (form.logo_app || ""), onChange: set("logo_app"), placeholder: "https://..." }),
+                            React.createElement(Inp, { label: t("st_ou_url"), value: form.logo_app?.startsWith("data:") ? "" : (form.logo_app || ""), onChange: set("logo_app"), placeholder: "https://..." }),
                             form.logo_app && React.createElement("button", { onClick: () => setForm(f => ({ ...f, logo_app: "" })), style: { marginTop: 5, background: "rgba(220,38,38,0.10)", color: "#dc2626", border: "none", borderRadius: 6, padding: "4px 9px", cursor: "pointer", fontSize: 10, fontWeight: 700 } }, t("st_retirer")))))),
             section === "ecole" && React.createElement(Card, { s: { marginBottom: 14 } },
                 React.createElement("div", { style: { fontWeight: 800, fontSize: 13, color: "var(--me-text)", marginBottom: 12 } }, t("st_identite")),
@@ -6343,7 +6305,7 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
                     React.createElement("div", { style: { fontSize: 12.5, color: "var(--me-brand2)", fontWeight: 600 } },
                         t("st_formule"),
                         " : ",
-                        React.createElement("b", null, ((_m = FORMULES[etab.formule]) === null || _m === void 0 ? void 0 : _m.l) || t("st_formule_nd")),
+                        React.createElement("b", null, FORMULES[etab.formule]?.l || t("st_formule_nd")),
                         FORMULES[etab.formule] ? ` — ${FORMULES[etab.formule].admins === Infinity ? t("st_admins_illimite") : FORMULES[etab.formule].admins + " " + t("st_admins_mot")}` : "")),
                 React.createElement("div", { style: { marginTop: 16, background: "var(--me-surface-2,#f8fafc)", border: "1px solid #eef2f7", borderRadius: 11, padding: 14 } },
                     React.createElement("div", { style: { fontSize: 13, fontWeight: 800, color: "var(--me-text)", marginBottom: 3 } }, t("st_periodes")),
@@ -6395,7 +6357,7 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
             section === "paiement" && React.createElement(Card, { s: { marginBottom: 14 } },
                 React.createElement("div", { style: { fontWeight: 800, fontSize: 13, color: "var(--me-text)", marginBottom: 6 } }, t("st_frais_classe")),
                 React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-2)", marginBottom: 14 } }, t("st_frais_classe_d")),
-                ((data === null || data === void 0 ? void 0 : data.classes) || []).length === 0 ? React.createElement("div", { style: { fontSize: 12, color: "var(--me-text-3)" } }, t("st_creez_classes")) : (React.createElement("div", { style: { overflowX: "auto" } },
+                (data?.classes || []).length === 0 ? React.createElement("div", { style: { fontSize: 12, color: "var(--me-text-3)" } }, t("st_creez_classes")) : (React.createElement("div", { style: { overflowX: "auto" } },
                     React.createElement("table", { style: { width: "100%", borderCollapse: "collapse", minWidth: 520 } },
                         React.createElement("thead", null,
                             React.createElement("tr", { style: { background: "var(--me-surface-2,#f8fafc)" } }, [t("st_th_classe"), `${t("st_th_mensuel")} (${form.devise})`, `${t("st_th_annuel")} (${form.devise})`, `${t("st_th_insc")} (${form.devise})`].map((h, hi) => React.createElement("th", { key: hi, style: { padding: "8px 10px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "var(--me-text-3)", textTransform: "uppercase" } }, h)))),
@@ -6421,7 +6383,7 @@ function Parametres({ etab, data, ops, onEtabUpdate, currentUser, theme, setThem
                                             React.createElement("input", { type: "number", value: f.insc, onChange: e => setFrais(c.id, "insc", e.target.value), placeholder: "\u2014", style: { width: 110, padding: "7px 9px", borderRadius: 7, border: "1.5px solid #e2e8f0", fontSize: 12, outline: "none", fontFamily: "'Plus Jakarta Sans',sans-serif" } }))));
                                 })));
                         }))))),
-                ((data === null || data === void 0 ? void 0 : data.classes) || []).length > 0 && React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 14, alignItems: "center" } },
+                (data?.classes || []).length > 0 && React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 14, alignItems: "center" } },
                     fraisSaved && React.createElement("span", { style: { color: "#059669", fontSize: 12, fontWeight: 700 } }, t("st_frais_saved")),
                     React.createElement(Btn, { ch: savingFrais ? t("st_enregistrement") : t("st_save_frais"), v: "success", onClick: saveFrais, disabled: savingFrais }))),
             section === "compte" && React.createElement(Card, { s: { marginTop: 18 } },
@@ -6543,7 +6505,7 @@ function EditorHub({ onCreate, masterPw }) {
     const [extBusy, setExtBusy] = useState(0);
     const [formSel, setFormSel] = useState({});
     const [formBusy, setFormBusy] = useState("");
-    const changerFormule = async (id, fm) => { var _b; setFormBusy(id); setExtMsg(""); try {
+    const changerFormule = async (id, fm) => { setFormBusy(id); setExtMsg(""); try {
         const { error } = await sb.from("etablissements").update({ formule: fm }).eq("id", id);
         if (error) {
             let m = "Échec du changement de formule.";
@@ -6554,7 +6516,7 @@ function EditorHub({ onCreate, masterPw }) {
             setExtMsg(m);
         }
         else {
-            setExtMsg("✓ Formule changée : " + (((_b = FORMULES[fm]) === null || _b === void 0 ? void 0 : _b.l) || fm));
+            setExtMsg("✓ Formule changée : " + (FORMULES[fm]?.l || fm));
             loadEcoles();
         }
     }
@@ -6608,7 +6570,7 @@ function EditorHub({ onCreate, masterPw }) {
         const map = {};
         ecoles.forEach(e => { if (e.code_activation)
             map[e.code_activation] = { nom: e.nom, date: e.created_at }; });
-        setCodes((data || []).map(c => { var _b, _c; return ({ ...c, _ecole: (_b = map[c.code]) === null || _b === void 0 ? void 0 : _b.nom, _ecoleDate: (_c = map[c.code]) === null || _c === void 0 ? void 0 : _c.date }); }));
+        setCodes((data || []).map(c => ({ ...c, _ecole: map[c.code]?.nom, _ecoleDate: map[c.code]?.date })));
     }
     catch (_) { } };
     useEffect(() => { loadCodes(); }, []);
@@ -6729,27 +6691,23 @@ function EditorHub({ onCreate, masterPw }) {
                         "Codes existants (",
                         codes.length,
                         ")"),
-                    React.createElement("div", { style: { maxHeight: 170, overflowY: "auto", border: "1px solid #eef2f7", borderRadius: 9 } }, codes.map(c => {
-                        var _b;
-                        return (React.createElement("div", { key: c.id, style: { padding: "8px 11px", borderBottom: "1px solid #f1f5f9", fontSize: 12 } },
-                            React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 } },
-                                React.createElement("span", { style: { fontWeight: 800, color: "var(--me-text)", letterSpacing: 1 } }, c.code),
-                                React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: "var(--me-text-2)", textTransform: "capitalize" } }, ((_b = FORMULES[c.formule]) === null || _b === void 0 ? void 0 : _b.l) || c.formule),
-                                React.createElement("span", { style: { fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: c.statut === "libre" ? "#dcfce7" : "#fee2e2", color: c.statut === "libre" ? "#166534" : "#991b1b" } }, c.statut === "libre" ? "Libre" : "Utilisé"),
-                                React.createElement("a", { href: "#", onClick: e => { e.preventDefault(); copier(c.code); }, style: { fontSize: 11, color: "var(--me-brand)", textDecoration: "none", fontWeight: 700 } }, copied === c.code ? "✓" : "Copier"),
-                                c.statut === "libre" && React.createElement("button", { onClick: () => supprimerCode(c.code), title: "Supprimer", style: { background: "none", border: "none", color: "#dc2626", cursor: "pointer", fontSize: 13, padding: "0 2px", lineHeight: 1 } }, "\uD83D\uDDD1\uFE0F")),
-                            c.statut !== "libre" && React.createElement("div", { style: { fontSize: 10.5, color: "var(--me-text-3)", marginTop: 4, fontWeight: 600 } },
-                                "\uD83C\uDFEB ",
-                                c._ecole || "École activée",
-                                c._ecoleDate ? ` · ${fmtDate(String(c._ecoleDate).slice(0, 10))}` : "")));
-                    })))),
+                    React.createElement("div", { style: { maxHeight: 170, overflowY: "auto", border: "1px solid #eef2f7", borderRadius: 9 } }, codes.map(c => (React.createElement("div", { key: c.id, style: { padding: "8px 11px", borderBottom: "1px solid #f1f5f9", fontSize: 12 } },
+                        React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 } },
+                            React.createElement("span", { style: { fontWeight: 800, color: "var(--me-text)", letterSpacing: 1 } }, c.code),
+                            React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: "var(--me-text-2)", textTransform: "capitalize" } }, FORMULES[c.formule]?.l || c.formule),
+                            React.createElement("span", { style: { fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: c.statut === "libre" ? "#dcfce7" : "#fee2e2", color: c.statut === "libre" ? "#166534" : "#991b1b" } }, c.statut === "libre" ? "Libre" : "Utilisé"),
+                            React.createElement("a", { href: "#", onClick: e => { e.preventDefault(); copier(c.code); }, style: { fontSize: 11, color: "var(--me-brand)", textDecoration: "none", fontWeight: 700 } }, copied === c.code ? "✓" : "Copier"),
+                            c.statut === "libre" && React.createElement("button", { onClick: () => supprimerCode(c.code), title: "Supprimer", style: { background: "none", border: "none", color: "#dc2626", cursor: "pointer", fontSize: 13, padding: "0 2px", lineHeight: 1 } }, "\uD83D\uDDD1\uFE0F")),
+                        c.statut !== "libre" && React.createElement("div", { style: { fontSize: 10.5, color: "var(--me-text-3)", marginTop: 4, fontWeight: 600 } },
+                            "\uD83C\uDFEB ",
+                            c._ecole || "École activée",
+                            c._ecoleDate ? ` · ${fmtDate(String(c._ecoleDate).slice(0, 10))}` : ""))))))),
             React.createElement("div", { style: { background: "var(--me-surface-2,#f8fafc)", borderRadius: 13, padding: 16, marginBottom: 14 } },
                 React.createElement("div", { style: { fontWeight: 800, fontSize: 13, color: "var(--me-text)", marginBottom: 4 } }, "4\uFE0F\u20E3 Abonnements des \u00E9coles"),
                 React.createElement("div", { style: { fontSize: 11, color: "var(--me-text-2)", marginBottom: 12, lineHeight: 1.5 } }, "Prolongez l'abonnement d'une \u00E9cole apr\u00E8s paiement."),
                 extMsg && React.createElement("div", { style: { background: extMsg[0] === "✓" ? "rgba(5,150,105,0.12)" : "rgba(220,38,38,0.10)", border: `1px solid ${extMsg[0] === "✓" ? "#a7f3d0" : "#fecaca"}`, borderRadius: 9, padding: "8px 12px", color: extMsg[0] === "✓" ? "#065f46" : "#dc2626", fontSize: 12, marginBottom: 10, fontWeight: 700 } }, extMsg),
                 ecoles.length === 0 ? React.createElement("div", { style: { fontSize: 12, color: "var(--me-text-3)", textAlign: "center", padding: "8px 0" } }, "Aucune \u00E9cole pour le moment.") :
                     React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8 } }, ecoles.map(e => {
-                        var _b;
                         const j = joursAvantExpiration(e);
                         const exp = j !== null && j < 0;
                         return (React.createElement("div", { key: e.id, style: { border: "1px solid #eef2f7", borderRadius: 10, padding: "10px 12px" } },
@@ -6757,7 +6715,7 @@ function EditorHub({ onCreate, masterPw }) {
                                 React.createElement("div", null,
                                     React.createElement("div", { style: { fontWeight: 800, fontSize: 13, color: "var(--me-text)" } }, e.nom),
                                     React.createElement("div", { style: { fontSize: 11, color: exp ? "#dc2626" : "var(--me-text-2)", fontWeight: 600 } }, e.abonnement_expire_le ? `${exp ? "Expiré le" : "Expire le"} ${fmtDate(e.abonnement_expire_le)}${j !== null && j >= 0 ? ` · ${j} j` : ""}` : "Sans échéance")),
-                                React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: "var(--me-text-2)", textTransform: "capitalize" } }, ((_b = FORMULES[e.formule]) === null || _b === void 0 ? void 0 : _b.l) || e.formule)),
+                                React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: "var(--me-text-2)", textTransform: "capitalize" } }, FORMULES[e.formule]?.l || e.formule)),
                             React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "flex-end", marginTop: 8 } },
                                 React.createElement("div", { style: { width: 120 } },
                                     React.createElement(Slt, { label: "Ajouter", value: String(extDuree[e.id] || 12), onChange: ev => setExtDuree(d => ({ ...d, [e.id]: parseInt(ev.target.value, 10) || 12 })), opts: [{ v: "3", l: "3 mois" }, { v: "6", l: "6 mois" }, { v: "12", l: "1 an" }, { v: "24", l: "2 ans" }] })),
@@ -6860,8 +6818,8 @@ function AbonnementExpire({ etab, currentUser, onRenouvele, onLogout }) {
                 React.createElement("div", { style: { width: 70, height: 70, borderRadius: 22, background: "rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 34, margin: "0 auto 14px", border: "1px solid rgba(255,255,255,0.18)" } }, "\uD83D\uDD12"),
                 React.createElement("h1", { style: { color: "#fff", fontSize: 24, fontWeight: 900, margin: "0 0 6px" } }, "Abonnement expir\u00E9"),
                 React.createElement("p", { style: { color: "rgba(255,255,255,0.7)", margin: 0, fontSize: 13.5, lineHeight: 1.5 } },
-                    (etab === null || etab === void 0 ? void 0 : etab.nom) || "Votre école",
-                    (etab === null || etab === void 0 ? void 0 : etab.abonnement_expire_le) ? ` — expiré depuis le ${fmtDate(etab.abonnement_expire_le)}` : "",
+                    etab?.nom || "Votre école",
+                    etab?.abonnement_expire_le ? ` — expiré depuis le ${fmtDate(etab.abonnement_expire_le)}` : "",
                     ".",
                     React.createElement("br", null),
                     "Pour continuer, renouvelez votre abonnement.")),
@@ -7093,7 +7051,7 @@ function App() {
         catch (_) { }
         setMsgSeen(now);
     } }, [page, currentUser]);
-    const { data, syncStatus, toast, ops, online, pendingCount, flushOutbox } = useSupabaseData(etab === null || etab === void 0 ? void 0 : etab.id);
+    const { data, syncStatus, toast, ops, online, pendingCount, flushOutbox } = useSupabaseData(etab?.id);
     // ── Notifications : nouveaux messages ──
     const [notifEnabled, setNotifEnabled] = useState(() => { try {
         return localStorage.getItem("monecole_notifs") === "1" && NOTIF_OK && Notification.permission === "granted";
@@ -7129,7 +7087,7 @@ function App() {
         const mAut = Array.isArray(currentUser.matieres_autorisees) ? currentUser.matieres_autorisees : [];
         const cAut = Array.isArray(currentUser.classes_autorisees) ? currentUser.classes_autorisees : [];
         const matNom = id => { const m = (data.matieres || []).find(x => x.id === id); return m ? txt(m.nom, m.nom_ar) : ""; };
-        const classeNom = id => { var _b; return ((_b = (data.classes || []).find(c => c.id === id)) === null || _b === void 0 ? void 0 : _b.nom) || ""; };
+        const classeNom = id => (data.classes || []).find(c => c.id === id)?.nom || "";
         const check = () => {
             if (!notifsActives())
                 return;
@@ -7420,8 +7378,8 @@ function App() {
     const allowed = pagesForUser(currentUser);
     const safePage = allowed.includes(page) ? page : "dashboard";
     // Restriction enseignant : ne voir que ses classes / ses matières (le reste des écrans s'y adapte automatiquement)
-    const restrClasses = Array.isArray(currentUser === null || currentUser === void 0 ? void 0 : currentUser.classes_autorisees) && currentUser.classes_autorisees.length;
-    const restrMats = Array.isArray(currentUser === null || currentUser === void 0 ? void 0 : currentUser.matieres_autorisees) && currentUser.matieres_autorisees.length;
+    const restrClasses = Array.isArray(currentUser?.classes_autorisees) && currentUser.classes_autorisees.length;
+    const restrMats = Array.isArray(currentUser?.matieres_autorisees) && currentUser.matieres_autorisees.length;
     const scopedData = (restrClasses || restrMats) ? {
         ...data,
         classes: restrClasses ? (data.classes || []).filter(c => currentUser.classes_autorisees.includes(c.id)) : data.classes,
@@ -7498,17 +7456,17 @@ body{overscroll-behavior-y:none;}
         React.createElement("div", { style: isMobile ? { position: "fixed", top: 0, left: 0, height: "100dvh", width: 240, maxWidth: "84vw", background: "linear-gradient(180deg,#0f172a 0%,#13203a 100%)", display: "flex", flexDirection: "column", zIndex: 60, paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)", transform: navOpen ? "translateX(0)" : "translateX(-100%)", transition: "transform .25s ease", boxShadow: navOpen ? "6px 0 34px rgba(0,0,0,.45)" : "none" } : { width: 214, height: "100dvh", background: "linear-gradient(180deg,#0f172a 0%,#13203a 100%)", display: "flex", flexDirection: "column", flexShrink: 0, boxShadow: "2px 0 18px rgba(15,23,42,.18)" } },
             React.createElement("div", { style: { padding: "18px 13px", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 } },
                 React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 9, marginBottom: 11 } },
-                    React.createElement("div", { style: { width: 38, height: 38, borderRadius: 11, background: ((etab === null || etab === void 0 ? void 0 : etab.logo_app) || (etab === null || etab === void 0 ? void 0 : etab.logo)) ? "#fff" : "linear-gradient(135deg,var(--me-brand),var(--me-brand2))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, overflow: "hidden", border: ((etab === null || etab === void 0 ? void 0 : etab.logo_app) || (etab === null || etab === void 0 ? void 0 : etab.logo)) ? "1px solid rgba(255,255,255,0.15)" : "none", boxShadow: "0 4px 12px -4px rgba(26,86,219,.6)" } }, ((etab === null || etab === void 0 ? void 0 : etab.logo_app) || (etab === null || etab === void 0 ? void 0 : etab.logo)) ? React.createElement("img", { src: etab.logo_app || etab.logo, alt: "logo", style: { width: "100%", height: "100%", objectFit: "contain" } }) : "🎓"),
+                    React.createElement("div", { style: { width: 38, height: 38, borderRadius: 11, background: (etab?.logo_app || etab?.logo) ? "#fff" : "linear-gradient(135deg,var(--me-brand),var(--me-brand2))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, overflow: "hidden", border: (etab?.logo_app || etab?.logo) ? "1px solid rgba(255,255,255,0.15)" : "none", boxShadow: "0 4px 12px -4px rgba(26,86,219,.6)" } }, (etab?.logo_app || etab?.logo) ? React.createElement("img", { src: etab.logo_app || etab.logo, alt: "logo", style: { width: "100%", height: "100%", objectFit: "contain" } }) : "🎓"),
                     React.createElement("div", null,
                         React.createElement("div", { style: { fontWeight: 800, fontSize: 16, color: "#fff", letterSpacing: -0.5, fontFamily: "'Sora',sans-serif" } }, "MonEcole"),
-                        (etab === null || etab === void 0 ? void 0 : etab.nom) && React.createElement("div", { style: { fontSize: 10, color: "rgba(255,255,255,0.55)", fontWeight: 600, marginTop: 1, lineHeight: 1.2, maxWidth: 135, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, txt(etab.nom, etab.nom_ar)))),
+                        etab?.nom && React.createElement("div", { style: { fontSize: 10, color: "rgba(255,255,255,0.55)", fontWeight: 600, marginTop: 1, lineHeight: 1.2, maxWidth: 135, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, txt(etab.nom, etab.nom_ar)))),
                 React.createElement("div", { style: { padding: "9px 11px", background: "rgba(255,255,255,0.06)", borderRadius: 11, border: "1px solid rgba(255,255,255,0.07)", marginBottom: 8 } },
                     React.createElement("div", { style: { fontSize: 10, color: "rgba(255,255,255,0.37)", marginBottom: 1 } }, "Connect\u00E9"),
-                    React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 3 } }, currentUser === null || currentUser === void 0 ? void 0 :
-                        currentUser.prenom,
-                        " ", currentUser === null || currentUser === void 0 ? void 0 :
-                        currentUser.nom),
-                    React.createElement(Badge, { role: currentUser === null || currentUser === void 0 ? void 0 : currentUser.role })),
+                    React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 3 } },
+                        currentUser?.prenom,
+                        " ",
+                        currentUser?.nom),
+                    React.createElement(Badge, { role: currentUser?.role })),
                 React.createElement("div", { style: { display: "flex", justifyContent: "center" } },
                     React.createElement(SyncBadge, { status: syncStatus }))),
             React.createElement("nav", { style: { flex: 1, minHeight: 0, padding: "8px 6px", overflowY: "auto" } }, (() => {
