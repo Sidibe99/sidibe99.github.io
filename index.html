@@ -322,7 +322,7 @@ const I18N = {
     pr_sub:"Feuille de présence quotidienne", pr_presents:"✅ Présents", pr_absents:"❌ Absents",
     pr_select_classe:"Sélectionnez une classe.", pr_feuille_du:"Feuille du", pr_present:"✅ Présent", pr_absent:"❌ Absent",
     pr_histo:"⚠️ Historique absences", pr_th_total:"Total", pr_absences:"absence(s)",
-    prs_titre:"📊 Statistiques d'absences", prs_mois:"Mois", prs_abs:"Absences", prs_taux:"Taux d'absence", prs_filles:"% Filles", prs_total:"Total", prs_vide:"Aucune absence enregistrée pour le moment.", reg_titre:"📋 Registre d'appel mensuel", reg_eleve:"Élève", reg_present:"Présents", reg_absent:"Absents", reg_taux:"Taux présence", reg_vide:"Aucun pointage enregistré ce mois.", reg_resume:"Résumé mensuel",
+    prs_titre:"📊 Statistiques d'absences", prs_mois:"Mois", prs_abs:"Absences", prs_taux:"Taux d'absence", prs_filles:"% Filles", prs_total:"Total", prs_vide:"Aucune absence enregistrée pour le moment.", reg_titre:"📊 Statistiques mensuelles", reg_col:"Statistiques mensuelles", reg_jours:"Jours de cours du mois", reg_theo:"Présences possibles", reg_effectif:"Effectif", reg_garcons:"Garçons", reg_filles:"Filles", reg_abs_cum:"Absences cumulées", reg_pres_cum:"Présences cumulées", reg_pct:"Présence %", reg_valeur:"Valeur", reg_synthese:"Synthèse du mois", reg_detail:"Détail (par genre)", reg_pp:"Présence possible du mois (PP)", reg_am:"Absences mensuelles (AM)", reg_pe:"Présence effective (PE)", reg_taux_pres:"Taux de présence", reg_taux_abs:"Taux d'absence", reg_vide:"Aucun pointage enregistré ce mois.",
     bu_sub:"Consultez et imprimez", bu_par_periode:"Bulletin par période", bu_annuel:"Bulletin annuel (toutes notes)",
     bu_toutes_classes:"Toutes classes", bu_tout_imprimer:"🖨️ Tout imprimer", bu_aucun_eleve:"Aucun élève.",
     fn_align_g:"Gauche", fn_align_c:"Centre", fn_align_d:"Droite",
@@ -509,7 +509,7 @@ const I18N = {
     pr_sub:"ورقة الحضور اليومية", pr_presents:"✅ الحاضرون", pr_absents:"❌ الغائبون",
     pr_select_classe:"اختر قسمًا.", pr_feuille_du:"ورقة يوم", pr_present:"✅ حاضر", pr_absent:"❌ غائب",
     pr_histo:"⚠️ سجل الغيابات", pr_th_total:"المجموع", pr_absences:"غياب",
-    prs_titre:"📊 إحصائيات الغياب", prs_mois:"الشهر", prs_abs:"الغيابات", prs_taux:"نسبة الغياب", prs_filles:"٪ الإناث", prs_total:"المجموع", prs_vide:"لا غياب مسجل حتى الآن.", reg_titre:"📋 سجل الحضور الشهري", reg_eleve:"التلميذ", reg_present:"الحضور", reg_absent:"الغياب", reg_taux:"نسبة الحضور", reg_vide:"لا يوجد تسجيل حضور هذا الشهر.", reg_resume:"ملخص شهري",
+    prs_titre:"📊 إحصائيات الغياب", prs_mois:"الشهر", prs_abs:"الغيابات", prs_taux:"نسبة الغياب", prs_filles:"٪ الإناث", prs_total:"المجموع", prs_vide:"لا غياب مسجل حتى الآن.", reg_titre:"📊 إحصائيات شهرية", reg_col:"الإحصائيات الشهرية", reg_jours:"أيام الدراسة في الشهر", reg_theo:"الحضور الممكن", reg_effectif:"العدد", reg_garcons:"الذكور", reg_filles:"الإناث", reg_abs_cum:"مجموع الغيابات", reg_pres_cum:"مجموع الحضور", reg_pct:"٪ الحضور", reg_valeur:"القيمة", reg_synthese:"ملخص الشهر", reg_detail:"تفصيل (حسب الجنس)", reg_pp:"الحضور الممكن في الشهر", reg_am:"غيابات الشهر", reg_pe:"الحضور الفعلي", reg_taux_pres:"نسبة الحضور", reg_taux_abs:"نسبة الغياب", reg_vide:"لا يوجد تسجيل حضور هذا الشهر.",
     bu_sub:"اطّلع واطبع", bu_par_periode:"كشف حسب الفترة", bu_annuel:"الكشف السنوي (كل النقاط)",
     bu_toutes_classes:"كل الأقسام", bu_tout_imprimer:"🖨️ طباعة الكل", bu_aucun_eleve:"لا تلاميذ.",
     fn_align_g:"يسار", fn_align_c:"وسط", fn_align_d:"يمين",
@@ -3922,7 +3922,16 @@ function Presences({data,ops,etab}) {
   const regClasseId=parseInt(classeId);
   const monthRecs=data.presences.filter(p=>p.classe_id===regClasseId && (p.date||"").slice(0,7)===selMonth);
   const regJours=[...new Set(monthRecs.map(p=>p.date))].sort();
-  const registre=eleves.map(e=>{ let pres=0,abs=0; const cells=regJours.map(d=>{ const rec=monthRecs.find(p=>p.eleve_id===e.id&&p.date===d); const absent=rec?rec.present===false:false; if(absent)abs++;else pres++; return {d,absent}; }); return {e,cells,pres,abs,taux:regJours.length?Math.round(pres/regJours.length*100):0}; });
+  const [joursManuel,setJoursManuel]=useState("");
+  const regJoursCours=joursManuel!==""?(parseInt(joursManuel)||0):regJours.length;
+  const regEstFille=el=>(el?.genre||"").toLowerCase().startsWith("f");
+  const regElMap={}; eleves.forEach(e=>{regElMap[e.id]=e;});
+  const regNbF=eleves.filter(regEstFille).length, regNbG=eleves.length-regNbF, regEff=eleves.length;
+  let regAbsG=0,regAbsF=0; monthRecs.forEach(p=>{ if(p.present===false){ const el=regElMap[p.eleve_id]; if(el){ if(regEstFille(el))regAbsF++; else regAbsG++; } } });
+  const regAbsTot=regAbsG+regAbsF;
+  const regTheoTot=regEff*regJoursCours, regTheoG=regNbG*regJoursCours, regTheoF=regNbF*regJoursCours;
+  const regPresTot=Math.max(0,regTheoTot-regAbsTot), regPresG=Math.max(0,regTheoG-regAbsG), regPresF=Math.max(0,regTheoF-regAbsF);
+  const regPct=(p,tt)=>tt>0?(p/tt*100).toFixed(2):"0.00";
   const regMoisLabel=(()=>{try{const[y,m]=selMonth.split("-");return new Date(parseInt(y),parseInt(m)-1,1).toLocaleDateString(CURRENT_LANG==="ar"?"ar":"fr-FR",{month:"long",year:"numeric"});}catch(_){return selMonth;}})();
   return(
     <div>
@@ -3957,37 +3966,32 @@ function Presences({data,ops,etab}) {
         <Tbl cols={[t("no_eleve"),t("no_classe"),t("pr_th_total")]} empty={null} rows={absHist.slice(0,10).map(e=>{const cl=data.classes.find(c=>c.id===e.classe_id);return(<TR key={e.id}><TD bold>{e.prenom} {e.nom}</TD><TD>{txt(cl?.nom,cl?.nom_ar)}</TD><TD><span style={{background:e.tot>=5?"#fee2e2":"#fef3c7",color:e.tot>=5?"#dc2626":"#d97706",borderRadius:7,padding:"2px 10px",fontSize:12,fontWeight:700}}>{e.tot} {t("pr_absences")}</span></TD></TR>);})}/>
       </Card>}
       <Card s={{marginTop:14}}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10,marginBottom:11}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10,marginBottom:12}}>
           <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{t("reg_titre")}</div>
           <input type="month" value={selMonth} onChange={e=>setSelMonth(e.target.value)} style={{padding:"7px 10px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:12.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
         </div>
-        {eleves.length===0?<div style={{fontSize:12.5,color:"var(--me-text-3)",padding:"6px 2px"}}>{t("pr_select_classe")}</div>:regJours.length===0?<div style={{fontSize:12.5,color:"var(--me-text-3)",padding:"6px 2px"}}>{t("reg_vide")}</div>:<React.Fragment>
-          <div style={{fontSize:11.5,color:"var(--me-text-3)",marginBottom:9}}><span style={{color:"#059669"}}>✓</span> {t("pr_present")} · <span style={{color:"#dc2626"}}>✗</span> {t("pr_absent")} — {regMoisLabel}</div>
-          <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch",marginBottom:16,border:"1px solid #f1f5f9",borderRadius:10}}>
-            <table style={{borderCollapse:"collapse",fontSize:11.5,width:"max-content"}}>
-              <thead><tr>
-                <th style={{position:"sticky",left:0,zIndex:1,background:"var(--me-surface,#fff)",padding:"7px 9px",textAlign:"left",borderBottom:"2px solid #e2e8f0",whiteSpace:"nowrap"}}>{t("reg_eleve")}</th>
-                {regJours.map(d=><th key={d} style={{padding:"7px 6px",borderBottom:"2px solid #e2e8f0",color:"var(--me-text-3)",fontWeight:700}}>{d.slice(8,10)}</th>)}
-                <th style={{padding:"7px 8px",borderBottom:"2px solid #e2e8f0",color:"#dc2626",fontWeight:700}}>{t("prs_total")}</th>
-              </tr></thead>
-              <tbody>
-                {registre.map(r=>(<tr key={r.e.id}>
-                  <td style={{position:"sticky",left:0,zIndex:1,background:"var(--me-surface,#fff)",padding:"7px 9px",fontWeight:700,whiteSpace:"nowrap",borderBottom:"1px solid #f1f5f9"}}>{r.e.prenom} {r.e.nom}</td>
-                  {r.cells.map((c,i)=><td key={i} style={{textAlign:"center",padding:"7px 6px",borderBottom:"1px solid #f1f5f9",color:c.absent?"#dc2626":"#059669",fontWeight:700}}>{c.absent?"✗":"✓"}</td>)}
-                  <td style={{textAlign:"center",padding:"7px 8px",borderBottom:"1px solid #f1f5f9",color:"#dc2626",fontWeight:800}}>{r.abs}</td>
-                </tr>))}
-              </tbody>
-            </table>
+        {eleves.length===0?<div style={{fontSize:12.5,color:"var(--me-text-3)",padding:"6px 2px"}}>{t("pr_select_classe")}</div>:<React.Fragment>
+          <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:12}}>
+            <span style={{fontSize:12.5,color:"var(--me-text-2)",fontWeight:600}}>{t("reg_jours")} :</span>
+            <input type="number" min="0" value={joursManuel} onChange={e=>setJoursManuel(e.target.value)} placeholder={String(regJours.length)} style={{width:78,padding:"6px 9px",borderRadius:8,border:"1.5px solid #e2e8f0",fontSize:12.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
+            <span style={{fontSize:11.5,color:"var(--me-text-3)"}}>{regMoisLabel} · {t("reg_theo")} : {regTheoTot}</span>
           </div>
-          <div style={{fontWeight:700,fontSize:12.5,color:"var(--me-text)",marginBottom:8}}>{t("reg_resume")} — {regMoisLabel}</div>
-          <Tbl cols={[t("reg_eleve"),t("reg_present"),t("reg_absent"),t("reg_taux")]} empty={null} rows={registre.map(r=>(
-            <TR key={r.e.id}>
-              <TD bold>{r.e.prenom} {r.e.nom}</TD>
-              <TD><span style={{color:"#059669",fontWeight:700}}>{r.pres}</span></TD>
-              <TD><span style={{color:"#dc2626",fontWeight:700}}>{r.abs}</span></TD>
-              <TD><span style={{background:r.taux<80?"#fee2e2":"#dcfce7",color:r.taux<80?"#dc2626":"#059669",borderRadius:7,padding:"2px 10px",fontSize:12,fontWeight:700}}>{r.taux}%</span></TD>
-            </TR>
-          ))}/>
+          <div style={{fontWeight:700,fontSize:12.5,color:"var(--me-text)",marginBottom:8}}>{t("reg_synthese")}</div>
+          <Tbl cols={[t("reg_col"),t("reg_valeur")]} empty={null} rows={[
+            <TR key="pp"><TD bold>{t("reg_pp")}</TD><TD>{regTheoTot}</TD></TR>,
+            <TR key="am"><TD bold>{t("reg_am")}</TD><TD><span style={{color:"#dc2626",fontWeight:700}}>{regAbsTot}</span></TD></TR>,
+            <TR key="pe"><TD bold>{t("reg_pe")}</TD><TD><span style={{color:"#059669",fontWeight:700}}>{regPresTot}</span></TD></TR>,
+            <TR key="tp"><TD bold>{t("reg_taux_pres")}</TD><TD><span style={{background:"#dcfce7",color:"#059669",borderRadius:7,padding:"2px 9px",fontWeight:700}}>{regPct(regPresTot,regTheoTot)}%</span></TD></TR>,
+            <TR key="ta"><TD bold>{t("reg_taux_abs")}</TD><TD><span style={{background:"#fee2e2",color:"#dc2626",borderRadius:7,padding:"2px 9px",fontWeight:700}}>{regPct(regAbsTot,regTheoTot)}%</span></TD></TR>
+          ]}/>
+          <div style={{height:16}}/>
+          <div style={{fontWeight:700,fontSize:12.5,color:"var(--me-text)",marginBottom:8}}>{t("reg_detail")}</div>
+          <Tbl cols={[t("reg_col"),t("prs_total"),t("reg_garcons"),t("reg_filles")]} empty={null} rows={[
+            <TR key="eff"><TD bold>{t("reg_effectif")}</TD><TD>{regEff}</TD><TD>{regNbG}</TD><TD>{regNbF}</TD></TR>,
+            <TR key="abs"><TD bold>{t("reg_abs_cum")}</TD><TD><span style={{color:"#dc2626",fontWeight:700}}>{regAbsTot}</span></TD><TD><span style={{color:"#dc2626"}}>{regAbsG}</span></TD><TD><span style={{color:"#dc2626"}}>{regAbsF}</span></TD></TR>,
+            <TR key="pres"><TD bold>{t("reg_pres_cum")}</TD><TD><span style={{color:"#059669",fontWeight:700}}>{regPresTot}</span></TD><TD><span style={{color:"#059669"}}>{regPresG}</span></TD><TD><span style={{color:"#059669"}}>{regPresF}</span></TD></TR>,
+            <TR key="pct"><TD bold>{t("reg_pct")}</TD><TD><span style={{background:"#dcfce7",color:"#059669",borderRadius:7,padding:"2px 9px",fontWeight:700}}>{regPct(regPresTot,regTheoTot)}%</span></TD><TD>{regPct(regPresG,regTheoG)}%</TD><TD>{regPct(regPresF,regTheoF)}%</TD></TR>
+          ]}/>
         </React.Fragment>}
       </Card>
     </div>
