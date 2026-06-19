@@ -322,7 +322,7 @@ const I18N = {
     pr_sub:"Feuille de présence quotidienne", pr_presents:"✅ Présents", pr_absents:"❌ Absents",
     pr_select_classe:"Sélectionnez une classe.", pr_feuille_du:"Feuille du", pr_present:"✅ Présent", pr_absent:"❌ Absent",
     pr_histo:"⚠️ Historique absences", pr_th_total:"Total", pr_absences:"absence(s)",
-    prs_titre:"📊 Statistiques d'absences", prs_mois:"Mois", prs_abs:"Absences", prs_taux:"Taux d'absence", prs_filles:"% Filles", prs_total:"Total", prs_vide:"Aucune absence enregistrée pour le moment.",
+    prs_titre:"📊 Statistiques d'absences", prs_mois:"Mois", prs_abs:"Absences", prs_taux:"Taux d'absence", prs_filles:"% Filles", prs_total:"Total", prs_vide:"Aucune absence enregistrée pour le moment.", reg_titre:"📋 Registre d'appel mensuel", reg_eleve:"Élève", reg_present:"Présents", reg_absent:"Absents", reg_taux:"Taux présence", reg_vide:"Aucun pointage enregistré ce mois.", reg_resume:"Résumé mensuel",
     bu_sub:"Consultez et imprimez", bu_par_periode:"Bulletin par période", bu_annuel:"Bulletin annuel (toutes notes)",
     bu_toutes_classes:"Toutes classes", bu_tout_imprimer:"🖨️ Tout imprimer", bu_aucun_eleve:"Aucun élève.",
     fn_align_g:"Gauche", fn_align_c:"Centre", fn_align_d:"Droite",
@@ -509,7 +509,7 @@ const I18N = {
     pr_sub:"ورقة الحضور اليومية", pr_presents:"✅ الحاضرون", pr_absents:"❌ الغائبون",
     pr_select_classe:"اختر قسمًا.", pr_feuille_du:"ورقة يوم", pr_present:"✅ حاضر", pr_absent:"❌ غائب",
     pr_histo:"⚠️ سجل الغيابات", pr_th_total:"المجموع", pr_absences:"غياب",
-    prs_titre:"📊 إحصائيات الغياب", prs_mois:"الشهر", prs_abs:"الغيابات", prs_taux:"نسبة الغياب", prs_filles:"٪ الإناث", prs_total:"المجموع", prs_vide:"لا غياب مسجل حتى الآن.",
+    prs_titre:"📊 إحصائيات الغياب", prs_mois:"الشهر", prs_abs:"الغيابات", prs_taux:"نسبة الغياب", prs_filles:"٪ الإناث", prs_total:"المجموع", prs_vide:"لا غياب مسجل حتى الآن.", reg_titre:"📋 سجل الحضور الشهري", reg_eleve:"التلميذ", reg_present:"الحضور", reg_absent:"الغياب", reg_taux:"نسبة الحضور", reg_vide:"لا يوجد تسجيل حضور هذا الشهر.", reg_resume:"ملخص شهري",
     bu_sub:"اطّلع واطبع", bu_par_periode:"كشف حسب الفترة", bu_annuel:"الكشف السنوي (كل النقاط)",
     bu_toutes_classes:"كل الأقسام", bu_tout_imprimer:"🖨️ طباعة الكل", bu_aucun_eleve:"لا تلاميذ.",
     fn_align_g:"يسار", fn_align_c:"وسط", fn_align_d:"يمين",
@@ -3918,6 +3918,12 @@ function Presences({data,ops,etab}) {
   const totAbsF=Object.values(moisMap).reduce((s,m)=>s+m.absF,0);
   const tauxGlobal=totRecs?Math.round(totAbs/totRecs*100):0;
   const pctFGlobal=totAbs?Math.round(totAbsF/totAbs*100):0;
+  const [selMonth,setSelMonth]=useState(TODAY.slice(0,7));
+  const regClasseId=parseInt(classeId);
+  const monthRecs=data.presences.filter(p=>p.classe_id===regClasseId && (p.date||"").slice(0,7)===selMonth);
+  const regJours=[...new Set(monthRecs.map(p=>p.date))].sort();
+  const registre=eleves.map(e=>{ let pres=0,abs=0; const cells=regJours.map(d=>{ const rec=monthRecs.find(p=>p.eleve_id===e.id&&p.date===d); const absent=rec?rec.present===false:false; if(absent)abs++;else pres++; return {d,absent}; }); return {e,cells,pres,abs,taux:regJours.length?Math.round(pres/regJours.length*100):0}; });
+  const regMoisLabel=(()=>{try{const[y,m]=selMonth.split("-");return new Date(parseInt(y),parseInt(m)-1,1).toLocaleDateString(CURRENT_LANG==="ar"?"ar":"fr-FR",{month:"long",year:"numeric"});}catch(_){return selMonth;}})();
   return(
     <div>
       <SHdr title={t("nav_presences")+" 📅"} sub={t("pr_sub")} action={eleves.length>0?<ExportBar name={`presences_${(data.classes.find(c=>c.id===parseInt(classeId))?.nom||"classe")}_${date}`.replace(/\s+/g,"_")} title={`${t("nav_presences")} — ${date}`} getRows={()=>eleves.map(e=>({"Élève":`${e.prenom} ${e.nom}`,Matricule:e.matricule,Statut:absents.some(a=>a.id===e.id)?"Absent":"Présent"}))}/>:null}/>
@@ -3951,21 +3957,38 @@ function Presences({data,ops,etab}) {
         <Tbl cols={[t("no_eleve"),t("no_classe"),t("pr_th_total")]} empty={null} rows={absHist.slice(0,10).map(e=>{const cl=data.classes.find(c=>c.id===e.classe_id);return(<TR key={e.id}><TD bold>{e.prenom} {e.nom}</TD><TD>{txt(cl?.nom,cl?.nom_ar)}</TD><TD><span style={{background:e.tot>=5?"#fee2e2":"#fef3c7",color:e.tot>=5?"#dc2626":"#d97706",borderRadius:7,padding:"2px 10px",fontSize:12,fontWeight:700}}>{e.tot} {t("pr_absences")}</span></TD></TR>);})}/>
       </Card>}
       <Card s={{marginTop:14}}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:11}}>
-          <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{t("prs_titre")}</div>
-          {moisRows.length>0&&<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-            <span style={{background:"rgba(220,38,38,0.10)",color:"#dc2626",borderRadius:8,padding:"4px 11px",fontSize:11.5,fontWeight:700}}>{t("prs_abs")} : {totAbs} ({tauxGlobal}%)</span>
-            <span style={{background:"rgba(219,39,119,0.12)",color:"#db2777",borderRadius:8,padding:"4px 11px",fontSize:11.5,fontWeight:700}}>{t("prs_filles")} : {pctFGlobal}%</span>
-          </div>}
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10,marginBottom:11}}>
+          <div style={{fontWeight:700,fontSize:13,color:"var(--me-text)"}}>{t("reg_titre")}</div>
+          <input type="month" value={selMonth} onChange={e=>setSelMonth(e.target.value)} style={{padding:"7px 10px",borderRadius:9,border:"1.5px solid #e2e8f0",fontSize:12.5,fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
         </div>
-        {moisRows.length>0?<Tbl cols={[t("prs_mois"),t("prs_abs"),t("prs_taux"),t("prs_filles")]} empty={null} rows={moisRows.map(r=>(
-          <TR key={r.mk}>
-            <TD bold>{r.label}</TD>
-            <TD>{r.abs}</TD>
-            <TD><span style={{background:r.taux>=20?"#fee2e2":"#fef3c7",color:r.taux>=20?"#dc2626":"#d97706",borderRadius:7,padding:"2px 10px",fontSize:12,fontWeight:700}}>{r.taux}%</span></TD>
-            <TD><span style={{color:"#db2777",fontWeight:700}}>{r.pctF}%</span></TD>
-          </TR>
-        ))}/>:<div style={{fontSize:12.5,color:"var(--me-text-3)",padding:"6px 2px"}}>{t("prs_vide")}</div>}
+        {eleves.length===0?<div style={{fontSize:12.5,color:"var(--me-text-3)",padding:"6px 2px"}}>{t("pr_select_classe")}</div>:regJours.length===0?<div style={{fontSize:12.5,color:"var(--me-text-3)",padding:"6px 2px"}}>{t("reg_vide")}</div>:<React.Fragment>
+          <div style={{fontSize:11.5,color:"var(--me-text-3)",marginBottom:9}}><span style={{color:"#059669"}}>✓</span> {t("pr_present")} · <span style={{color:"#dc2626"}}>✗</span> {t("pr_absent")} — {regMoisLabel}</div>
+          <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch",marginBottom:16,border:"1px solid #f1f5f9",borderRadius:10}}>
+            <table style={{borderCollapse:"collapse",fontSize:11.5,width:"max-content"}}>
+              <thead><tr>
+                <th style={{position:"sticky",left:0,zIndex:1,background:"var(--me-surface,#fff)",padding:"7px 9px",textAlign:"left",borderBottom:"2px solid #e2e8f0",whiteSpace:"nowrap"}}>{t("reg_eleve")}</th>
+                {regJours.map(d=><th key={d} style={{padding:"7px 6px",borderBottom:"2px solid #e2e8f0",color:"var(--me-text-3)",fontWeight:700}}>{d.slice(8,10)}</th>)}
+                <th style={{padding:"7px 8px",borderBottom:"2px solid #e2e8f0",color:"#dc2626",fontWeight:700}}>{t("prs_total")}</th>
+              </tr></thead>
+              <tbody>
+                {registre.map(r=>(<tr key={r.e.id}>
+                  <td style={{position:"sticky",left:0,zIndex:1,background:"var(--me-surface,#fff)",padding:"7px 9px",fontWeight:700,whiteSpace:"nowrap",borderBottom:"1px solid #f1f5f9"}}>{r.e.prenom} {r.e.nom}</td>
+                  {r.cells.map((c,i)=><td key={i} style={{textAlign:"center",padding:"7px 6px",borderBottom:"1px solid #f1f5f9",color:c.absent?"#dc2626":"#059669",fontWeight:700}}>{c.absent?"✗":"✓"}</td>)}
+                  <td style={{textAlign:"center",padding:"7px 8px",borderBottom:"1px solid #f1f5f9",color:"#dc2626",fontWeight:800}}>{r.abs}</td>
+                </tr>))}
+              </tbody>
+            </table>
+          </div>
+          <div style={{fontWeight:700,fontSize:12.5,color:"var(--me-text)",marginBottom:8}}>{t("reg_resume")} — {regMoisLabel}</div>
+          <Tbl cols={[t("reg_eleve"),t("reg_present"),t("reg_absent"),t("reg_taux")]} empty={null} rows={registre.map(r=>(
+            <TR key={r.e.id}>
+              <TD bold>{r.e.prenom} {r.e.nom}</TD>
+              <TD><span style={{color:"#059669",fontWeight:700}}>{r.pres}</span></TD>
+              <TD><span style={{color:"#dc2626",fontWeight:700}}>{r.abs}</span></TD>
+              <TD><span style={{background:r.taux<80?"#fee2e2":"#dcfce7",color:r.taux<80?"#dc2626":"#059669",borderRadius:7,padding:"2px 10px",fontSize:12,fontWeight:700}}>{r.taux}%</span></TD>
+            </TR>
+          ))}/>
+        </React.Fragment>}
       </Card>
     </div>
   );
