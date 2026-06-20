@@ -3346,7 +3346,7 @@ function Notes({data,ops,etab,currentUser}) {
       <tbody>${sr.map(r=>`<tr><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;font-weight:600">${esc(r.label)}</td><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;text-align:center">${esc(r.total)}</td><td style="border:1px solid #cbd5e1;padding:${SZ.pad};font-size:${SZ.fs}px;text-align:center">${esc(r.filles)}</td></tr>`).join("")}</tbody>
     </table></div>`:"";
     const hSty=enteteCouleur?"":' style="background:#ffffff;color:#000;border:1px solid #94a3b8"';
-    printHTML(`${officialHeader(etab,{classe:cl?.nom,docTitle:`Fiche de notes — ${matiere?.nom}`,docTitleAr:`بطاقة العلامات ${matiere?.nom_ar||matiere?.nom||""}`})}
+    printHTML(`${officialHeader(etab,{classe:cl?.nom,docTitle:`Fiche de notes — ${matiere?.nom}`,docTitleAr:`بطاقة الدرجات ${matiere?.nom_ar||matiere?.nom||""}`})}
     <p style="font-size:12px;color:#475569">Période : <b>${periode}</b> · Coefficient : <b>${matiere?.coefficient}</b> · Enseignant : <b>${matiere?.enseignant||"—"}</b></p>
     <table><tr><th${hSty}>N°</th><th${hSty}>${t("fi_eleve")}</th><th${hSty}>${t("fi_matricule")}</th><th${hSty}>${t("fi_note")} /${bareme}</th><th${hSty}>${t("fi_appreciation")}</th></tr>${rows}</table>
     ${statHTML}
