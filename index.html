@@ -41,67 +41,37 @@
 <div id="root"><div id="loading">Chargement de MonEcole...</div></div>
 
 <script>
-// Charger les scripts dans l'ordre, avec CDN de secours.
-// Important : on ne force pas le cache avec ?_r=..., sinon chaque rafraîchissement dépend encore plus du réseau.
-function loadScript(urls) {
-  urls = Array.isArray(urls) ? urls : [urls];
-  var i = 0;
+// Charger les scripts dans l'ordre, en série, pour garantir que tout soit prêt
+function loadScript(src, attempt) {
+  attempt = attempt || 0;
   return new Promise(function(resolve, reject) {
-    function tryNext() {
-      if (i >= urls.length) {
-        reject(new Error('Impossible de charger une dépendance : ' + urls.join(' ou ')));
-        return;
-      }
-      var src = urls[i++];
-      var s = document.createElement('script');
-      s.src = src;
-      s.defer = true;
-      s.onload = resolve;
-      s.onerror = function() {
-        if (s.parentNode) s.parentNode.removeChild(s);
-        setTimeout(tryNext, 500);
-      };
-      document.head.appendChild(s);
-    }
-    tryNext();
+    var s = document.createElement('script');
+    s.src = attempt ? (src + (src.indexOf('?')<0?'?':'&') + '_r=' + attempt) : src;
+    s.onload = resolve;
+    s.onerror = function() {
+      if (s.parentNode) s.parentNode.removeChild(s);
+      if (attempt < 3) { setTimeout(function(){ loadScript(src, attempt+1).then(resolve, reject); }, 700*(attempt+1)); }
+      else { reject(new Error('Echec chargement: ' + src)); }
+    };
+    document.head.appendChild(s);
   });
 }
 
 async function boot() {
   try {
-    await loadScript([
-      'https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js',
-      'https://unpkg.com/react@18/umd/react.production.min.js'
-    ]);
-    await loadScript([
-      'https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js',
-      'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js'
-    ]);
-    await loadScript([
-      'https://cdn.jsdelivr.net/npm/prop-types@15.8.1/prop-types.min.js',
-      'https://unpkg.com/prop-types@15.8.1/prop-types.min.js'
-    ]);
-    await loadScript([
-      'https://cdn.jsdelivr.net/npm/recharts@2.10.0/umd/Recharts.js',
-      'https://unpkg.com/recharts@2.10.0/umd/Recharts.js'
-    ]);
-    await loadScript([
-      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
-      'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js'
-    ]);
-    await loadScript([
-      'https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.6/babel.min.js',
-      'https://unpkg.com/@babel/standalone@7.23.6/babel.min.js'
-    ]);
-
-    var el = document.getElementById('app-code');
-    if (!el) throw new Error('Code de l’application introuvable (#app-code).');
-    if (!window.Babel) throw new Error('Babel n’est pas chargé.');
-    var transformed = Babel.transform(el.textContent, { presets: ['react'] }).code;
+    await loadScript('https://unpkg.com/react@18/umd/react.production.min.js');
+    await loadScript('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js');
+    await loadScript('https://unpkg.com/prop-types@15.8.1/prop-types.min.js');
+    await loadScript('https://unpkg.com/recharts@2.10.0/umd/Recharts.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js');
+    await loadScript('https://unpkg.com/@babel/standalone@7.23.6/babel.min.js');
+    
+    // Une fois tout chargé, transformer et exécuter le code
+    var code = document.getElementById('app-code').textContent;
+    var transformed = Babel.transform(code, { presets: ['react'] }).code;
     eval(transformed);
   } catch(e) {
-    console.error(e);
-    document.getElementById('root').innerHTML = '<div style="padding:40px;color:#dc2626;font-family:sans-serif"><h2>Erreur de chargement</h2><p>' + (e && e.message ? e.message : e) + '</p><p style="color:#475569">Vérifie la connexion, les CDN ou la configuration Supabase enregistrée dans ce navigateur.</p></div>';
+    document.getElementById('root').innerHTML = '<div style="padding:40px;color:#dc2626;font-family:sans-serif"><h2>Erreur de chargement</h2><p>' + e.message + '</p></div>';
   }
 }
 boot();
@@ -116,42 +86,19 @@ const { createClient } = supabase;
 const DEFAULT_SUPABASE_URL = "https://durbgghxbbhqtxncpdcq.supabase.co";
 const DEFAULT_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1cmJnZ2h4YmJocXR4bmNwZGNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NjcyNjYsImV4cCI6MjA5NjI0MzI2Nn0.GK4Xpx1G31_e4m6BW8m9NojWo00O7SRbXfIIvx3vwvA";
 
-function isValidSupabaseUrl(url) {
-  try {
-    const u = new URL(String(url).trim());
-    return (u.protocol === "https:" || u.protocol === "http:") && !!u.hostname;
-  } catch(e) { return false; }
-}
-
 function readSupabaseConfig() {
   try {
-    const url = (localStorage.getItem("monecole_sb_url") || "").trim();
-    const anon = (localStorage.getItem("monecole_sb_anon") || "").trim();
-    if (url && anon && isValidSupabaseUrl(url)) return { url, anon, custom:true };
-    if (url || anon) {
-      localStorage.removeItem("monecole_sb_url");
-      localStorage.removeItem("monecole_sb_anon");
-    }
+    const url = localStorage.getItem("monecole_sb_url");
+    const anon = localStorage.getItem("monecole_sb_anon");
+    if (url && anon) return { url, anon, custom:true };
   } catch(e) {}
   return { url: DEFAULT_SUPABASE_URL, anon: DEFAULT_SUPABASE_ANON, custom:false };
 }
 
-let SB_CONFIG = readSupabaseConfig();
-let SUPABASE_URL = SB_CONFIG.url;
-let SUPABASE_ANON = SB_CONFIG.anon;
-let sb;
-try {
-  sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-} catch(e) {
-  try {
-    localStorage.removeItem("monecole_sb_url");
-    localStorage.removeItem("monecole_sb_anon");
-  } catch(_) {}
-  SB_CONFIG = { url: DEFAULT_SUPABASE_URL, anon: DEFAULT_SUPABASE_ANON, custom:false };
-  SUPABASE_URL = SB_CONFIG.url;
-  SUPABASE_ANON = SB_CONFIG.anon;
-  sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-}
+const SB_CONFIG = readSupabaseConfig();
+const SUPABASE_URL = SB_CONFIG.url;
+const SUPABASE_ANON = SB_CONFIG.anon;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
 // Enregistre une nouvelle config Supabase (école) puis recharge l'app
 function saveSupabaseConfig(url, anon) {
@@ -203,8 +150,6 @@ const NIVEAUX_CYCLE = {
 const SERIES = ["Scientifique","Littéraire"];
 // Appréciations préscolaire (si l'école choisit ce mode)
 const APPRECIATIONS_MATERNELLE = ["Acquis","En cours d'acquisition","Non acquis"];
-// Groupes sanguins : écrit séparément pour éviter toute erreur de guillemets dans JSX
-const GROUPES_SANGUINS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const baremeOf = niveau => (niveau==="Primaire"||niveau==="Maternelle") ? 10 : 20;
 // Mode d'évaluation de la maternelle selon l'établissement : "note" (/10) ou "appreciation"
 const modeMaternelle = etab => etab?.mode_maternelle==="appreciation" ? "appreciation" : "note";
@@ -3159,12 +3104,7 @@ function Eleves({data,ops,etab,currentUser}) {
           <Inp label={t("el_email")} value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))}/>
           <Inp label={t("el_telephone")} value={form.telephone} onChange={e=>setForm(f=>({...f,telephone:e.target.value}))} placeholder="+224 ..."/>
           <div style={{gridColumn:"1/-1",fontWeight:800,fontSize:12,color:"var(--me-brand)",margin:"10px 0 0"}}>{t("el_sec_medical")}</div>
-          <Slt
-            label={t("el_groupe_sanguin")}
-            value={form.groupe_sanguin}
-            onChange={e=>setForm(f=>({...f,groupe_sanguin:e.target.value}))}
-            opts={[{v:"",l:t("el_choisir")}, ...GROUPES_SANGUINS.map(g=>({v:g,l:g}))]}
-          />
+          <Slt label={t("el_groupe_sanguin")} value={form.groupe_sanguin} onChange={e=>setForm(f=>({...f,groupe_sanguin:e.target.value}))} opts={[{v:"",l:t("el_choisir")},...["A+","A-","B+","B-","AB+","AB-","O+","O-"].map(g=>({v:g,l:g}))]}/>
           <Inp label={t("el_allergies")} value={form.allergies} onChange={e=>setForm(f=>({...f,allergies:e.target.value}))}/>
           <Inp label={t("el_urgence_nom")} value={form.urgence_nom} onChange={e=>setForm(f=>({...f,urgence_nom:e.target.value}))}/>
           <Inp label={t("el_urgence_tel")} value={form.urgence_tel} onChange={e=>setForm(f=>({...f,urgence_tel:e.target.value}))}/>
