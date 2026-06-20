@@ -203,6 +203,8 @@ const NIVEAUX_CYCLE = {
 const SERIES = ["Scientifique","Littéraire"];
 // Appréciations préscolaire (si l'école choisit ce mode)
 const APPRECIATIONS_MATERNELLE = ["Acquis","En cours d'acquisition","Non acquis"];
+// Groupes sanguins : écrit séparément pour éviter toute erreur de guillemets dans JSX
+const GROUPES_SANGUINS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const baremeOf = niveau => (niveau==="Primaire"||niveau==="Maternelle") ? 10 : 20;
 // Mode d'évaluation de la maternelle selon l'établissement : "note" (/10) ou "appreciation"
 const modeMaternelle = etab => etab?.mode_maternelle==="appreciation" ? "appreciation" : "note";
@@ -3157,7 +3159,12 @@ function Eleves({data,ops,etab,currentUser}) {
           <Inp label={t("el_email")} value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))}/>
           <Inp label={t("el_telephone")} value={form.telephone} onChange={e=>setForm(f=>({...f,telephone:e.target.value}))} placeholder="+224 ..."/>
           <div style={{gridColumn:"1/-1",fontWeight:800,fontSize:12,color:"var(--me-brand)",margin:"10px 0 0"}}>{t("el_sec_medical")}</div>
-          <Slt label={t("el_groupe_sanguin")} value={form.groupe_sanguin} onChange={e=>setForm(f=>({...f,groupe_sanguin:e.target.value}))} opts={[{v:"",l:t("el_choisir")},...["A+","A-","B+","B-","AB+","AB-","O+","O-"].map(g=>({v:g,l:g}))]}/>
+          <Slt
+            label={t("el_groupe_sanguin")}
+            value={form.groupe_sanguin}
+            onChange={e=>setForm(f=>({...f,groupe_sanguin:e.target.value}))}
+            opts={[{v:"",l:t("el_choisir")}, ...GROUPES_SANGUINS.map(g=>({v:g,l:g}))]}
+          />
           <Inp label={t("el_allergies")} value={form.allergies} onChange={e=>setForm(f=>({...f,allergies:e.target.value}))}/>
           <Inp label={t("el_urgence_nom")} value={form.urgence_nom} onChange={e=>setForm(f=>({...f,urgence_nom:e.target.value}))}/>
           <Inp label={t("el_urgence_tel")} value={form.urgence_tel} onChange={e=>setForm(f=>({...f,urgence_tel:e.target.value}))}/>
